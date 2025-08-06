@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\HandymanController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -45,12 +47,22 @@ Route::middleware(['auth:customer', 'verified'])->prefix('customer')->name('cust
     Route::get('/dashboard', function () {
         return view('customer.dashboard');
     })->name('dashboard');
+
+    Route::get('/services/{slug}', [ServiceController::class, 'show'])->name('services.show');
+
+    // Handyman routes
+    Route::get('/handymen/{id}', [HandymanController::class, 'show'])->name('handymen.show');
 });
+
 // Tukang Dashboard
 Route::middleware(['auth:tukang'])->prefix('tukang')->name('tukang.')->group(function () {
     Route::get('/dashboard', function () {
         return view('tukang.dashboard');
     })->name('dashboard');
 });
+
+// Public service routes (for non-authenticated users or general access)
+Route::get('/services/{slug}', [ServiceController::class, 'show'])->name('services.show');
+Route::get('/handymen/{id}', [HandymanController::class, 'show'])->name('handymen.show');
 
 require __DIR__.'/auth.php';
