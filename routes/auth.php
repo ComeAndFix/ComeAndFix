@@ -11,6 +11,7 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\CustomerEmailVerificationController;
+use App\Http\Controllers\Auth\TukangEmailVerificationController;
 
 Route::middleware('guest')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])
@@ -78,7 +79,7 @@ Route::middleware('guest:tukang')->group(function () {
     Route::get('tukang/verify-email', [EmailVerificationPromptController::class, '__invoke'])
         ->name('tukang.verification.notice');
 
-    Route::get('tukang/verify-email/{id}/{hash}', [VerifyEmailController::class, '__invoke'])
+    Route::get('tukang/verify-email/{id}/{hash}', TukangEmailVerificationController::class)
         ->middleware(['signed', 'throttle:6,1'])
         ->name('tukang.verification.verify');
 

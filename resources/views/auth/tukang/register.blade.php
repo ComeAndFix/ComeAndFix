@@ -22,6 +22,16 @@
         </div>
 
         <div class="mt-4">
+            <x-input-label for="address" :value="__('Address')" />
+            <x-text-input id="address" class="block mt-1 w-full" type="text" name="address" />
+        </div>
+
+        <div class="mt-4">
+            <x-input-label for="city" :value="__('City')" />
+            <x-text-input id="city" class="block mt-1 w-full" type="text" name="city" />
+        </div>
+
+        <div class="mt-4">
             <x-input-label for="specializations" :value="__('Specializations')" />
             <div class="mt-2 space-y-2">
                 <label class="inline-flex items-center">

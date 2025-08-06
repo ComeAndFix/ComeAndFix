@@ -47,7 +47,7 @@ Route::middleware(['auth:customer', 'verified'])->prefix('customer')->name('cust
     })->name('dashboard');
 });
 // Tukang Dashboard
-Route::middleware(['auth:tukang'])->prefix('tukang')->name('tukang.')->group(function () {
+Route::middleware(['auth:tukang', 'verified'])->prefix('tukang')->name('tukang.')->group(function () {
     Route::get('/dashboard', function () {
         return view('tukang.dashboard');
     })->name('dashboard');

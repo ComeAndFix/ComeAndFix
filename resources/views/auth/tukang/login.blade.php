@@ -3,7 +3,7 @@
         {{ __('Tukang Login') }}
     </div>
 
-    <form method="POST" action="#">
+    <form method="POST" action="{{ route('tukang.login') }}">
         @csrf
 
         <div>
