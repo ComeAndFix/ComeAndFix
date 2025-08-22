@@ -60,6 +60,16 @@ Route::middleware('auth')->group(function () {
         ->name('logout');
 });
 
+Route::middleware('auth:customer')->group(function () {
+    Route::post('customer/logout', [AuthenticatedSessionController::class, 'destroy'])
+        ->name('customer.logout');
+});
+
+Route::middleware('auth:tukang')->group(function () {
+    Route::post('tukang/logout', [AuthenticatedSessionController::class, 'destroy'])
+        ->name('tukang.logout');
+});
+
 // Add these routes for customer email verification
 Route::middleware('guest:customer')->group(function () {
     Route::get('customer/verify-email', [EmailVerificationPromptController::class, '__invoke'])
