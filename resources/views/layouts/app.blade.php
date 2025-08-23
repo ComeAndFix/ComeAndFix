@@ -1,36 +1,174 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-bs-theme="light">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ config('app.name', 'Come&Fix') }}</title>
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
-        <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-    </head>
-    <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
-            @include('layouts.navigation')
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
 
-            <!-- Page Heading -->
-            @isset($header)
-                <header class="bg-white dark:bg-gray-800 shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                        {{ $header }}
-                    </div>
-                </header>
-            @endisset
+    <!-- Custom Dark Mode CSS -->
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
 
-            <!-- Page Content -->
-            <main>
-                {{ $slot }}
-            </main>
+        [data-bs-theme="dark"] {
+            --bs-body-bg: #121212;
+            --bs-body-color: #ffffff;
+            --bs-border-color: #343a40;
+        }
+
+        [data-bs-theme="dark"] .bg-light {
+            background-color: #1e1e1e !important;
+        }
+
+        [data-bs-theme="dark"] .text-muted {
+            color: #adb5bd !important;
+        }
+
+        [data-bs-theme="dark"] .border-bottom {
+            border-color: #343a40 !important;
+        }
+
+        [data-bs-theme="dark"] .shadow-sm {
+            box-shadow: 0 .125rem .25rem rgba(255, 255, 255, .075) !important;
+        }
+
+        [data-bs-theme="dark"] .card {
+            background-color: #2d2d2d;
+            border-color: #343a40;
+        }
+
+        [data-bs-theme="dark"] .dropdown-menu {
+            background-color: #2d2d2d;
+            border-color: #343a40;
+        }
+
+        [data-bs-theme="dark"] .dropdown-item:hover {
+            background-color: #343a40;
+        }
+
+        .navbar-nav .nav-link {
+            transition: all 0.3s ease;
+        }
+
+        .navbar-nav .nav-link:hover {
+            transform: translateY(-1px);
+        }
+
+        #themeToggle, #altThemeToggle {
+            transition: all 0.3s ease;
+            display: inline-block !important;
+            visibility: visible !important;
+            border-radius: 4px !important;
+        }
+
+        #themeToggle:hover, #altThemeToggle:hover {
+            transform: scale(1.1);
+        }
+
+        /* Ensure navigation items are visible */
+        .navbar-nav {
+            display: flex !important;
+        }
+
+        .navbar-nav .nav-item {
+            display: block !important;
+        }
+
+        .navbar-nav .nav-link {
+            display: block !important;
+            color: var(--bs-nav-link-color) !important;
+        }
+    </style>
+
+    <!-- Scripts -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+<body>
+@include('layouts.navigation')
+
+<!-- Page Heading -->
+@isset($header)
+    <header class="bg-body-secondary shadow-sm border-bottom">
+        <div class="container py-3">
+            {{ $header }}
         </div>
-    </body>
+    </header>
+@endisset
+
+<!-- Page Content -->
+<main>
+    {{ $slot }}
+</main>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Theme Toggle and Navigation Scripts -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Theme Toggle Functionality
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const htmlElement = document.documentElement;
+
+        if (themeToggle && themeIcon) {
+            // Check for saved theme preference
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                htmlElement.setAttribute('data-bs-theme', savedTheme);
+                updateIcon(savedTheme);
+            } else {
+                // Default to light theme
+                htmlElement.setAttribute('data-bs-theme', 'light');
+                updateIcon('light');
+            }
+
+            themeToggle.addEventListener('click', function() {
+                const currentTheme = htmlElement.getAttribute('data-bs-theme');
+                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+
+                htmlElement.setAttribute('data-bs-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                updateIcon(newTheme);
+            });
+
+            function updateIcon(theme) {
+                if (theme === 'dark') {
+                    themeIcon.className = 'bi bi-sun-fill';
+                } else {
+                    themeIcon.className = 'bi bi-moon-fill';
+                }
+            }
+        } else {
+            console.log('Theme toggle elements not found');
+        }
+
+        // Smooth scrolling for navbar links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    const offsetTop = target.offsetTop - 80;
+                    window.scrollTo({
+                        top: offsetTop,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    });
+</script>
+</body>
 </html>
