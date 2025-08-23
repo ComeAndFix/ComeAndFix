@@ -34,31 +34,6 @@
             </div>
         </section>
 
-        <!-- Quick Stats -->
-        <section class="py-4 bg-white border-bottom">
-            <div class="container">
-                <div class="row text-center">
-                    <div class="col-md-3">
-                        <h3 class="text-primary fw-bold">500+</h3>
-                        <p class="mb-0">Verified Handymen</p>
-                    </div>
-                    <div class="col-md-3">
-                        <h3 class="text-primary fw-bold">10k+</h3>
-                        <p class="mb-0">Jobs Completed</p>
-                    </div>
-                    <div class="col-md-3">
-                        <h3 class="text-primary fw-bold">4.8★</h3>
-                        <p class="mb-0">Average Rating</p>
-                    </div>
-                    <div class="col-md-3">
-                        <h3 class="text-primary fw-bold">24/7</h3>
-                        <p class="mb-0">Support</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Popular Services -->
         <!-- Popular Services -->
         <section id="services" class="py-5 bg-body">
             <div class="container">
@@ -202,33 +177,13 @@
             </div>
         </section>
 
-        <!-- Emergency Services -->
-        <section class="py-5 bg-danger text-white">
-            <div class="container">
-                <div class="row align-items-center">
-                    <div class="col-md-8">
-                        <h3 class="fw-bold mb-2">
-                            <i class="bi bi-exclamation-triangle me-2"></i>
-                            Emergency Services Available 24/7
-                        </h3>
-                        <p class="mb-0">Urgent plumbing, electrical, or HVAC issues? Get immediate help from our emergency response team.</p>
-                    </div>
-                    <div class="col-md-4 text-end">
-                        <button class="btn btn-light btn-lg">
-                            <i class="bi bi-telephone-fill me-2"></i>
-                            Call Emergency
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </section>
 
-        <!-- Recent Jobs -->
+        <!-- Recent Orders -->
         <section class="py-5">
             <div class="container">
                 <div class="row align-items-center mb-4">
                     <div class="col">
-                        <h2 class="fw-bold mb-0">Your Recent Bookings</h2>
+                        <h2 class="fw-bold mb-0">Your Recent Orders</h2>
                     </div>
                     <div class="col-auto">
                         <a href="#" class="btn btn-outline-primary">View All</a>
