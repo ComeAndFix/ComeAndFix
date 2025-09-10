@@ -1,80 +1,116 @@
 <x-guest-layout>
-    <div class="mb-4 text-sm text-gray-600">
-        {{ __('Tukang Registration') }}
-    </div>
+    <h3 class="fw-bold text-center mb-4">{{ __('Tukang Registration') }}</h3>
 
     <form method="POST" action="{{ route('tukang.register') }}">
         @csrf
 
-        <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" required autofocus />
+        <!-- Name -->
+        <div class="mb-3">
+            <label for="name" class="form-label">{{ __('Name') }}</label>
+            <input id="name" class="form-control" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
+            <x-input-error :messages="$errors->get('name')" class="mt-2" />
         </div>
 
-        <div class="mt-4">
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" required />
+        <!-- Email Address -->
+        <div class="mb-3">
+            <label for="email" class="form-label">{{ __('Email') }}</label>
+            <input id="email" class="form-control" type="email" name="email" :value="old('email')" required autocomplete="username" />
+            <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
-        <div class="mt-4">
-            <x-input-label for="phone" :value="__('Phone')" />
-            <x-text-input id="phone" class="block mt-1 w-full" type="text" name="phone" required />
+        <!-- Phone -->
+        <div class="mb-3">
+            <label for="phone" class="form-label">{{ __('Phone') }}</label>
+            <input id="phone" class="form-control" type="text" name="phone" :value="old('phone')" required />
+            <x-input-error :messages="$errors->get('phone')" class="mt-2" />
         </div>
 
-        <div class="mt-4">
-            <x-input-label for="specializations" :value="__('Specializations')" />
-            <div class="mt-2 space-y-2">
-                <label class="inline-flex items-center">
-                    <input type="checkbox" name="specializations[]" value="HVAC" class="rounded">
-                    <span class="ml-2">HVAC</span>
-                </label>
-                <label class="inline-flex items-center">
-                    <input type="checkbox" name="specializations[]" value="Electricity" class="rounded">
-                    <span class="ml-2">Electricity</span>
-                </label>
-                <label class="inline-flex items-center">
-                    <input type="checkbox" name="specializations[]" value="Plumbing" class="rounded">
-                    <span class="ml-2">Plumbing</span>
-                </label>
-                <label class="inline-flex items-center">
-                    <input type="checkbox" name="specializations[]" value="Carpentry" class="rounded">
-                    <span class="ml-2">Carpentry</span>
-                </label>
-                <label class="inline-flex items-center">
-                    <input type="checkbox" name="specializations[]" value="Painting" class="rounded">
-                    <span class="ml-2">Painting</span>
-                </label>
+        <!-- Address -->
+        <div class="mb-3">
+            <label for="address" class="form-label">{{ __('Address') }}</label>
+            <textarea id="address" name="address" class="form-control" required>{{ old('address') }}</textarea>
+            <x-input-error :messages="$errors->get('address')" class="mt-2" />
+        </div>
+
+        <!-- City -->
+        <div class="mb-3">
+            <label for="city" class="form-label">{{ __('City') }}</label>
+            <input id="city" class="form-control" type="text" name="city" :value="old('city')" required />
+            <x-input-error :messages="$errors->get('city')" class="mt-2" />
+        </div>
+
+        <!-- Postal Code -->
+        <div class="mb-3">
+            <label for="postal_code" class="form-label">{{ __('Postal Code') }}</label>
+            <input id="postal_code" class="form-control" type="text" name="postal_code" :value="old('postal_code')" />
+            <x-input-error :messages="$errors->get('postal_code')" class="mt-2" />
+        </div>
+
+        <!-- Specializations -->
+        <div class="mb-3">
+            <label class="form-label">{{ __('Specializations') }}</label>
+            <div class="mt-2">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="specializations[]" value="HVAC" id="spec_hvac">
+                    <label class="form-check-label" for="spec_hvac">HVAC</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="specializations[]" value="Electricity" id="spec_electricity">
+                    <label class="form-check-label" for="spec_electricity">Electricity</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="specializations[]" value="Plumbing" id="spec_plumbing">
+                    <label class="form-check-label" for="spec_plumbing">Plumbing</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="specializations[]" value="Carpentry" id="spec_carpentry">
+                    <label class="form-check-label" for="spec_carpentry">Carpentry</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="specializations[]" value="Painting" id="spec_painting">
+                    <label class="form-check-label" for="spec_painting">Painting</label>
+                </div>
             </div>
         </div>
 
-        <div class="mt-4">
-            <x-input-label for="years_experience" :value="__('Years of Experience')" />
-            <x-text-input id="years_experience" class="block mt-1 w-full" type="number" name="years_experience" min="0" />
+        <!-- Description -->
+        <div class="mb-3">
+            <label for="description" class="form-label">{{ __('Description') }}</label>
+            <textarea id="description" name="description" class="form-control">{{ old('description') }}</textarea>
+            <x-input-error :messages="$errors->get('description')" class="mt-2" />
         </div>
 
-        <div class="mt-4">
-            <x-input-label for="hourly_rate" :value="__('Hourly Rate (IDR)')" />
-            <x-text-input id="hourly_rate" class="block mt-1 w-full" type="number" name="hourly_rate" step="0.01" />
+        <!-- Years of Experience -->
+        <div class="mb-3">
+            <label for="years_experience" class="form-label">{{ __('Years of Experience') }}</label>
+            <input id="years_experience" class="form-control" type="number" name="years_experience" :value="old('years_experience')" min="0" />
+            <x-input-error :messages="$errors->get('years_experience')" class="mt-2" />
         </div>
 
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-            <x-text-input id="password" class="block mt-1 w-full" type="password" name="password" required />
+        <!-- Password -->
+        <div class="mb-3">
+            <label for="password" class="form-label">{{ __('Password') }}</label>
+            <input id="password" class="form-control" type="password" name="password" required autocomplete="new-password" />
+            <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
 
-        <div class="mt-4">
-            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
-            <x-text-input id="password_confirmation" class="block mt-1 w-full" type="password" name="password_confirmation" required />
+        <!-- Confirm Password -->
+        <div class="mb-3">
+            <label for="password_confirmation" class="form-label">{{ __('Confirm Password') }}</label>
+            <input id="password_confirmation" class="form-control" type="password" name="password_confirmation" required autocomplete="new-password" />
+            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
         </div>
 
-        <div class="flex items-center justify-end mt-4">
-            <a class="underline text-sm text-gray-600 hover:text-gray-900" href="{{ route('tukang.login') }}">
+        <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-primary">
+                {{ __('Register') }}
+            </button>
+        </div>
+
+        <div class="text-center mt-3">
+            <a class="text-decoration-none" href="{{ route('tukang.login') }}">
                 {{ __('Already registered?') }}
             </a>
-
-            <x-primary-button class="ml-4">
-                {{ __('Register') }}
-            </x-primary-button>
         </div>
     </form>
 </x-guest-layout>

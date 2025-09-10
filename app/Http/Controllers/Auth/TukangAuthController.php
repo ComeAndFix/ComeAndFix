@@ -84,7 +84,7 @@
 
         public function logout(Request $request)
         {
-            Auth::guard('customer')->logout(); // or 'tukang' for TukangAuthController
+            Auth::guard('tukang')->logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
             return redirect('/');
