@@ -6,7 +6,7 @@ use App\Http\Controllers\HandymanController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('customer.login');
 });
 
 Route::get('/dashboard', function () {

@@ -67,7 +67,7 @@
         </div>
 
         <div class="text-center mt-3">
-            <a class="text-decoration-none" href="{{ route('login') }}">
+            <a class="text-decoration-none" href="{{ route('customer.login') }}">
                 {{ __('Already registered?') }}
             </a>
         </div>
