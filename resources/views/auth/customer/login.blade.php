@@ -34,7 +34,7 @@
         </div>
 
         <div class="text-center mt-3">
-            <a class="text-decoration-none" href="{{ route('register') }}">
+            <a class="text-decoration-none" href="{{ route('customer.register') }}">
                 {{ __('Need an account?') }}
             </a>
         </div>
