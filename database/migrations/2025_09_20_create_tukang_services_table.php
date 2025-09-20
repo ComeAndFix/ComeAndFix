@@ -6,11 +6,11 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up()
+    public function up(): void
     {
-        Schema::create('handyman_services', function (Blueprint $table) {
+        Schema::create('tukang_services', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('handyman_id')->constrained()->onDelete('cascade');
+            $table->foreignId('tukang_id')->constrained('tukangs')->onDelete('cascade');
             $table->foreignId('service_id')->constrained()->onDelete('cascade');
             $table->decimal('custom_rate', 8, 2)->nullable();
             $table->text('description')->nullable();
@@ -18,8 +18,8 @@ return new class extends Migration
         });
     }
 
-    public function down()
+    public function down(): void
     {
-        Schema::dropIfExists('handyman_services');
+        Schema::dropIfExists('tukang_services');
     }
 };

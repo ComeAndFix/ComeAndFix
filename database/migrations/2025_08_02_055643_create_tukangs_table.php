@@ -21,6 +21,8 @@ return new class extends Migration
             $table->text('address');
             $table->string('city');
             $table->string('postal_code')->nullable();
+            $table->decimal('latitude', 10, 8)->nullable();
+            $table->decimal('longitude', 11, 8)->nullable();
             $table->json('specializations'); // ['HVAC', 'Electricity', 'Plumbing', 'Carpentry', 'Painting']
             $table->text('description')->nullable();
             $table->integer('years_experience')->default(0);
