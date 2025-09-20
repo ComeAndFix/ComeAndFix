@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Service;
-use App\Models\Handyman;
+use App\Models\Tukang;
 use Illuminate\Http\Request;
 
 class ServiceController extends Controller
@@ -11,31 +11,24 @@ class ServiceController extends Controller
     public function show($slug, Request $request)
     {
         $service = Service::where('slug', $slug)->firstOrFail();
+        
+        $latitude = $request->get('lat', -6.2088); // Default to Jakarta
+        $longitude = $request->get('lng', 106.8456);
 
-        // Get user's location (you can also use IP geolocation)
-        $latitude = $request->query('lat');
-        $longitude = $request->query('lng');
-
-        // Default to a central location if no coordinates provided
-        if (!$latitude || !$longitude) {
-            $latitude = 40.7128; // New York City
-            $longitude = -74.0060;
-        }
-
-        // Find handymen who offer this service, ordered by distance
-        $handymen = Handyman::whereHas('services', function($query) use ($service) {
-            $query->where('service_id', $service->id);
-        })
+        // Get tukangs that offer this service
+        $tukangs = Tukang::whereJsonContains('specializations', $service->name)
             ->where('is_available', true)
-            ->with(['services', 'portfolios.images', 'user'])
+            ->where('is_active', true)
+            ->whereNotNull('latitude')
+            ->whereNotNull('longitude')
             ->get()
-            ->map(function($handyman) use ($latitude, $longitude) {
-                $handyman->distance = $handyman->getDistanceFrom($latitude, $longitude);
-                return $handyman;
+            ->map(function($tukang) use ($latitude, $longitude) {
+                $tukang->distance = $tukang->getDistanceFrom($latitude, $longitude);
+                return $tukang;
             })
             ->sortBy('distance')
             ->take(10);
 
-        return view('services.show', compact('service', 'handymen', 'latitude', 'longitude'));
+        return view('services.show', compact('service', 'tukangs', 'latitude', 'longitude'));
     }
 }

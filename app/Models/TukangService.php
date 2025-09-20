@@ -5,12 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class HandymanService extends Model
+class TukangService extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'handyman_id',
+        'tukang_id',
         'service_id',
         'custom_rate',
         'description'
@@ -20,9 +20,9 @@ class HandymanService extends Model
         'custom_rate' => 'decimal:2'
     ];
 
-    public function handyman()
+    public function tukang()
     {
-        return $this->belongsTo(Handyman::class);
+        return $this->belongsTo(Tukang::class);
     }
 
     public function service()
