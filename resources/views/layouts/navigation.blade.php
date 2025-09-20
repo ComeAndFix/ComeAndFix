@@ -13,36 +13,36 @@
         <!-- Navigation items -->
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-{{--                <li class="nav-item">--}}
-{{--                    <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">--}}
-{{--                        <i class="bi bi-house me-1"></i>Home--}}
-{{--                    </a>--}}
-{{--                </li>--}}
+                {{--                <li class="nav-item">--}}
+                {{--                    <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">--}}
+                {{--                        <i class="bi bi-house me-1"></i>Home--}}
+                {{--                    </a>--}}
+                {{--                </li>--}}
                 <li class="nav-item">
                     <a class="nav-link" href="#services">
                         <i class="bi bi-wrench me-1"></i>Services
                     </a>
                 </li>
-{{--                <li class="nav-item">--}}
-{{--                    <a class="nav-link" href="#how-it-works">--}}
-{{--                        <i class="bi bi-info-circle me-1"></i>How It Works--}}
-{{--                    </a>--}}
-{{--                </li>--}}
+                {{--                <li class="nav-item">--}}
+                {{--                    <a class="nav-link" href="#how-it-works">--}}
+                {{--                        <i class="bi bi-info-circle me-1"></i>How It Works--}}
+                {{--                    </a>--}}
+                {{--                </li>--}}
                 <li class="nav-item">
                     <a class="nav-link" href="#">
                         <i class="bi bi-calendar-check me-1"></i>My Bookings
                     </a>
                 </li>
-{{--                <li class="nav-item">--}}
-{{--                    <a class="nav-link" href="#">--}}
-{{--                        <i class="bi bi-chat-dots me-1"></i>Messages--}}
-{{--                    </a>--}}
-{{--                </li>--}}
-{{--                <li class="nav-item">--}}
-{{--                    <a class="nav-link" href="#emergency">--}}
-{{--                        <i class="bi bi-exclamation-triangle me-1"></i>Emergency--}}
-{{--                    </a>--}}
-{{--                </li>--}}
+                {{--                <li class="nav-item">--}}
+                {{--                    <a class="nav-link" href="#">--}}
+                {{--                        <i class="bi bi-chat-dots me-1"></i>Messages--}}
+                {{--                    </a>--}}
+                {{--                </li>--}}
+                {{--                <li class="nav-item">--}}
+                {{--                    <a class="nav-link" href="#emergency">--}}
+                {{--                        <i class="bi bi-exclamation-triangle me-1"></i>Emergency--}}
+                {{--                    </a>--}}
+                {{--                </li>--}}
             </ul>
 
             <!-- Right side items -->
@@ -74,7 +74,7 @@
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>Profile</a></li>
-{{--                        <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i>Settings</a></li>--}}
+                        {{--                        <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i>Settings</a></li>--}}
                         <li><hr class="dropdown-divider"></li>
                         <li>
                             @if(Auth::guard('customer')->check())
