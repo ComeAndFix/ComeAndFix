@@ -10,7 +10,7 @@ class Portfolio extends Model
     use HasFactory;
 
     protected $fillable = [
-        'handyman_id',
+        'tukang_id',
         'title',
         'description',
         'cost',
@@ -23,13 +23,18 @@ class Portfolio extends Model
         'completed_at' => 'date'
     ];
 
-    public function handyman()
+    public function tukang()
     {
-        return $this->belongsTo(Handyman::class);
+        return $this->belongsTo(Tukang::class);
     }
 
     public function images()
     {
         return $this->hasMany(PortfolioImage::class)->orderBy('sort_order');
+    }
+
+    public function getOwner()
+    {
+        return $this->tukang;
     }
 }

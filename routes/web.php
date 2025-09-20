@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ServiceController;
-use App\Http\Controllers\HandymanController;
+use App\Http\Controllers\Customer\TukangMapController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -40,8 +40,6 @@ Route::prefix('tukang')->name('tukang.')->group(function () {
     Route::post('/logout', [TukangAuthController::class, 'logout'])->name('logout');
 });
 
-use Illuminate\Support\Facades\Auth;
-
 // Customer Dashboard
 Route::middleware(['auth:customer', 'verified'])->prefix('customer')->name('customer.')->group(function () {
     Route::get('/dashboard', function () {
@@ -49,9 +47,14 @@ Route::middleware(['auth:customer', 'verified'])->prefix('customer')->name('cust
     })->name('dashboard');
 
     Route::get('/services/{slug}', [ServiceController::class, 'show'])->name('services.show');
-
-    // Handyman routes
-    Route::get('/handymen/{id}', [HandymanController::class, 'show'])->name('handymen.show');
+    
+    // Tukang Routes (replacing handymen)
+    Route::get('/tukangs/{id}', [TukangMapController::class, 'showProfile'])->name('tukangs.show');
+    
+    // Tukang Map Routes
+    Route::get('/find-tukang', [TukangMapController::class, 'index'])->name('find-tukang');
+    Route::get('/api/tukangs', [TukangMapController::class, 'getTukangs'])->name('api.tukangs');
+    Route::get('/api/tukangs/{tukang}', [TukangMapController::class, 'show'])->name('api.tukang.show');
 });
 
 // Tukang Dashboard
@@ -61,8 +64,8 @@ Route::middleware(['auth:tukang', 'verified'])->prefix('tukang')->name('tukang.'
     })->name('dashboard');
 });
 
-// Public service routes (for non-authenticated users or general access)
+// Public service routes
 Route::get('/services/{slug}', [ServiceController::class, 'show'])->name('services.show');
-Route::get('/handymen/{id}', [HandymanController::class, 'show'])->name('handymen.show');
+Route::get('/tukangs/{id}', [TukangMapController::class, 'showProfile'])->name('tukangs.show');
 
 require __DIR__.'/auth.php';

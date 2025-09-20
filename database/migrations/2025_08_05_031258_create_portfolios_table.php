@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('portfolios', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('handyman_id')->constrained()->onDelete('cascade');
+            $table->foreignId('tukang_id')->constrained('tukangs')->onDelete('cascade');
             $table->string('title');
             $table->text('description');
             $table->decimal('cost', 10, 2)->nullable();

@@ -24,15 +24,16 @@ class Service extends Model
         'base_price' => 'decimal:2'
     ];
 
-    public function handymen()
+    // Replace handymen with tukangs
+    public function tukangs()
     {
-        return $this->belongsToMany(Handyman::class, 'handyman_services')
+        return $this->belongsToMany(Tukang::class, 'tukang_services')
             ->withPivot('custom_rate', 'description')
             ->withTimestamps();
     }
 
-    public function handymanServices()
+    public function tukangServices()
     {
-        return $this->hasMany(HandymanService::class);
+        return $this->hasMany(TukangService::class);
     }
 }
