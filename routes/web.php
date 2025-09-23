@@ -54,7 +54,7 @@ Route::middleware(['auth:customer', 'verified'])->prefix('customer')->name('cust
     // Tukang Map Routes
     Route::get('/find-tukang', [TukangMapController::class, 'index'])->name('find-tukang');
     Route::get('/api/tukangs', [TukangMapController::class, 'getTukangs'])->name('api.tukangs');
-    Route::get('/api/tukangs/{tukang}', [TukangMapController::class, 'show'])->name('api.tukang.show');
+    Route::get('/api/tukangs/{tukang}', [TukangMapController::class, 'show'])->name('api.tukangs.show');
 });
 
 // Tukang Dashboard
