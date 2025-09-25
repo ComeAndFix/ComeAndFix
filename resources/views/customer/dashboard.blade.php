@@ -44,63 +44,73 @@
 
                 <div class="row g-4">
                     <div class="col-lg-3 col-md-6">
-                        <div class="card h-100 border-0 shadow-sm hover-shadow">
-                            <div class="card-body text-center p-4">
-                                <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
-                                    <i class="bi bi-wrench text-primary" style="font-size: 2rem;"></i>
+                        <a href="{{ route('find-tukang', ['service_type' => 'Plumbing']) }}" class="text-decoration-none">
+                            <div class="card h-100 border-0 shadow-sm hover-shadow">
+                                <div class="card-body text-center p-4">
+                                    <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                        <i class="bi bi-wrench text-primary" style="font-size: 2rem;"></i>
+                                    </div>
+                                    <h5 class="fw-bold text-body">Plumbing</h5>
+                                    <p class="text-body-secondary small mb-3">Pipe repairs, leaks, installations</p>
                                 </div>
-                                <h5 class="fw-bold text-body">Plumbing</h5>
-                                <p class="text-body-secondary small mb-3">Pipe repairs, leaks, installations</p>
                             </div>
-                        </div>
+                        </a>
                     </div>
 
                     <div class="col-lg-3 col-md-6">
-                        <div class="card h-100 border-0 shadow-sm hover-shadow">
-                            <div class="card-body text-center p-4">
-                                <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
-                                    <i class="bi bi-lightning text-success" style="font-size: 2rem;"></i>
+                        <a href="{{ route('find-tukang', ['service_type' => 'Electricity']) }}" class="text-decoration-none">
+                            <div class="card h-100 border-0 shadow-sm hover-shadow">
+                                <div class="card-body text-center p-4">
+                                    <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                        <i class="bi bi-lightning text-success" style="font-size: 2rem;"></i>
+                                    </div>
+                                    <h5 class="fw-bold text-body">Electrical</h5>
+                                    <p class="text-body-secondary small mb-3">Wiring, outlets, lighting fixes</p>
                                 </div>
-                                <h5 class="fw-bold text-body">Electrical</h5>
-                                <p class="text-body-secondary small mb-3">Wiring, outlets, lighting fixes</p>
                             </div>
-                        </div>
+                        </a>
                     </div>
 
                     <div class="col-lg-3 col-md-6">
-                        <div class="card h-100 border-0 shadow-sm hover-shadow">
-                            <div class="card-body text-center p-4">
-                                <div class="bg-info bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
-                                    <i class="bi bi-fan text-info" style="font-size: 2rem;"></i>
+                        <a href="{{ route('find-tukang', ['service_type' => 'HVAC']) }}" class="text-decoration-none">
+                            <div class="card h-100 border-0 shadow-sm hover-shadow">
+                                <div class="card-body text-center p-4">
+                                    <div class="bg-info bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                        <i class="bi bi-fan text-info" style="font-size: 2rem;"></i>
+                                    </div>
+                                    <h5 class="fw-bold text-body">AC Service</h5>
+                                    <p class="text-body-secondary small mb-3">Installation, repair, maintenance</p>
                                 </div>
-                                <h5 class="fw-bold text-body">AC Service</h5>
-                                <p class="text-body-secondary small mb-3">Installation, repair, maintenance</p>
                             </div>
-                        </div>
+                        </a>
                     </div>
 
                     <div class="col-lg-3 col-md-6">
-                        <div class="card h-100 border-0 shadow-sm hover-shadow">
-                            <div class="card-body text-center p-4">
-                                <div class="bg-warning bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
-                                    <i class="bi bi-paint-bucket text-warning" style="font-size: 2rem;"></i>
+                        <a href="{{ route('find-tukang', ['service_type' => 'Painting']) }}" class="text-decoration-none">
+                            <div class="card h-100 border-0 shadow-sm hover-shadow">
+                                <div class="card-body text-center p-4">
+                                    <div class="bg-warning bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                        <i class="bi bi-paint-bucket text-warning" style="font-size: 2rem;"></i>
+                                    </div>
+                                    <h5 class="fw-bold text-body">Painting</h5>
+                                    <p class="text-body-secondary small mb-3">Interior, exterior, touch-ups</p>
                                 </div>
-                                <h5 class="fw-bold text-body">Painting</h5>
-                                <p class="text-body-secondary small mb-3">Interior, exterior, touch-ups</p>
                             </div>
-                        </div>
+                        </a>
                     </div>
 
                     <div class="col-lg-3 col-md-6">
-                        <div class="card h-100 border-0 shadow-sm hover-shadow">
-                            <div class="card-body text-center p-4">
-                                <div class="bg-danger bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
-                                    <i class="bi bi-hammer text-danger" style="font-size: 2rem;"></i>
+                        <a href="{{ route('find-tukang', ['service_type' => 'Carpentry']) }}" class="text-decoration-none">
+                            <div class="card h-100 border-0 shadow-sm hover-shadow">
+                                <div class="card-body text-center p-4">
+                                    <div class="bg-danger bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                        <i class="bi bi-hammer text-danger" style="font-size: 2rem;"></i>
+                                    </div>
+                                    <h5 class="fw-bold text-body">Carpentry</h5>
+                                    <p class="text-body-secondary small mb-3">Furniture repair, custom work</p>
                                 </div>
-                                <h5 class="fw-bold text-body">Carpentry</h5>
-                                <p class="text-body-secondary small mb-3">Furniture repair, custom work</p>
                             </div>
-                        </div>
+                        </a>
                     </div>
 
                     <div class="col-lg-3 col-md-6">
