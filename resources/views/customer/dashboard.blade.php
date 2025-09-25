@@ -44,7 +44,7 @@
 
                 <div class="row g-4">
                     <div class="col-lg-3 col-md-6">
-                        <a href="{{ route('customer.find-tukang', ['service_type' => 'Plumbing']) }}" class="text-decoration-none">
+                        <a href="{{ route('find-tukang', ['service_type' => 'Plumbing']) }}" class="text-decoration-none">
                             <div class="card h-100 border-0 shadow-sm hover-shadow">
                                 <div class="card-body text-center p-4">
                                     <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
@@ -58,7 +58,7 @@
                     </div>
 
                     <div class="col-lg-3 col-md-6">
-                        <a href="{{ route('customer.find-tukang', ['service_type' => 'Electricity']) }}" class="text-decoration-none">
+                        <a href="{{ route('find-tukang', ['service_type' => 'Electricity']) }}" class="text-decoration-none">
                             <div class="card h-100 border-0 shadow-sm hover-shadow">
                                 <div class="card-body text-center p-4">
                                     <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
@@ -72,7 +72,7 @@
                     </div>
 
                     <div class="col-lg-3 col-md-6">
-                        <a href="{{ route('customer.find-tukang', ['service_type' => 'HVAC']) }}" class="text-decoration-none">
+                        <a href="{{ route('find-tukang', ['service_type' => 'HVAC']) }}" class="text-decoration-none">
                             <div class="card h-100 border-0 shadow-sm hover-shadow">
                                 <div class="card-body text-center p-4">
                                     <div class="bg-info bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
@@ -86,7 +86,7 @@
                     </div>
 
                     <div class="col-lg-3 col-md-6">
-                        <a href="{{ route('customer.find-tukang', ['service_type' => 'Painting']) }}" class="text-decoration-none">
+                        <a href="{{ route('find-tukang', ['service_type' => 'Painting']) }}" class="text-decoration-none">
                             <div class="card h-100 border-0 shadow-sm hover-shadow">
                                 <div class="card-body text-center p-4">
                                     <div class="bg-warning bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
@@ -100,7 +100,7 @@
                     </div>
 
                     <div class="col-lg-3 col-md-6">
-                        <a href="{{ route('customer.find-tukang', ['service_type' => 'Carpentry']) }}" class="text-decoration-none">
+                        <a href="{{ route('find-tukang', ['service_type' => 'Carpentry']) }}" class="text-decoration-none">
                             <div class="card h-100 border-0 shadow-sm hover-shadow">
                                 <div class="card-body text-center p-4">
                                     <div class="bg-danger bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">

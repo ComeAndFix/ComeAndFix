@@ -15,7 +15,7 @@
                 <div class="alert alert-info mb-4">
                     <i class="bi bi-info-circle"></i>
                     Showing Tukangs specialized in <strong>{{ $serviceType }}</strong>
-                    <a href="{{ route('customer.find-tukang') }}" class="btn btn-sm btn-outline-primary ms-2">Show All</a>
+                    <a href="{{ route('find-tukang') }}" class="btn btn-sm btn-outline-primary ms-2">Show All</a>
                 </div>
             @endif
 
@@ -54,7 +54,7 @@
             }).addTo(map);
 
             // Build API URL with service filter
-            let apiUrl = '{{ route("customer.api.tukangs") }}';
+            let apiUrl = '{{ route("api.tukangs") }}';
             if (serviceType) {
                 apiUrl += '?service_type=' + encodeURIComponent(serviceType);
             }
@@ -69,7 +69,7 @@
                                 <i class="bi bi-exclamation-circle display-4 mb-3"></i>
                                 <h5>No ${serviceType} Specialists Found</h5>
                                 <p>Try expanding your search or browse all services</p>
-                                <a href="{{ route('customer.find-tukang') }}" class="btn btn-primary">Show All Tukangs</a>
+                                <a href="{{ route('find-tukang') }}" class="btn btn-primary">Show All Tukangs</a>
                             </div>
                         `;
                         return;
@@ -87,7 +87,6 @@
                     });
                 });
 
-            // Rest of your existing JavaScript functions remain the same...
             function loadTukangProfile(tukangId) {
                 sidebar.innerHTML = `
                     <div class="card-body text-center">
@@ -98,12 +97,14 @@
                     </div>
                 `;
 
-                fetch(`{{ url('/customer/api/tukangs') }}/${tukangId}`)
+                // FIXED: Use the correct route without /customer/ prefix
+                fetch(`{{ url('/api/tukangs') }}/${tukangId}`)
                     .then(response => response.json())
                     .then(tukang => {
                         displayTukangProfile(tukang);
                     })
                     .catch(error => {
+                        console.error('Error fetching tukang profile:', error);
                         sidebar.innerHTML = `
                             <div class="card-body text-center text-danger">
                                 <i class="bi bi-exclamation-triangle display-4 mb-3"></i>
@@ -181,7 +182,7 @@
                             </div>
                         ` : ''}
 
-                        ${tukang.specializations ? `
+                        ${tukang.specializations && tukang.specializations.length > 0 ? `
                             <div class="mb-4">
                                 <h6 class="fw-bold">Specializations</h6>
                                 <div class="d-flex flex-wrap gap-1">
