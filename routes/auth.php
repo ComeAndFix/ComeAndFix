@@ -7,22 +7,22 @@ use App\Http\Controllers\Auth\EmailVerificationPromptController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
-use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\CustomerEmailVerificationController;
 use App\Http\Controllers\Auth\TukangEmailVerificationController;
+use App\Http\Controllers\Auth\CustomerAuthController;
 
-Route::middleware('guest')->group(function () {
-    Route::get('register', [RegisteredUserController::class, 'create'])
+Route::middleware('guest:customer')->name('customer.')->group(function () {
+    Route::get('register', [CustomerAuthController::class, 'showRegister'])
         ->name('register');
 
-    Route::post('register', [RegisteredUserController::class, 'store']);
+    Route::post('register', [CustomerAuthController::class, 'register']);
 
-    Route::get('login', [AuthenticatedSessionController::class, 'create'])
+    Route::get('login', [CustomerAuthController::class, 'showLogin'])
         ->name('login');
 
-    Route::post('login', [AuthenticatedSessionController::class, 'store']);
+    Route::post('login', [CustomerAuthController::class, 'login']);
 
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
         ->name('password.request');
@@ -61,12 +61,12 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware('auth:customer')->group(function () {
-    Route::post('customer/logout', [AuthenticatedSessionController::class, 'destroy'])
+    Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('customer.logout');
 });
 
 Route::middleware('auth:tukang')->group(function () {
-    Route::post('tukang/logout', [AuthenticatedSessionController::class, 'destroy'])
+    Route::post('logout/tukang', [AuthenticatedSessionController::class, 'destroy'])
         ->name('tukang.logout');
 });
 

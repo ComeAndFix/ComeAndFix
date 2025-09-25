@@ -48,34 +48,41 @@
             return redirect()->route('customer.login')->with('success', 'Registration successful! Please check your email to verify your account before logging in.');
         }
 
-       public function login(Request $request)
-       {
-           $request->validate([
-               'email' => 'required|email',
-               'password' => 'required',
-           ]);
+        public function login(Request $request)
+        {
+            $request->validate([
+                'email' => 'required|email',
+                'password' => 'required',
+            ]);
 
-           $credentials = $request->only('email', 'password');
+            $credentials = $request->only('email', 'password');
 
-           if (Auth::guard('customer')->attempt($credentials)) {
-               $customer = Auth::guard('customer')->user();
+            $customer = Customer::where('email', $request->email)->first();
 
-               // Check if email is verified
-               if (!$customer->hasVerifiedEmail()) {
-                   Auth::guard('customer')->logout();
-                   return back()->withErrors([
-                       'email' => 'Please verify your email address before logging in.',
-                   ])->onlyInput('email');
-               }
+            if (!$customer) {
+                return back()->withErrors([
+                    'email' => 'The provided credentials do not match our records.',
+                ])->onlyInput('email');
+            }
 
-               $request->session()->regenerate();
-               return redirect()->route('customer.dashboard');
-           }
+            if (Auth::guard('customer')->attempt($credentials)) {
+                $customer = Auth::guard('customer')->user();
 
-           return back()->withErrors([
-               'email' => 'The provided credentials do not match our records.',
-           ])->onlyInput('email');
-       }
+                if (!$customer->hasVerifiedEmail()) {
+                    Auth::guard('customer')->logout();
+                    return back()->withErrors([
+                        'email' => 'Please verify your email address before logging in.',
+                    ])->onlyInput('email');
+                }
+
+                $request->session()->regenerate();
+                return redirect()->route('dashboard');
+            }
+
+            return back()->withErrors([
+                'password' => 'The password you entered is incorrect.',
+            ])->onlyInput('email');
+        }
 
         public function logout(Request $request)
         {
