@@ -87,6 +87,15 @@
             <x-input-error :messages="$errors->get('years_experience')" class="mt-2" />
         </div>
 
+        <div class="mb-3">
+            <label for="hourly_rate" class="form-label">{{ __('Hourly Rate') }}</label>
+            <div class="input-group">
+                <span class="input-group-text">Rp.</span>
+                <input id="hourly_rate" class="form-control" type="number" name="hourly_rate" :value="old('hourly_rate')" min="0" step="0.01" placeholder="0.00" />
+            </div>
+            <x-input-error :messages="$errors->get('hourly_rate')" class="mt-2" />
+        </div>
+
         <!-- Password -->
         <div class="mb-3">
             <label for="password" class="form-label">{{ __('Password') }}</label>

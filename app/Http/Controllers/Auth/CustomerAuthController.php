@@ -69,7 +69,7 @@
                }
 
                $request->session()->regenerate();
-               return redirect()->route('customer.dashboard');
+               return redirect()->route('dashboard');
            }
 
            return back()->withErrors([

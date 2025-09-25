@@ -40,12 +40,12 @@ class AuthenticatedSessionController extends Controller
             Auth::guard('customer')->logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
-            return redirect('/customer/login');
+            return redirect('/login');
         } elseif (Auth::guard('tukang')->check()) {
             Auth::guard('tukang')->logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
-            return redirect('/tukang/login');
+            return redirect('/login/tukang');
         } else {
             Auth::guard('web')->logout();
             $request->session()->invalidate();
