@@ -36,4 +36,9 @@ class Service extends Model
     {
         return $this->hasMany(TukangService::class);
     }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
 }
