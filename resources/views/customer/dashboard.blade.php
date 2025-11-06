@@ -189,65 +189,108 @@
 
 
         <!-- Recent Orders -->
-        <section class="py-5">
+        <section id="recent-orders" class="py-5 bg-light">
             <div class="container">
                 <div class="row align-items-center mb-4">
                     <div class="col">
-                        <h2 class="fw-bold mb-0">Your Recent Orders</h2>
+                        <h2 class="fw-bold mb-0">Active Orders</h2>
                     </div>
                     <div class="col-auto">
-                        <a href="#" class="btn btn-outline-primary">View All</a>
+                        <a href="#" class="btn btn-outline-primary">View All Orders</a>
                     </div>
                 </div>
 
                 <div class="row g-4">
-                    <div class="col-md-6">
-                        <div class="card border-0 shadow-sm">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-start mb-3">
-                                    <div>
-                                        <h6 class="fw-bold mb-1">Kitchen Faucet Repair</h6>
-                                        <small class="text-muted">Plumbing • March 15, 2024</small>
+                    @forelse($recentOrders as $order)
+                        <div class="col-md-6">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                        <div>
+                                            <h5 class="fw-bold mb-1">{{ $order->service->name }}</h5>
+                                            <small class="text-muted">Order #{{ $order->order_number }}</small>
+                                        </div>
+                                        <div class="d-flex flex-column align-items-end">
+                                            <span class="badge bg-{{ $order->status_color }} mb-1">{{ ucfirst($order->status) }}</span>
+                                            @if($order->payment_status)
+                                                <span class="badge bg-{{ $order->payment_status === 'paid' ? 'success' : 'warning' }} small">
+                                            {{ ucfirst($order->payment_status) }}
+                                        </span>
+                                            @endif
+                                        </div>
                                     </div>
-                                    <span class="badge bg-success">Completed</span>
-                                </div>
-                                <p class="small text-muted mb-3">Fixed leaky kitchen faucet and replaced worn gaskets</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="d-flex align-items-center">
-                                        <img src="/images/handyman-avatar.jpg" alt="Handyman" class="rounded-circle me-2" style="width: 32px; height: 32px;">
-                                        <span class="small">John Smith</span>
-                                    </div>
-                                    <button class="btn btn-sm btn-outline-primary">Rate & Review</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="col-md-6">
-                        <div class="card border-0 shadow-sm">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-start mb-3">
-                                    <div>
-                                        <h6 class="fw-bold mb-1">Living Room Painting</h6>
-                                        <small class="text-muted">Painting • March 20, 2024</small>
+                                    <div class="mb-3">
+                                        @if($order->service_description)
+                                            <p class="small text-muted mb-2">{{ $order->service_description }}</p>
+                                        @endif
+
+                                        @if($order->service_details)
+                                            <div class="small text-muted mb-2">
+                                                <strong>Service Details:</strong>
+                                                <ul class="list-unstyled ms-3 mb-2">
+                                                    @foreach($order->service_details as $key => $value)
+                                                        <li>- {{ ucfirst(str_replace('_', ' ', $key)) }}: {{ $value }}</li>
+                                                    @endforeach
+                                                </ul>
+                                            </div>
+                                        @endif
+
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <span class="text-primary fw-bold">Rp {{ number_format($order->price, 0, ',', '.') }}</span>
+                                            <small class="text-muted">Created: {{ $order->created_at->format('d M Y H:i') }}</small>
+                                        </div>
+
+                                        @if($order->accepted_at)
+                                            <div class="small text-muted">
+                                                Accepted: {{ $order->accepted_at->format('d M Y H:i') }}
+                                            </div>
+                                        @endif
                                     </div>
-                                    <span class="badge bg-warning">In Progress</span>
-                                </div>
-                                <p class="small text-muted mb-3">Interior painting of living room walls</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="d-flex align-items-center">
-                                        <img src="/images/handyman-avatar2.jpg" alt="Handyman" class="rounded-circle me-2" style="width: 32px; height: 32px;">
-                                        <span class="small">Mike Johnson</span>
+
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="d-flex align-items-center">
+                                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-2"
+                                                 style="width: 32px; height: 32px;">
+                                                {{ substr($order->tukang->name, 0, 1) }}
+                                            </div>
+                                            <span class="small">{{ $order->tukang->name }}</span>
+                                        </div>
+                                        <a href="{{ route('chat.show', ['receiverType' => 'tukang', 'receiverId' => $order->tukang_id]) }}"
+                                           class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-chat"></i> Contact
+                                        </a>
                                     </div>
-                                    <button class="btn btn-sm btn-primary">Track Progress</button>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    @empty
+                        <div class="col-12">
+                            <div class="text-center py-4">
+                                <i class="bi bi-bag x-lg text-muted mb-3" style="font-size: 3rem;"></i>
+                                <p class="text-muted">No orders yet</p>
+                            </div>
+                        </div>
+                    @endforelse
                 </div>
             </div>
         </section>
+
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if there's a scroll_to parameter in the URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const scrollTo = urlParams.get('scroll_to');
+
+            if (scrollTo === 'recent-orders') {
+                const element = document.getElementById('recent-orders');
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+        });
+    </script>
 
     <style>
         .hover-shadow {

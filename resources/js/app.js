@@ -1,2 +1,3 @@
-import './bootstrap';
-import './echo';
+import './bootstrap.js';
+import './echo.js';
+import './payment.js';
