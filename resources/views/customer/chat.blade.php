@@ -10,7 +10,6 @@
             </a>
         </div>
     </x-slot>
-
     <div class="py-6">
         <div class="max-w-4xl mx-auto">
             <div class="bg-white shadow-lg rounded-lg overflow-hidden d-flex flex-column" style="height: 80vh;">
