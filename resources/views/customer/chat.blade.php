@@ -1,4 +1,5 @@
 <x-app-layout>
+    @include('components.payment-popup')
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
@@ -57,11 +58,36 @@
                                                     <i class="bi bi-x-circle"></i> Reject
                                                 </button>
                                             </div>
+                                        @elseif($message->order->status === 'accepted' && $message->order->payment_status !== 'paid')
+                                            <div class="mt-2">
+                                                <span class="badge bg-success">Accepted</span>
+                                                <button type="button" class="btn btn-primary btn-sm ms-2" onclick="showPaymentForOrder({{ $message->order->id }}, {{ json_encode([
+                                                    'id' => $message->order->id,
+                                                    'service_name' => $message->order->service ? $message->order->service->name : 'Service',
+                                                    'total_amount' => $message->order->price,
+                                                    'description' => $message->order->service_description ?? '',
+                                                    'order_number' => $message->order->order_number,
+                                                    'items' => [[
+                                                        'name' => $message->order->service ? $message->order->service->name : 'Service',
+                                                        'quantity' => 1,
+                                                        'price' => number_format($message->order->price, 0, ',', '.')
+                                                    ]]
+                                                ]) }})">
+                                                    <i class="bi bi-credit-card"></i> Pay Now
+                                                </button>
+                                            </div>
+                                        @elseif($message->order->payment_status === 'paid')
+                                            <div class="mt-2">
+                                                <span class="badge bg-info">On Progress</span>
+                                                <span class="badge bg-success ms-1">
+                                                    <i class="bi bi-check-circle"></i> Paid
+                                                </span>
+                                            </div>
                                         @else
                                             <div class="mt-2">
-                                <span class="badge bg-{{ $message->order->status === 'accepted' ? 'success' : ($message->order->status === 'rejected' ? 'danger' : 'warning') }}">
-                                    {{ ucfirst($message->order->status) }}
-                                </span>
+                                                <span class="badge bg-{{ $message->order->status === 'accepted' ? 'success' : ($message->order->status === 'rejected' ? 'danger' : 'warning') }}">
+                                                    {{ ucfirst($message->order->status) }}
+                                                </span>
                                             </div>
                                         @endif
                                     </div>
@@ -108,6 +134,21 @@
             const messageInput = document.getElementById('message-input');
             const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
+            // Global function to show payment modal
+            window.showPaymentForOrder = function(orderId, orderData) {
+                console.log('Showing payment for order:', orderId, orderData);
+
+                if (window.paymentHandler) {
+                    window.paymentHandler.showPaymentModal(orderData);
+                } else if (window.PaymentHandler) {
+                    window.paymentHandler = new window.PaymentHandler();
+                    window.paymentHandler.init();
+                    window.paymentHandler.showPaymentModal(orderData);
+                } else {
+                    showErrorAlert('Payment system not available. Please refresh the page.');
+                }
+            };
+
             // WebSocket listeners
             if (window.Echo) {
                 window.Echo.channel(`chat.${conversationId}`)
@@ -125,74 +166,7 @@
                     })
                     .listen('OrderStatusUpdated', (e) => {
                         console.log('Order status updated event received:', e);
-                        console.log('Looking for order element with ID:', e.order.id);
-
-                        // Find the order proposal element
-                        const orderElement = document.querySelector(`[data-order-id="${e.order.id}"]`);
-                        console.log('Found order element:', orderElement);
-
-                        if (orderElement) {
-                            // Look for the buttons container more specifically
-                            const buttonsContainer = orderElement.querySelector('.d-flex.gap-2') ||
-                                orderElement.querySelector('.order-actions') ||
-                                orderElement.querySelector('.mt-2:last-child');
-
-                            console.log('Found buttons container:', buttonsContainer);
-
-                            if (buttonsContainer) {
-                                let badgeClass = '';
-                                switch(e.order.status) {
-                                    case 'accepted':
-                                        badgeClass = 'bg-success';
-                                        break;
-                                    case 'rejected':
-                                        badgeClass = 'bg-danger';
-                                        break;
-                                    default:
-                                        badgeClass = 'bg-warning';
-                                }
-
-                                // Create status badge
-                                const statusDiv = document.createElement('div');
-                                statusDiv.className = 'mt-2';
-                                statusDiv.innerHTML = `<span class="badge ${badgeClass}">${e.order.status.charAt(0).toUpperCase() + e.order.status.slice(1)}</span>`;
-
-                                console.log('Replacing buttons with status:', statusDiv);
-                                buttonsContainer.replaceWith(statusDiv);
-                            } else {
-                                // Fallback: try to find accept/reject buttons directly
-                                const acceptBtn = orderElement.querySelector('button[onclick*="acceptOrder"]');
-                                const rejectBtn = orderElement.querySelector('button[onclick*="rejectOrder"]');
-
-                                if (acceptBtn && rejectBtn) {
-                                    const parentContainer = acceptBtn.parentElement;
-
-                                    let badgeClass = '';
-                                    switch(e.order.status) {
-                                        case 'accepted':
-                                            badgeClass = 'bg-success';
-                                            break;
-                                        case 'rejected':
-                                            badgeClass = 'bg-danger';
-                                            break;
-                                        default:
-                                            badgeClass = 'bg-warning';
-                                    }
-
-                                    const statusDiv = document.createElement('div');
-                                    statusDiv.className = 'mt-2';
-                                    statusDiv.innerHTML = `<span class="badge ${badgeClass}">${e.order.status.charAt(0).toUpperCase() + e.order.status.slice(1)}</span>`;
-
-                                    parentContainer.replaceWith(statusDiv);
-                                    console.log('Replaced buttons using fallback method');
-                                }
-                            }
-                        } else {
-                            console.log('Order element not found for ID:', e.order.id);
-                            console.log('Available order elements:', document.querySelectorAll('[data-order-id]'));
-                        }
-
-                        // Show the status update message
+                        updateOrderStatus(e.order);
                         showOrderStatusUpdate(e.order);
                     })
                     .error((error) => {
@@ -243,6 +217,51 @@
                 }
             });
 
+            function updateOrderStatus(order) {
+                const orderElement = document.querySelector(`[data-order-id="${order.id}"]`);
+                if (!orderElement) return;
+
+                const buttonsContainer = orderElement.querySelector('.d-flex.gap-2') ||
+                    orderElement.querySelector('.mt-2:last-child');
+
+                if (buttonsContainer) {
+                    const statusDiv = document.createElement('div');
+                    statusDiv.className = 'mt-2';
+
+                    if (order.status === 'accepted' && order.payment_status !== 'paid') {
+                        statusDiv.innerHTML = `
+                            <span class="badge bg-success">Accepted</span>
+                            <button type="button" class="btn btn-primary btn-sm ms-2" onclick="showPaymentForOrder(${order.id}, ${JSON.stringify({
+                            id: order.id,
+                            service_name: order.service ? order.service.name : 'Service',
+                            total_amount: order.price,
+                            description: order.service_description || '',
+                            order_number: order.order_number,
+                            items: [{
+                                name: order.service ? order.service.name : 'Service',
+                                quantity: 1,
+                                price: parseFloat(order.price).toLocaleString('id-ID')
+                            }]
+                        }).replace(/"/g, '&quot;')})">
+                                <i class="bi bi-credit-card"></i> Pay Now
+                            </button>
+                        `;
+                    } else if (order.payment_status === 'paid') {
+                        statusDiv.innerHTML = `
+                            <span class="badge bg-info">On Progress</span>
+                            <span class="badge bg-success ms-1">
+                                <i class="bi bi-check-circle"></i> Paid
+                            </span>
+                        `;
+                    } else {
+                        const badgeClass = order.status === 'rejected' ? 'bg-danger' : 'bg-warning';
+                        statusDiv.innerHTML = `<span class="badge ${badgeClass}">${order.status.charAt(0).toUpperCase() + order.status.slice(1)}</span>`;
+                    }
+
+                    buttonsContainer.replaceWith(statusDiv);
+                }
+            }
+
             function showOrderProposal(order) {
                 if(document.querySelector(`[data-order-id="${order.id}"]`)){
                     return;
@@ -250,33 +269,33 @@
 
                 const orderDiv = document.createElement('div');
                 orderDiv.className = 'order-proposal mb-3 text-start';
-                orderDiv.setAttribute('data-order-id', order.id); // This was missing!
+                orderDiv.setAttribute('data-order-id', order.id);
 
                 orderDiv.innerHTML = `
-        <div class="d-inline-block bg-warning border p-3 rounded" style="max-width: 75%;">
-            <div class="d-flex align-items-center mb-2">
-                <i class="bi bi-briefcase me-2"></i>
-                <strong>Order Proposal</strong>
-            </div>
-            <div class="order-details">
-                <div><strong>Service:</strong> ${order.service ? order.service.name : 'Service'}</div>
-                <div><strong>Price:</strong> Rp ${parseInt(order.price).toLocaleString('id-ID')}</div>
-                ${order.service_description ? `<div><strong>Description:</strong> ${order.service_description}</div>` : ''}
-                <div class="mt-2">
-                    <small>Order #${order.order_number}</small><br>
-                    <small>Expires: ${formatDateTime(order.expires_at)}</small>
-                </div>
-            </div>
-            <div class="d-flex gap-2 mt-3">
-                <button type="button" class="btn btn-success btn-sm" onclick="acceptOrder(${order.id})">
-                    <i class="bi bi-check-circle"></i> Accept
-                </button>
-                <button type="button" class="btn btn-danger btn-sm" onclick="rejectOrder(${order.id})">
-                    <i class="bi bi-x-circle"></i> Reject
-                </button>
-            </div>
-        </div>
-    `;
+                    <div class="d-inline-block bg-warning border p-3 rounded" style="max-width: 75%;">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="bi bi-briefcase me-2"></i>
+                            <strong>Order Proposal</strong>
+                        </div>
+                        <div class="order-details">
+                            <div><strong>Service:</strong> ${order.service ? order.service.name : 'Service'}</div>
+                            <div><strong>Price:</strong> Rp ${parseInt(order.price).toLocaleString('id-ID')}</div>
+                            ${order.service_description ? `<div><strong>Description:</strong> ${order.service_description}</div>` : ''}
+                            <div class="mt-2">
+                                <small>Order #${order.order_number}</small><br>
+                                <small>Expires: ${formatDateTime(order.expires_at)}</small>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2 mt-3">
+                            <button type="button" class="btn btn-success btn-sm" onclick="acceptOrder(${order.id})">
+                                <i class="bi bi-check-circle"></i> Accept
+                            </button>
+                            <button type="button" class="btn btn-danger btn-sm" onclick="rejectOrder(${order.id})">
+                                <i class="bi bi-x-circle"></i> Reject
+                            </button>
+                        </div>
+                    </div>
+                `;
 
                 messagesContainer.appendChild(orderDiv);
                 scrollToBottom();
@@ -291,8 +310,13 @@
 
                 switch(order.status) {
                     case 'accepted':
-                        statusText = 'You accepted the order! 🎉';
-                        statusClass = 'bg-success text-white';
+                        if (order.payment_status === 'paid') {
+                            statusText = 'Payment completed! Order is now in progress 🎉';
+                            statusClass = 'bg-success text-white';
+                        } else {
+                            statusText = 'You accepted the order! Please complete payment 💳';
+                            statusClass = 'bg-success text-white';
+                        }
                         break;
                     case 'rejected':
                         statusText = 'You rejected the order';
@@ -313,6 +337,16 @@
             }
 
             window.acceptOrder = async function(orderId) {
+                console.log('Accept order called for ID:', orderId);
+
+                const orderElement = document.querySelector(`[data-order-id="${orderId}"]`);
+                const acceptBtn = orderElement?.querySelector('button[onclick*="acceptOrder"]');
+
+                if (acceptBtn) {
+                    acceptBtn.disabled = true;
+                    acceptBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Accepting...';
+                }
+
                 try {
                     const response = await fetch(`/order/${orderId}/accept`, {
                         method: 'POST',
@@ -324,19 +358,62 @@
                     });
 
                     const data = await response.json();
+                    console.log('Accept order response:', data);
 
                     if (data.success) {
                         showSuccessAlert('Order accepted successfully!');
+
+                        const orderData = {
+                            id: orderId,
+                            service_name: data.order.service ? data.order.service.name : 'Service',
+                            total_amount: data.order.price,
+                            description: data.order.service_description || '',
+                            order_number: data.order.order_number,
+                            items: [{
+                                name: data.order.service ? data.order.service.name : 'Service',
+                                quantity: 1,
+                                price: parseFloat(data.order.price).toLocaleString('id-ID')
+                            }]
+                        };
+
+                        setTimeout(() => {
+                            if (window.paymentHandler) {
+                                window.paymentHandler.showPaymentModal(orderData);
+                            } else if (window.PaymentHandler) {
+                                window.paymentHandler = new window.PaymentHandler();
+                                window.paymentHandler.init();
+                                window.paymentHandler.showPaymentModal(orderData);
+                            } else {
+                                showErrorAlert('Payment system not available. Please refresh the page.');
+                            }
+                        }, 500);
+
                     } else {
                         showErrorAlert(data.error || 'Failed to accept order');
+                        if (acceptBtn) {
+                            acceptBtn.disabled = false;
+                            acceptBtn.innerHTML = '<i class="bi bi-check-circle"></i> Accept';
+                        }
                     }
                 } catch (error) {
                     console.error('Error accepting order:', error);
                     showErrorAlert('Failed to accept order. Please try again.');
+                    if (acceptBtn) {
+                        acceptBtn.disabled = false;
+                        acceptBtn.innerHTML = '<i class="bi bi-check-circle"></i> Accept';
+                    }
                 }
             };
 
             window.rejectOrder = async function(orderId) {
+                const orderElement = document.querySelector(`[data-order-id="${orderId}"]`);
+                const rejectBtn = orderElement?.querySelector('button[onclick*="rejectOrder"]');
+
+                if (rejectBtn) {
+                    rejectBtn.disabled = true;
+                    rejectBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Rejecting...';
+                }
+
                 try {
                     const response = await fetch(`/order/${orderId}/reject`, {
                         method: 'POST',
@@ -353,14 +430,21 @@
                         showSuccessAlert('Order rejected');
                     } else {
                         showErrorAlert(data.error || 'Failed to reject order');
+                        if (rejectBtn) {
+                            rejectBtn.disabled = false;
+                            rejectBtn.innerHTML = '<i class="bi bi-x-circle"></i> Reject';
+                        }
                     }
                 } catch (error) {
                     console.error('Error rejecting order:', error);
                     showErrorAlert('Failed to reject order. Please try again.');
+                    if (rejectBtn) {
+                        rejectBtn.disabled = false;
+                        rejectBtn.innerHTML = '<i class="bi bi-x-circle"></i> Reject';
+                    }
                 }
             };
 
-            // Utility functions
             function addMessageToChat(message, isSender) {
                 console.log('Adding message to chat:', message, 'isSender:', isSender);
 
@@ -520,7 +604,6 @@
             }
         }
 
-        /* Responsive adjustments */
         @media (max-height: 600px) {
             .bg-white.shadow-lg.rounded-lg {
                 height: 85vh !important;
@@ -533,4 +616,6 @@
             }
         }
     </style>
+
+    @vite(['resources/js/app.js'])
 </x-app-layout>

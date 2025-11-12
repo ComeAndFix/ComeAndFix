@@ -5,6 +5,8 @@ use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\Customer\TukangMapController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\TukangController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\Customer\CustomerDashboardController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -39,6 +41,8 @@ Route::middleware(['auth:customer', 'verified'])->group(function () {
         return view('customer.dashboard');
     })->name('dashboard');
 
+    Route::get('/dashboard', [CustomerDashboardController::class, 'index'])->name('dashboard');
+
     Route::get('/services/{slug}', [ServiceController::class, 'show'])->name('services.show');
     Route::get('/tukangs/{id}', [TukangMapController::class, 'showProfile'])->name('tukangs.show');
     Route::get('/find-tukang', [TukangMapController::class, 'index'])->name('find-tukang');
@@ -52,10 +56,7 @@ Route::middleware(['auth:customer', 'verified'])->group(function () {
     Route::post('/order/{order}/accept', [ChatController::class, 'acceptOrder'])->name('order.accept');
     Route::post('/order/{order}/reject', [ChatController::class, 'rejectOrder'])->name('order.reject');
 
-    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
-    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+    Route::post('/payments/process', [PaymentController::class, 'processPayment'])->name('payments.process');
 });
 
 // Tukang Dashboard

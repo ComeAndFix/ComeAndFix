@@ -9,6 +9,12 @@ class Order extends Model
 {
     use HasFactory;
 
+    const STATUS_PENDING = 'pending';
+    const STATUS_ACCEPTED = 'accepted';
+    const STATUS_ON_PROGRESS = 'on_progress';
+    const STATUS_REJECTED = 'rejected';
+    const STATUS_COMPLETED = 'completed';
+
     protected $fillable = [
         'order_number',
         'customer_id',
@@ -20,16 +26,34 @@ class Order extends Model
         'status',
         'expires_at',
         'accepted_at',
-        'service_details'
+        'service_details',
+        'payment_status'
     ];
 
     protected $casts = [
         'expires_at' => 'datetime',
         'accepted_at' => 'datetime',
         'price' => 'decimal:2',
-        'service_details' => 'array'
+        'service_details' => 'array',
+        'payment_status' => 'string'
     ];
 
+    const PAYMENT_STATUS_UNPAID = 'unpaid';
+    const PAYMENT_STATUS_PAID = 'paid';
+    const PAYMENT_STATUS_FAILED = 'failed';
+    const PAYMENT_STATUS_REFUNDED = 'refunded';
+
+    public function getStatusColorAttribute()
+    {
+        return match($this->status) {
+            self::STATUS_PENDING => 'warning',
+            self::STATUS_ACCEPTED => 'success',
+            self::STATUS_ON_PROGRESS => 'info',
+            self::STATUS_REJECTED => 'danger',
+            self::STATUS_COMPLETED => 'primary',
+            default => 'secondary'
+        };
+    }
     public function customer()
     {
         return $this->belongsTo(Customer::class);
@@ -50,10 +74,10 @@ class Order extends Model
         return $this->hasOneThrough(
             TukangService::class,
             Service::class,
-            'id', // Foreign key on services table
-            'service_id', // Foreign key on tukang_services table
-            'service_id', // Local key on orders table
-            'id' // Local key on services table
+            'id',
+            'service_id',
+            'service_id',
+            'id'
         )->where('tukang_services.tukang_id', $this->tukang_id);
     }
 
