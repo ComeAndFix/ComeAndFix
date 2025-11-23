@@ -57,6 +57,10 @@ Route::middleware(['auth:customer', 'verified'])->group(function () {
     Route::post('/order/{order}/reject', [ChatController::class, 'rejectOrder'])->name('order.reject');
 
     Route::post('/payments/process', [PaymentController::class, 'processPayment'])->name('payments.process');
+
+    Route::get('/orders/{order}', [\App\Http\Controllers\Customer\CustomerOrderController::class, 'show'])->name('customer.orders.show');
+    Route::post('/orders/{order}/approve', [\App\Http\Controllers\Customer\CustomerOrderController::class, 'approveCompletion'])->name('customer.orders.approveCompletion');
+    Route::post('/orders/{order}/reject', [\App\Http\Controllers\Customer\CustomerOrderController::class, 'rejectCompletion'])->name('customer.orders.rejectCompletion');
 });
 
 // Tukang Dashboard
@@ -76,6 +80,11 @@ Route::middleware(['auth:tukang', 'verified'])->name('tukang.')->group(function 
 
     Route::post('/order/send', [ChatController::class, 'sendOrderProposal'])->name('order.send');
     Route::get('/services', [ChatController::class, 'getTukangServices'])->name('services');
+
+    Route::get('/jobs', [\App\Http\Controllers\Tukang\TukangJobController::class, 'index'])->name('jobs.index');
+    Route::get('/jobs/{order}', [\App\Http\Controllers\Tukang\TukangJobController::class, 'show'])->name('jobs.show');
+    Route::get('/jobs/{order}/complete', [\App\Http\Controllers\Tukang\TukangJobController::class, 'completeForm'])->name('jobs.complete');
+    Route::post('/jobs/{order}/complete', [\App\Http\Controllers\Tukang\TukangJobController::class, 'submitCompletion'])->name('jobs.submitCompletion');
 });
 
 // Public service routes

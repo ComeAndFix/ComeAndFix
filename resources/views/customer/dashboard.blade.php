@@ -246,6 +246,19 @@
                                                 Accepted: {{ $order->accepted_at->format('d M Y H:i') }}
                                             </div>
                                         @endif
+
+                                        @if($order->completion && $order->completion->isPending())
+                                            <div class="alert alert-info mt-2">
+                                                <i class="bi bi-clock"></i> Completion proof submitted - awaiting your review
+                                                <a href="{{ route('customer.orders.show', $order) }}" class="btn btn-sm btn-primary ms-2">
+                                                    Review Completion
+                                                </a>
+                                            </div>
+                                        @elseif($order->completion && $order->completion->isRejected())
+                                            <div class="alert alert-warning mt-2">
+                                                <i class="bi bi-exclamation-triangle"></i> Completion proof rejected - awaiting resubmission
+                                            </div>
+                                        @endif
                                     </div>
 
                                     <div class="d-flex justify-content-between align-items-center">

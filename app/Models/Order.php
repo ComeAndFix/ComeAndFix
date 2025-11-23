@@ -95,4 +95,14 @@ class Order extends Model
     {
         return $this->service->name ?? 'Custom Service';
     }
+
+    public function completion()
+    {
+        return $this->hasOne(OrderCompletion::class);
+    }
+
+    public function hasCompletionProof()
+    {
+        return $this->completion()->exists();
+    }
 }

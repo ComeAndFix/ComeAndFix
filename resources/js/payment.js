@@ -183,7 +183,6 @@ class PaymentHandler {
                 throw new Error('CSRF token not found');
             }
 
-            // Add validation for amount
             const amount = parseFloat(this.currentOrder.total_amount || this.currentOrder.price);
             if (isNaN(amount) || amount <= 0) {
                 throw new Error('Invalid payment amount');
@@ -213,35 +212,26 @@ class PaymentHandler {
             if (result.success) {
                 const modal = bootstrap.Modal.getInstance(document.getElementById('paymentModal'));
                 if (modal) {
+                    // Remove the preventModalClose listener before hiding
+                    const modalElement = document.getElementById('paymentModal');
+                    modalElement.removeEventListener('hide.bs.modal', this.preventModalClose);
                     modal.hide();
                 }
-                this.showSuccessMessage('Payment completed successfully!');
 
-                // Update order status and payment status in UI
-                const orderElement = document.querySelector(`[data-order-id="${this.currentOrder.id}"]`);
-                if (orderElement) {
-                    const statusBadge = orderElement.querySelector('.badge');
-                    if (statusBadge) {
-                        statusBadge.className = 'badge bg-info';
-                        statusBadge.textContent = 'On Progress';
-                    }
-                }
+                this.showSuccessMessage('Payment completed successfully! Redirecting...');
 
-                if (typeof window.addPaymentSuccessMessage === 'function') {
-                    window.addPaymentSuccessMessage(this.currentOrder);
-                }
-
-                // Delay reload to show success message
+                // Redirect to dashboard
                 setTimeout(() => {
-                    window.location.reload();
-                }, 2000);
+                    window.location.href = result.redirect_url || '/customer/dashboard';
+                }, 1500);
             } else {
                 this.showErrorMessage(result.error || 'Payment failed. Please try again.');
+                payButton.disabled = false;
+                payButton.innerHTML = originalText;
             }
         } catch (error) {
             console.error('Payment processing error:', error);
             this.showErrorMessage(error.message || 'An error occurred during payment processing.');
-        } finally {
             payButton.disabled = false;
             payButton.innerHTML = originalText;
         }

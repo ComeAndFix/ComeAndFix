@@ -1,0 +1,191 @@
+<x-app-layout>
+            <div class="container py-4">
+                <div class="row mb-3">
+                    <div class="col">
+                        <a href="{{ route('tukang.jobs.index') }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Back to Jobs
+                        </a>
+                    </div>
+                </div>
+
+                <div class="row justify-content-center">
+                    <div class="col-md-10">
+                        <!-- Order Details Card -->
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-header bg-primary text-white">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h4 class="mb-0">Job Details</h4>
+                                    <span class="badge bg-{{ $order->status_color }}">{{ ucfirst($order->status) }}</span>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row mb-4">
+                                    <div class="col-md-6">
+                                        <h5 class="fw-bold mb-3">Order Information</h5>
+                                        <table class="table table-sm">
+                                            <tr>
+                                                <th width="40%">Order Number:</th>
+                                                <td>{{ $order->order_number }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Service:</th>
+                                                <td>{{ $order->service->name }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Price:</th>
+                                                <td class="text-primary fw-bold">Rp {{ number_format($order->price, 0, ',', '.') }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Payment Status:</th>
+                                                <td>
+                                                    <span class="badge bg-{{ $order->payment_status === 'paid' ? 'success' : 'warning' }}">
+                                                        {{ ucfirst($order->payment_status ?? 'unpaid') }}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th>Created:</th>
+                                                <td>{{ $order->created_at->format('d M Y H:i') }}</td>
+                                            </tr>
+                                            @if($order->accepted_at)
+                                                <tr>
+                                                    <th>Accepted:</th>
+                                                    <td>{{ $order->accepted_at->format('d M Y H:i') }}</td>
+                                                </tr>
+                                            @endif
+                                        </table>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <h5 class="fw-bold mb-3">Customer Information</h5>
+                                        <table class="table table-sm">
+                                            <tr>
+                                                <th width="40%">Name:</th>
+                                                <td>{{ $order->customer->name }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Phone:</th>
+                                                <td>{{ $order->customer->phone }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Address:</th>
+                                                <td>{{ $order->customer->address }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>City:</th>
+                                                <td>{{ $order->customer->city }}</td>
+                                            </tr>
+                                        </table>
+
+                                        <div class="mt-3">
+                                            <a href="{{ route('tukang.chat.show', ['receiverType' => 'customer', 'receiverId' => $order->customer_id]) }}"
+                                               class="btn btn-outline-primary w-100">
+                                                <i class="bi bi-chat-dots"></i> Contact Customer
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @if($order->service_description)
+                                    <hr>
+                                    <h5 class="fw-bold mb-3">Service Description</h5>
+                                    <p class="text-muted">{{ $order->service_description }}</p>
+                                @endif
+
+                                @if($order->service_details)
+                                    <hr>
+                                    <h5 class="fw-bold mb-3">Service Details</h5>
+                                    <ul class="list-unstyled">
+                                        @foreach($order->service_details as $key => $value)
+                                            <li class="mb-2">
+                                                <strong>{{ ucfirst(str_replace('_', ' ', $key)) }}:</strong> {{ $value }}
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                @endif
+                            </div>
+                        </div>
+
+                        <!-- Completion Section -->
+                        @if($order->completion)
+                            <div class="card shadow-sm mb-4">
+                                <div class="card-header bg-info text-white">
+                                    <h5 class="mb-0">Job Completion Proof</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <strong>Status:</strong>
+                                        <span class="badge bg-{{ $order->completion->status === 'approved' ? 'success' : ($order->completion->status === 'rejected' ? 'danger' : 'warning') }}">
+                                            {{ ucfirst($order->completion->status) }}
+                                        </span>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <strong>Description:</strong>
+                                        <p class="mt-2">{{ $order->completion->description }}</p>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <strong>Working Duration:</strong>
+                                        <p class="mt-2">{{ $order->completion->working_duration }} minutes</p>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <strong>Photos:</strong>
+                                        <div class="row g-2 mt-2">
+                                            @foreach($order->completion->photos as $photo)
+                                                <div class="col-md-4">
+                                                    <a href="{{ Storage::url($photo) }}" target="_blank">
+                                                        <img src="{{ Storage::url($photo) }}"
+                                                             class="img-fluid rounded"
+                                                             alt="Completion Photo">
+                                                    </a>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <strong>Submitted At:</strong>
+                                        <p class="mt-2">{{ $order->completion->submitted_at->format('d M Y H:i') }}</p>
+                                    </div>
+
+                                    @if($order->completion->isRejected())
+                                        <div class="alert alert-danger">
+                                            <strong><i class="bi bi-exclamation-triangle"></i> Rejection Reason:</strong>
+                                            <p class="mb-0 mt-2">{{ $order->completion->rejection_reason }}</p>
+                                        </div>
+                                        <a href="{{ route('tukang.jobs.complete', $order) }}" class="btn btn-warning">
+                                            <i class="bi bi-arrow-clockwise"></i> Resubmit Completion Proof
+                                        </a>
+                                    @elseif($order->completion->isPending())
+                                        <div class="alert alert-info">
+                                            <i class="bi bi-clock"></i> Waiting for customer approval
+                                        </div>
+                                    @elseif($order->completion->isApproved())
+                                        <div class="alert alert-success">
+                                            <i class="bi bi-check-circle"></i> Job completion approved by customer
+                                            <br>
+                                            <small>Approved at: {{ $order->completion->reviewed_at->format('d M Y H:i') }}</small>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        @else
+                            @if($order->status === \App\Models\Order::STATUS_ON_PROGRESS)
+                                <div class="card shadow-sm">
+                                    <div class="card-body text-center">
+                                        <i class="bi bi-clipboard-check display-4 text-muted mb-3"></i>
+                                        <h5>Ready to complete this job?</h5>
+                                        <p class="text-muted">Submit completion proof with photos and description</p>
+                                        <a href="{{ route('tukang.jobs.complete', $order) }}" class="btn btn-success btn-lg">
+                                            <i class="bi bi-check-circle"></i> Submit Completion Proof
+                                        </a>
+                                    </div>
+                                </div>
+                            @endif
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </x-app-layout>
