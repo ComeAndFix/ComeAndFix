@@ -24,7 +24,7 @@
                 <div class="col-lg-8">
                     <div id="map" style="height: 600px; width: 100%;"></div>
                 </div>
-                
+
                 <!-- Sidebar -->
                 <div class="col-lg-4">
                     <div id="tukang-sidebar" class="card shadow-sm" style="height: 600px; overflow-y: auto;">
@@ -41,8 +41,12 @@
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    
+
     <script>
+        function openChat(tukangId) {
+            window.location.href = `/chat/tukang/${tukangId}`;
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             const map = L.map('map').setView([-6.2000, 106.8167], 11);
             const sidebar = document.getElementById('tukang-sidebar');
@@ -78,7 +82,7 @@
                     tukangs.forEach(t => {
                         if (t.latitude && t.longitude) {
                             const marker = L.marker([t.latitude, t.longitude]).addTo(map);
-                            
+
                             marker.on('click', function() {
                                 loadTukangProfile(t.id);
                                 marker.bindPopup(`<strong>${t.name}</strong><br>Click to view portfolio`).openPopup();
@@ -117,14 +121,14 @@
 
             function displayTukangProfile(tukang) {
                 let portfolioHtml = '';
-                
+
                 if (tukang.portfolios && tukang.portfolios.length > 0) {
                     portfolioHtml = tukang.portfolios.map(p => `
                         <div class="card mb-3">
                             ${p.images && p.images.length > 0 ? `
-                                <img src="${p.images[0].image_path}" 
-                                     alt="${p.title}" 
-                                     class="card-img-top" 
+                                <img src="${p.images[0].image_path}"
+                                     alt="${p.title}"
+                                     class="card-img-top"
                                      style="height: 150px; object-fit: cover;">
                             ` : ''}
                             <div class="card-body p-3">
@@ -159,9 +163,9 @@
                 sidebar.innerHTML = `
                     <div class="card-body">
                         <div class="text-center mb-4">
-                            <img src="https://via.placeholder.com/80x80/007bff/ffffff?text=${tukang.name.charAt(0)}" 
-                                 alt="${tukang.name}" 
-                                 class="rounded-circle mb-2" 
+                            <img src="https://via.placeholder.com/80x80/007bff/ffffff?text=${tukang.name.charAt(0)}"
+                                 alt="${tukang.name}"
+                                 class="rounded-circle mb-2"
                                  style="width: 80px; height: 80px;">
                             <h5 class="fw-bold mb-1">${tukang.name}</h5>
                             <p class="text-muted small mb-2">${tukang.address || ''}</p>
@@ -169,8 +173,8 @@
                                 <i class="bi bi-star-fill"></i>
                                 <span class="text-muted ms-1">${tukang.rating || '0.0'} (${tukang.total_reviews || 0} reviews)</span>
                             </div>
-                            ${tukang.is_available ? 
-                                '<span class="badge bg-success"><i class="bi bi-check-circle"></i> Available</span>' : 
+                            ${tukang.is_available ?
+                                '<span class="badge bg-success"><i class="bi bi-check-circle"></i> Available</span>' :
                                 '<span class="badge bg-secondary"><i class="bi bi-clock"></i> Busy</span>'
                             }
                         </div>
@@ -202,7 +206,7 @@
                             <button class="btn btn-primary">
                                 <i class="bi bi-calendar-check"></i> Book Service
                             </button>
-                            <button class="btn btn-outline-primary">
+                            <button class="btn btn-outline-primary" onclick="openChat(${tukang.id})">
                                 <i class="bi bi-chat"></i> Send Message
                             </button>
                         </div>

@@ -29,4 +29,10 @@ class TukangService extends Model
     {
         return $this->belongsTo(Service::class);
     }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class, 'service_id', 'service_id')
+                    ->where('tukang_id', $this->tukang_id);
+    }
 }

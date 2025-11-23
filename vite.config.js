@@ -8,4 +8,10 @@ export default defineConfig({
             refresh: true,
         }),
     ],
+    define: {
+        global: 'globalThis',
+    },
+    optimizeDeps: {
+        include: ['laravel-echo']
+    },
 });

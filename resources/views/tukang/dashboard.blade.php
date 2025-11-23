@@ -9,7 +9,7 @@
                             <i class="bi bi-tools me-2"></i>
                             Handyman Dashboard
                         </h1>
-                        <p class="mb-0">Welcome back, {{ Auth::user()->name }}! Here's your job overview for today.</p>
+                        <p class="mb-0">Welcome back, {{ Auth::guard('tukang')->user()->name }}! Here's your job overview for today.</p>
                     </div>
                     <div class="col-lg-4 text-end">
                         <div class="badge bg-success fs-6 me-2">
@@ -30,11 +30,11 @@
             <div class="container">
                 <div class="row g-3">
                     <div class="col-md-3">
-                        <div class="card bg-warning text-dark border-0 h-100">
+                        <div class="card bg-warning text-dark border-0 h-100 cursor-pointer" onclick="showNewChats()">
                             <div class="card-body text-center">
-                                <i class="bi bi-clock-history display-6 mb-2"></i>
-                                <h3 class="fw-bold mb-1">0</h3>
-                                <p class="mb-0 small">New Jobs</p>
+                                <i class="bi bi-chat-dots display-6 mb-2"></i>
+                                <h3 class="fw-bold mb-1" id="new-messages-count">{{ $newMessagesCount }}</h3>
+                                <p class="mb-0 small">New Messages</p>
                             </div>
                         </div>
                     </div>
@@ -75,165 +75,80 @@
                 <div class="row g-4">
                     <!-- Left Column -->
                     <div class="col-lg-8">
-                        <!-- Incoming Jobs -->
-                        <div class="card border-0 shadow-sm mb-4">
-                            <div class="card-header bg-white border-bottom">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <h5 class="mb-0 fw-bold">
-                                        <i class="bi bi-inbox text-warning me-2"></i>
-                                        Incoming Job Requests
-                                    </h5>
-                                    <span class="badge bg-warning">0 New</span>
-                                </div>
+                        <!-- Chat Messages Container -->
+                        <div class="card border-0 shadow-sm mb-4" id="chat-container" style="display: none;">
+                            <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0 fw-bold">
+                                    <i class="bi bi-chat-dots me-2"></i>
+                                    Recent Messages
+                                </h5>
+                                <button class="btn btn-sm btn-outline-secondary" onclick="hideChatContainer()">
+                                    <i class="bi bi-x"></i>
+                                </button>
                             </div>
-                            <div class="card-body p-4 text-center">
-                                <i class="bi bi-inbox display-4 text-muted mb-3"></i>
-                                <p class="text-muted">No incoming job requests at the moment.</p>
+                            <div class="card-body p-0">
+                                <div id="messages-list">
+                                    <!-- Messages will be loaded here -->
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Active Jobs -->
+                        <!-- Incoming Job Requests -->
                         <div class="card border-0 shadow-sm mb-4">
                             <div class="card-header bg-white border-bottom">
                                 <h5 class="mb-0 fw-bold">
-                                    <i class="bi bi-play-circle text-info me-2"></i>
-                                    My Active Jobs
+                                    <i class="bi bi-inbox me-2"></i>
+                                    Incoming Job Requests
                                 </h5>
                             </div>
-                            <div class="card-body p-4 text-center">
-                                <i class="bi bi-play-circle display-4 text-muted mb-3"></i>
-                                <p class="text-muted">No active jobs at the moment.</p>
-                            </div>
-                        </div>
-
-                        <!-- Recent Completed Jobs -->
-                        <div class="card border-0 shadow-sm">
-                            <div class="card-header bg-white border-bottom">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <h5 class="mb-0 fw-bold">
-                                        <i class="bi bi-check-circle text-success me-2"></i>
-                                        Recent Completed Jobs
-                                    </h5>
-                                    <a href="#" class="btn btn-outline-primary btn-sm">View All</a>
+                            <div class="card-body p-0">
+                                <div id="job-requests-list">
+                                    @forelse($recentMessages as $message)
+                                        <div class="border-bottom p-3 hover-bg-light cursor-pointer" onclick="openChat('customer', {{ $message->sender_id }})">
+                                            <div class="d-flex align-items-start">
+                                                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; font-size: 14px; font-weight: bold;">
+                                                    {{ substr($message->sender->name, 0, 1) }}
+                                                </div>
+                                                <div class="flex-grow-1">
+                                                    <div class="d-flex justify-content-between align-items-start mb-1">
+                                                        <h6 class="mb-0 fw-bold">{{ $message->sender->name }}</h6>
+                                                        <small class="text-muted">{{ $message->created_at->diffForHumans() }}</small>
+                                                    </div>
+                                                    <p class="mb-1 text-muted">{{ Str::limit($message->message, 60) }}</p>
+                                                    @if(!$message->read_at)
+                                                        <span class="badge bg-warning text-dark">New</span>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @empty
+                                        <div class="text-center py-4 text-muted">
+                                            <i class="bi bi-inbox display-4 mb-2"></i>
+                                            <p>No job requests yet</p>
+                                        </div>
+                                    @endforelse
                                 </div>
-                            </div>
-                            <div class="card-body p-4 text-center">
-                                <i class="bi bi-check-circle display-4 text-muted mb-3"></i>
-                                <p class="text-muted">No completed jobs yet.</p>
                             </div>
                         </div>
                     </div>
 
                     <!-- Right Column -->
                     <div class="col-lg-4">
-                        <!-- Profile Card -->
-                        <div class="card border-0 shadow-sm mb-4">
-                            <div class="card-header bg-white border-bottom">
-                                <h5 class="mb-0 fw-bold">
-                                    <i class="bi bi-person-circle text-primary me-2"></i>
-                                    My Profile
-                                </h5>
-                            </div>
-                            <div class="card-body text-center">
-                                <img src="https://via.placeholder.com/80x80/007bff/ffffff?text=T" alt="Profile" class="rounded-circle mb-3" style="width: 80px; height: 80px;">
-                                <h6 class="fw-bold mb-1">{{ Auth::user()->name }}</h6>
-                                <p class="text-muted small mb-2">Professional Handyman</p>
-                                <div class="text-warning mb-3">
-                                    <i class="bi bi-star"></i>
-                                    <i class="bi bi-star"></i>
-                                    <i class="bi bi-star"></i>
-                                    <i class="bi bi-star"></i>
-                                    <i class="bi bi-star"></i>
-                                    <span class="text-muted ms-1">0.0 (0 reviews)</span>
-                                </div>
-                                <div class="row text-center mb-3">
-                                    <div class="col-4">
-                                        <h6 class="mb-0">0</h6>
-                                        <small class="text-muted">Jobs</small>
-                                    </div>
-                                    <div class="col-4">
-                                        <h6 class="mb-0">0%</h6>
-                                        <small class="text-muted">Success</small>
-                                    </div>
-                                    <div class="col-4">
-                                        <h6 class="mb-0">0Y</h6>
-                                        <small class="text-muted">Experience</small>
-                                    </div>
-                                </div>
-                                <button class="btn btn-outline-primary btn-sm w-100">Edit Profile</button>
-                            </div>
-                        </div>
-
-                        <!-- Earnings Overview -->
-{{--                        <div class="card border-0 shadow-sm mb-4">--}}
-{{--                            <div class="card-header bg-white border-bottom">--}}
-{{--                                <h5 class="mb-0 fw-bold">--}}
-{{--                                    <i class="bi bi-graph-up text-success me-2"></i>--}}
-{{--                                    Earnings Overview--}}
-{{--                                </h5>--}}
-{{--                            </div>--}}
-{{--                            <div class="card-body">--}}
-{{--                                <div class="row text-center mb-3">--}}
-{{--                                    <div class="col-6">--}}
-{{--                                        <h5 class="text-success fw-bold mb-1">Rp 0</h5>--}}
-{{--                                        <small class="text-muted">This Month</small>--}}
-{{--                                    </div>--}}
-{{--                                    <div class="col-6">--}}
-{{--                                        <h5 class="text-primary fw-bold mb-1">Rp 0</h5>--}}
-{{--                                        <small class="text-muted">This Week</small>--}}
-{{--                                    </div>--}}
-{{--                                </div>--}}
-{{--                                <div class="d-flex justify-content-between mb-2">--}}
-{{--                                    <small>Today</small>--}}
-{{--                                    <small class="fw-bold">Rp 0</small>--}}
-{{--                                </div>--}}
-{{--                                <div class="progress mb-3" style="height: 8px;">--}}
-{{--                                    <div class="progress-bar bg-success" style="width: 0%"></div>--}}
-{{--                                </div>--}}
-{{--                                <div class="row">--}}
-{{--                                    <div class="col-6">--}}
-{{--                                        <button class="btn btn-outline-success btn-sm w-100">Payment History</button>--}}
-{{--                                    </div>--}}
-{{--                                    <div class="col-6">--}}
-{{--                                        <button class="btn btn-success btn-sm w-100">Withdraw</button>--}}
-{{--                                    </div>--}}
-{{--                                </div>--}}
-{{--                            </div>--}}
-{{--                        </div>--}}
-
-                        <!-- Today's Schedule -->
-                        <div class="card border-0 shadow-sm mb-4">
-                            <div class="card-header bg-white border-bottom">
-                                <h5 class="mb-0 fw-bold">
-                                    <i class="bi bi-calendar-check text-info me-2"></i>
-                                    Today's Schedule
-                                </h5>
-                            </div>
-                            <div class="card-body p-4 text-center">
-                                <i class="bi bi-calendar-check display-4 text-muted mb-3"></i>
-                                <p class="text-muted">No scheduled jobs for today.</p>
-                                <a href="#" class="btn btn-outline-info btn-sm">View Full Calendar</a>
-                            </div>
-                        </div>
-
                         <!-- Quick Actions -->
-                        <div class="card border-0 shadow-sm">
+                        <div class="card border-0 shadow-sm mb-4">
                             <div class="card-header bg-white border-bottom">
-                                <h5 class="mb-0 fw-bold">
-                                    <i class="bi bi-lightning text-warning me-2"></i>
-                                    Quick Actions
-                                </h5>
+                                <h5 class="mb-0 fw-bold">Quick Actions</h5>
                             </div>
                             <div class="card-body">
                                 <div class="d-grid gap-2">
+                                    <button class="btn btn-primary" onclick="showNewChats()">
+                                        <i class="bi bi-chat-dots me-2"></i>View Messages
+                                    </button>
                                     <button class="btn btn-outline-primary">
-                                        <i class="bi bi-headset me-2"></i>Contact Support
+                                        <i class="bi bi-calendar-plus me-2"></i>Update Schedule
                                     </button>
-                                    <button class="btn btn-outline-secondary">
-                                        <i class="bi bi-question-circle me-2"></i>Help & FAQ
-                                    </button>
-                                    <button class="btn btn-outline-danger">
-                                        <i class="bi bi-exclamation-triangle me-2"></i>Report Issue
+                                    <button class="btn btn-outline-primary">
+                                        <i class="bi bi-person-gear me-2"></i>Edit Profile
                                     </button>
                                 </div>
                             </div>
@@ -245,25 +160,88 @@
     </div>
 
     <style>
-        .card {
-            transition: all 0.3s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
-        }
-
-        .badge {
-            font-size: 0.75rem;
-        }
-
-        .progress {
-            border-radius: 10px;
-        }
-
-        .btn-group .dropdown-menu {
-            border-radius: 8px;
-        }
+        .cursor-pointer { cursor: pointer; }
+        .hover-bg-light:hover { background-color: #f8f9fa; }
     </style>
+
+    <script>
+            function showNewChats() {
+                const chatContainer = document.getElementById('chat-container');
+                chatContainer.style.display = 'block';
+                loadRecentMessages();
+            }
+
+            function hideChatContainer() {
+                const chatContainer = document.getElementById('chat-container');
+                chatContainer.style.display = 'none';
+            }
+
+            function openChat(receiverType, receiverId) {
+                window.location.href = `/tukang/chat/${receiverType}/${receiverId}`;
+            }
+
+            function loadRecentMessages() {
+                const messagesList = document.getElementById('messages-list');
+                messagesList.innerHTML = '<div class="text-center py-3"><div class="spinner-border text-primary" role="status"></div></div>';
+
+                fetch('{{ route("tukang.messages.recent") }}')
+                    .then(response => response.json())
+                    .then(messages => {
+                        if (messages.length === 0) {
+                            messagesList.innerHTML = `
+                                <div class="text-center py-4 text-muted">
+                                    <i class="bi bi-chat-dots display-4 mb-2"></i>
+                                    <p>No messages yet</p>
+                                </div>
+                            `;
+                            return;
+                        }
+
+                        messagesList.innerHTML = messages.map(message => `
+                            <div class="border-bottom p-3 hover-bg-light cursor-pointer" onclick="openChat('customer', ${message.sender_id})">
+                                <div class="d-flex align-items-start">
+                                    <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; font-size: 14px; font-weight: bold;">
+                                        ${message.sender.name.charAt(0)}
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex justify-content-between align-items-start mb-1">
+                                            <h6 class="mb-0 fw-bold">${message.sender.name}</h6>
+                                            <small class="text-muted">${formatTime(message.created_at)}</small>
+                                        </div>
+                                        <p class="mb-1 text-muted">${message.message.substring(0, 60)}${message.message.length > 60 ? '...' : ''}</p>
+                                        ${!message.read_at ? '<span class="badge bg-warning text-dark">New</span>' : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('');
+                    })
+                    .catch(error => {
+                        console.error('Error loading messages:', error);
+                        messagesList.innerHTML = '<div class="text-center py-3 text-danger">Error loading messages</div>';
+                    });
+            }
+
+            function formatTime(timestamp) {
+                const date = new Date(timestamp);
+                const now = new Date();
+                const diff = now - date;
+                const hours = Math.floor(diff / (1000 * 60 * 60));
+
+                if (hours < 1) return 'Just now';
+                if (hours < 24) return `${hours}h ago`;
+                return date.toLocaleDateString();
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+                setInterval(function() {
+                    fetch('{{ route("tukang.messages.recent") }}')
+                        .then(response => response.json())
+                        .then(messages => {
+                            const unreadCount = messages.filter(msg => !msg.read_at).length;
+                            document.getElementById('new-messages-count').textContent = unreadCount;
+                        })
+                        .catch(error => console.error('Error refreshing message count:', error));
+                }, 30000);
+            });
+    </script>
 </x-app-layout>
