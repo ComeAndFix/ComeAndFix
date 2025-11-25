@@ -1,3 +1,6 @@
+<!-- Midtrans Snap Script -->
+<script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}"></script>
+
 <div id="paymentModal" class="modal fade" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -17,28 +20,25 @@
                 <div class="payment-methods">
                     <h6>Select Payment Method</h6>
                     <div class="form-check mb-2">
-                        <input class="form-check-input" type="radio" name="paymentMethod" id="creditCard" value="credit_card">
-                        <label class="form-check-label" for="creditCard">
-                            <i class="bi bi-credit-card me-2"></i>Credit Card
+                        <input class="form-check-input" type="radio" name="paymentMethod" id="qris" value="qris">
+                        <label class="form-check-label" for="qris">
+                            <i class="bi bi-qr-code me-2"></i>QRIS (Scan to Pay)
                         </label>
                     </div>
+                    <small class="text-muted d-block mb-3">Supported: GoPay, OVO, Dana, ShopeePay, LinkAja, and more</small>
+
                     <div class="form-check mb-2">
-                        <input class="form-check-input" type="radio" name="paymentMethod" id="gopay" value="gopay">
-                        <label class="form-check-label" for="gopay">
-                            <i class="bi bi-phone me-2"></i>GoPay
+                        <input class="form-check-input" type="radio" name="paymentMethod" id="virtualAccount" value="virtual_account">
+                        <label class="form-check-label" for="virtualAccount">
+                            <i class="bi bi-bank me-2"></i>Virtual Account
                         </label>
                     </div>
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="radio" name="paymentMethod" id="bankTransfer" value="bank_transfer">
-                        <label class="form-check-label" for="bankTransfer">
-                            <i class="bi bi-bank me-2"></i>Bank Transfer
-                        </label>
-                    </div>
+                    <small class="text-muted">Supported: BCA, BNI, BRI, Mandiri, Permata</small>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel Payment</button>
-                <button type="button" class="btn btn-primary" id="payButton" disabled>Pay Now</button>
+                <button type="button" class="btn btn-primary" id="payButton">Pay Now</button>
             </div>
         </div>
     </div>

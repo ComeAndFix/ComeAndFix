@@ -1,4 +1,3 @@
-// Payment popup functionality
 class PaymentHandler {
     constructor() {
         this.currentOrder = null;
@@ -209,31 +208,103 @@ class PaymentHandler {
 
             const result = await response.json();
 
-            if (result.success) {
+            if (result.success && result.data.snap_token) {
+                // Close the current modal
                 const modal = bootstrap.Modal.getInstance(document.getElementById('paymentModal'));
                 if (modal) {
-                    // Remove the preventModalClose listener before hiding
-                    const modalElement = document.getElementById('paymentModal');
-                    modalElement.removeEventListener('hide.bs.modal', this.preventModalClose);
                     modal.hide();
                 }
 
-                this.showSuccessMessage('Payment completed successfully! Redirecting...');
-
-                // Redirect to dashboard
-                setTimeout(() => {
-                    window.location.href = result.redirect_url || '/customer/dashboard';
-                }, 1500);
+                // Open Midtrans Snap
+                window.snap.pay(result.data.snap_token, {
+                    onSuccess: (result) => {
+                        this.handlePaymentSuccess(result);
+                    },
+                    onPending: (result) => {
+                        this.handlePaymentPending(result);
+                    },
+                    onError: (result) => {
+                        this.handlePaymentError(result);
+                    },
+                    onClose: () => {
+                        this.handlePaymentClose();
+                    }
+                });
             } else {
                 this.showErrorMessage(result.error || 'Payment failed. Please try again.');
-                payButton.disabled = false;
-                payButton.innerHTML = originalText;
             }
         } catch (error) {
             console.error('Payment processing error:', error);
             this.showErrorMessage(error.message || 'An error occurred during payment processing.');
+        } finally {
             payButton.disabled = false;
             payButton.innerHTML = originalText;
+        }
+    }
+
+    handlePaymentSuccess(result) {
+        console.log('Payment success:', result);
+        this.showSuccessMessage('Payment completed successfully!');
+
+        // Update the Pay Now button to show Paid status immediately
+        this.updatePayButtonToPaid();
+
+        // Reload page after showing success state
+        setTimeout(() => {
+            window.location.reload();
+        }, 2000);
+    }
+
+    handlePaymentPending(result) {
+        console.log('Payment pending:', result);
+        this.showMessage('Payment is being processed. Please wait...', 'info');
+        // Poll payment status
+        this.pollPaymentStatus(result.order_id);
+    }
+
+    handlePaymentError(result) {
+        console.error('Payment error:', result);
+        this.showErrorMessage('Payment failed. Please try again.');
+    }
+
+    handlePaymentClose() {
+        this.showMessage('Payment window closed. You can pay later from your orders.', 'info');
+    }
+
+    async pollPaymentStatus(paymentId, attempts = 0) {
+        if (attempts >= 10) {
+            this.showMessage('Payment status check timed out. Please refresh the page.', 'warning');
+            return;
+        }
+
+        try {
+            const response = await fetch(`/payments/${paymentId}/status`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+                }
+            });
+
+            const result = await response.json();
+
+            if (result.success && result.payment_status === 'completed') {
+                this.showSuccessMessage('Payment confirmed!');
+
+                // Update the Pay Now button to show Paid status immediately
+                this.updatePayButtonToPaid();
+
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            } else if (result.payment_status === 'pending') {
+                setTimeout(() => {
+                    this.pollPaymentStatus(paymentId, attempts + 1);
+                }, 3000);
+            } else {
+                this.showErrorMessage('Payment verification failed.');
+            }
+        } catch (error) {
+            console.error('Error polling payment status:', error);
         }
     }
 
@@ -261,6 +332,40 @@ class PaymentHandler {
             }
         }, 5000);
     }
+
+    updatePayButtonToPaid() {
+        if (!this.currentOrder || !this.currentOrder.id) {
+            console.warn('No current order to update');
+            return;
+        }
+
+        // Find the order element by order ID
+        const orderElement = document.querySelector(`[data-order-id="${this.currentOrder.id}"]`);
+        if (!orderElement) {
+            console.warn('Order element not found');
+            return;
+        }
+
+        // Find all Pay Now buttons for this order
+        const payButtons = orderElement.querySelectorAll('button[onclick*="showPaymentForOrder"]');
+
+        payButtons.forEach(button => {
+            // Find the parent container of the button
+            const container = button.closest('.mt-2') || button.parentElement;
+
+            if (container) {
+                // Replace the entire container with the Paid badge
+                container.innerHTML = `
+                    <span class="badge bg-info">On Progress</span>
+                    <span class="badge bg-success ms-1">
+                        <i class="bi bi-check-circle"></i> Paid
+                    </span>
+                `;
+            }
+        });
+
+        console.log('Updated Pay Now button to Paid status');
+    }
 }
 
 // Make PaymentHandler globally available
@@ -271,7 +376,7 @@ console.log('Creating PaymentHandler instance...');
 window.paymentHandler = new PaymentHandler();
 
 // Initialize when DOM is ready
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     console.log('DOM loaded, ensuring PaymentHandler is initialized...');
     if (!window.paymentHandler) {
         window.paymentHandler = new PaymentHandler();
@@ -280,7 +385,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Global function to add payment success message to chat
-window.addPaymentSuccessMessage = function(orderData) {
+window.addPaymentSuccessMessage = function (orderData) {
     const messagesContainer = document.getElementById('messages');
     if (messagesContainer) {
         const statusDiv = document.createElement('div');
@@ -292,7 +397,7 @@ window.addPaymentSuccessMessage = function(orderData) {
         `;
         messagesContainer.appendChild(statusDiv);
 
-        const scrollFunction = window.scrollToBottom || function() {
+        const scrollFunction = window.scrollToBottom || function () {
             const container = document.getElementById('messages-container');
             if (container) {
                 container.scrollTop = container.scrollHeight;

@@ -56,12 +56,24 @@ Route::middleware(['auth:customer', 'verified'])->group(function () {
     Route::post('/order/{order}/accept', [ChatController::class, 'acceptOrder'])->name('order.accept');
     Route::post('/order/{order}/reject', [ChatController::class, 'rejectOrder'])->name('order.reject');
 
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+
     Route::post('/payments/process', [PaymentController::class, 'processPayment'])->name('payments.process');
+    Route::get('/payments/{payment}/status', [PaymentController::class, 'checkStatus'])->name('payments.status');
+
+    Route::post('/customer/orders/{order}/accept', [ChatController::class, 'acceptOrder'])->name('customer.order.accept');
+    Route::post('/customer/orders/{order}/reject', [ChatController::class, 'rejectOrder'])->name('customer.order.reject');
 
     Route::get('/orders/{order}', [\App\Http\Controllers\Customer\CustomerOrderController::class, 'show'])->name('customer.orders.show');
     Route::post('/orders/{order}/approve', [\App\Http\Controllers\Customer\CustomerOrderController::class, 'approveCompletion'])->name('customer.orders.approveCompletion');
     Route::post('/orders/{order}/reject', [\App\Http\Controllers\Customer\CustomerOrderController::class, 'rejectCompletion'])->name('customer.orders.rejectCompletion');
 });
+
+// Payment notification webhook (outside auth middleware)
+Route::post('/payments/notification', [PaymentController::class, 'handleNotification'])->name('payments.notification');
 
 // Tukang Dashboard
 Route::middleware(['auth:tukang', 'verified'])->name('tukang.')->group(function () {

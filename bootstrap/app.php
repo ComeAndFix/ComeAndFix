@@ -16,6 +16,11 @@ return Application::configure(basePath: dirname(__DIR__))
             'auth' => \App\Http\Middleware\Authenticate::class,
             'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
         ]);
+        
+        // Exclude payment notification webhook from CSRF protection
+        $middleware->validateCsrfTokens(except: [
+            'payments/notification',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
