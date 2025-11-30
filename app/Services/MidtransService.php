@@ -29,12 +29,47 @@ class MidtransService
         try {
             $orderId = $order->order_number . '-' . time();
 
-            $amount = (int) $order->price;
+            $amount = (int) $order->total_price;
 
             $enabledPayments = ['gopay', 'shopeepay', 'other_qris'];
             
             if ($paymentMethod === 'virtual_account') {
                 $enabledPayments = ['bca_va', 'bni_va', 'bri_va', 'echannel', 'permata_va'];
+            }
+
+            // Build item details
+            $itemDetails = [];
+            
+            // Add base service
+            $itemDetails[] = [
+                'id' => 'service-' . ($order->service_id ?? 1),
+                'price' => (int) $order->price,
+                'quantity' => 1,
+                'name' => $order->service->name ?? 'Service',
+            ];
+
+            // Add additional items
+            if ($order->additionalItems && $order->additionalItems->count() > 0) {
+                foreach ($order->additionalItems as $item) {
+                    $itemDetails[] = [
+                        'id' => 'add-' . $item->id,
+                        'price' => (int) $item->item_price,
+                        'quantity' => (int) $item->quantity,
+                        'name' => substr($item->item_name, 0, 50), // Midtrans name limit
+                    ];
+                }
+            }
+
+            // Add custom items
+            if ($order->customItems && $order->customItems->count() > 0) {
+                foreach ($order->customItems as $item) {
+                    $itemDetails[] = [
+                        'id' => 'custom-' . $item->id,
+                        'price' => (int) $item->item_price,
+                        'quantity' => (int) $item->quantity,
+                        'name' => substr($item->item_name, 0, 50), // Midtrans name limit
+                    ];
+                }
             }
 
             $params = [
@@ -47,14 +82,7 @@ class MidtransService
                     'email' => $customer->email,
                     'phone' => $customer->phone ?? '087780932198',
                 ],
-                'item_details' => [
-                    [
-                        'id' => 'service-' . ($order->service_id ?? 1),
-                        'price' => $amount,
-                        'quantity' => 1,
-                        'name' => $order->service->name ?? 'Service',
-                    ]
-                ],
+                'item_details' => $itemDetails,
                 'enabled_payments' => $enabledPayments,
                 'custom_expiry' => [
                     'expiry_duration' => 15,
@@ -104,7 +132,7 @@ class MidtransService
                 'status' => $status
             ]);
 
-            return [
+            return [ 
                 'success' => true,
                 'status' => $status
             ];

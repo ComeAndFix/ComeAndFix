@@ -17,7 +17,7 @@ class OrderStatusUpdated implements ShouldBroadcastNow
 
     public function __construct(Order $order)
     {
-        $this->order = $order->load(['customer', 'tukang', 'service']);
+        $this->order = $order->load(['customer', 'tukang', 'service', 'additionalItems', 'customItems']);
     }
 
     public function broadcastOn(): array
@@ -34,13 +34,32 @@ class OrderStatusUpdated implements ShouldBroadcastNow
                 'id' => $this->order->id,
                 'order_number' => $this->order->order_number,
                 'status' => $this->order->status,
+                'payment_status' => $this->order->payment_status,
                 'price' => $this->order->price,
                 'service_description' => $this->order->service_description,
                 'expires_at' => $this->order->expires_at->timestamp * 1000,
+                'work_datetime' => $this->order->work_datetime ? $this->order->work_datetime->timestamp * 1000 : null,
                 'service' => [
                     'id' => $this->order->service->id,
                     'name' => $this->order->service->name,
                 ],
+                'additional_items' => $this->order->additionalItems->map(function($item) {
+                    return [
+                        'id' => $item->id,
+                        'item_name' => $item->item_name,
+                        'item_price' => $item->item_price,
+                        'quantity' => $item->quantity,
+                    ];
+                })->toArray(),
+                'custom_items' => $this->order->customItems->map(function($item) {
+                    return [
+                        'id' => $item->id,
+                        'item_name' => $item->item_name,
+                        'item_price' => $item->item_price,
+                        'quantity' => $item->quantity,
+                        'description' => $item->description,
+                    ];
+                })->toArray(),
                 'tukang' => [
                     'id' => $this->order->tukang->id,
                     'name' => $this->order->tukang->name,

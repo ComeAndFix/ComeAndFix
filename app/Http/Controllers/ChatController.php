@@ -38,7 +38,7 @@ class ChatController extends Controller
             );
 
             $messages = ChatMessage::where('conversation_id', $conversationId)
-                ->with(['sender', 'receiver', 'order.service'])
+                ->with(['sender', 'receiver', 'order.service', 'order.additionalItems', 'order.customItems'])
                 ->orderBy('created_at', 'asc')
                 ->get();
 
@@ -140,7 +140,7 @@ class ChatController extends Controller
             );
 
             $messages = ChatMessage::where('conversation_id', $conversationId)
-                ->with(['sender', 'receiver', 'order.service'])
+                ->with(['sender', 'receiver', 'order.service', 'order.additionalItems', 'order.customItems'])
                 ->orderBy('created_at', 'asc')
                 ->get();
 
@@ -252,7 +252,17 @@ class ChatController extends Controller
             'service_description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
             'expires_in_hours' => 'required|integer|min:1|max:168',
-            'service_details' => 'nullable|array'
+            'service_details' => 'nullable|array',
+            'work_datetime' => 'nullable|date',
+            'additional_items' => 'nullable|array',
+            'additional_items.*.item_name' => 'required_with:additional_items|string',
+            'additional_items.*.item_price' => 'required_with:additional_items|numeric|min:0',
+            'additional_items.*.quantity' => 'required_with:additional_items|integer|min:1',
+            'custom_items' => 'nullable|array',
+            'custom_items.*.item_name' => 'required_with:custom_items|string',
+            'custom_items.*.item_price' => 'required_with:custom_items|numeric|min:0',
+            'custom_items.*.quantity' => 'required_with:custom_items|integer|min:1',
+            'custom_items.*.description' => 'nullable|string'
         ]);
 
         try {
@@ -266,23 +276,47 @@ class ChatController extends Controller
                 'conversation_id' => $request->conversation_id,
                 'service_description' => $request->service_description,
                 'price' => $request->price,
-                'expires_at' => now()->addHours((int) $request->expires_in_hours), // Cast to integer
+                'expires_at' => now()->addHours((int) $request->expires_in_hours),
+                'work_datetime' => $request->work_datetime,
                 'service_details' => $request->service_details,
                 'status' => 'pending'
             ]);
 
+            // Save additional items if provided
+            if ($request->has('additional_items') && is_array($request->additional_items)) {
+                foreach ($request->additional_items as $item) {
+                    $order->additionalItems()->create([
+                        'item_name' => $item['item_name'],
+                        'item_price' => $item['item_price'],
+                        'quantity' => $item['quantity']
+                    ]);
+                }
+            }
+
+            // Save custom items if provided
+            if ($request->has('custom_items') && is_array($request->custom_items)) {
+                foreach ($request->custom_items as $item) {
+                    $order->customItems()->create([
+                        'item_name' => $item['item_name'],
+                        'item_price' => $item['item_price'],
+                        'quantity' => $item['quantity'],
+                        'description' => $item['description'] ?? null
+                    ]);
+                }
+            }
+
             ChatMessage::create([
                 'conversation_id' => $request->conversation_id,
-                'sender_type' => 'App\Models\Tukang',
+                'sender_type' => 'App\\Models\\Tukang',
                 'sender_id' => $tukangId,
-                'receiver_type' => 'App\Models\Customer',
+                'receiver_type' => 'App\\Models\\Customer',
                 'receiver_id' => $request->customer_id,
                 'message' => "Order proposal sent: #{$order->order_number}",
                 'message_type' => 'order_proposal',
                 'order_id' => $order->id
             ]);
 
-            $order->load(['service', 'customer', 'tukang']);
+            $order->load(['service', 'customer', 'tukang', 'additionalItems', 'customItems']);
 
             try {
                 broadcast(new OrderProposalSent($order));

@@ -17,7 +17,7 @@ class OrderProposalSent implements ShouldBroadcastNow
 
     public function __construct(Order $order)
     {
-        $this->order = $order->load(['customer', 'tukang', 'service']);
+        $this->order = $order->load(['customer', 'tukang', 'service', 'additionalItems', 'customItems']);
     }
 
     public function broadcastOn(): array
@@ -43,7 +43,25 @@ class OrderProposalSent implements ShouldBroadcastNow
                 'price' => $this->order->price,
                 'status' => $this->order->status,
                 'expires_at' => $this->order->expires_at->timestamp * 1000,
+                'work_datetime' => $this->order->work_datetime ? $this->order->work_datetime->timestamp * 1000 : null,
                 'service_details' => $this->order->service_details,
+                'additional_items' => $this->order->additionalItems->map(function($item) {
+                    return [
+                        'id' => $item->id,
+                        'item_name' => $item->item_name,
+                        'item_price' => $item->item_price,
+                        'quantity' => $item->quantity,
+                    ];
+                })->toArray(),
+                'custom_items' => $this->order->customItems->map(function($item) {
+                    return [
+                        'id' => $item->id,
+                        'item_name' => $item->item_name,
+                        'item_price' => $item->item_price,
+                        'quantity' => $item->quantity,
+                        'description' => $item->description,
+                    ];
+                })->toArray(),
                 'tukang' => [
                     'id' => $this->order->tukang->id,
                     'name' => $this->order->tukang->name,
