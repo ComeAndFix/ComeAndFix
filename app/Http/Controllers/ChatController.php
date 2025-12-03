@@ -63,6 +63,7 @@ class ChatController extends Controller
                 'message' => 'required|string|max:1000',
                 'receiver_id' => 'required|integer',
                 'receiver_type' => 'required|in:tukang,customer',
+                'service_type' => 'nullable|string',
             ]);
 
             $customer = Auth::guard('customer')->user();
@@ -81,8 +82,36 @@ class ChatController extends Controller
                 $receiverClass
             );
 
+            // Determine conversation service ID
+            $conversationServiceId = null;
+            
+            if ($request->service_type) {
+                // New service_type provided - look up and UPDATE conversation service
+                $service = \App\Models\Service::where('name', 'LIKE', $request->service_type . '%')
+                    ->where('is_active', true)
+                    ->first();
+                if ($service) {
+                    $conversationServiceId = $service->id;
+                    
+                    // Update all existing messages in this conversation to the new service
+                    ChatMessage::where('conversation_id', $conversationId)
+                        ->update(['conversation_service_id' => $conversationServiceId]);
+                }
+            }
+            
+            // If no service from request, use existing conversation service
+            if (!$conversationServiceId) {
+                $existingMessage = ChatMessage::where('conversation_id', $conversationId)
+                    ->whereNotNull('conversation_service_id')
+                    ->first();
+                if ($existingMessage) {
+                    $conversationServiceId = $existingMessage->conversation_service_id;
+                }
+            }
+
             $message = ChatMessage::create([
                 'conversation_id' => $conversationId,
+                'conversation_service_id' => $conversationServiceId,
                 'sender_type' => 'App\Models\Customer',
                 'sender_id' => $customer->id,
                 'receiver_type' => $receiverClass,
@@ -151,7 +180,28 @@ class ChatController extends Controller
                 ->whereNull('read_at')
                 ->update(['read_at' => now()]);
 
-            return view('tukang.chat', compact('receiver', 'messages', 'conversationId', 'receiverType'));
+            // Extract service context from query parameter or conversation
+            $serviceType = request()->query('service_type');
+            $selectedService = null;
+            
+            if ($serviceType) {
+                // Use LIKE to match service names (e.g., "Plumbing" matches "Plumbing Services")
+                $selectedService = \App\Models\Service::where('name', 'LIKE', $serviceType . '%')
+                    ->where('is_active', true)
+                    ->first();
+            }
+            
+            // If no service from URL, check conversation's stored service
+            if (!$selectedService) {
+                $messageWithService = ChatMessage::where('conversation_id', $conversationId)
+                    ->whereNotNull('conversation_service_id')
+                    ->first();
+                if ($messageWithService && $messageWithService->conversation_service_id) {
+                    $selectedService = \App\Models\Service::find($messageWithService->conversation_service_id);
+                }
+            }
+
+            return view('tukang.chat', compact('receiver', 'messages', 'conversationId', 'receiverType', 'selectedService'));
         } catch (\Exception $e) {
             Log::error('Tukang chat show error: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Unable to load chat');

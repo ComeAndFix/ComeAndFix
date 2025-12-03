@@ -218,6 +218,21 @@
 
                 const receiverId = document.getElementById('receiver-id').value;
                 const receiverType = document.getElementById('receiver-type').value;
+                
+                // Extract service_type from URL if present
+                const urlParams = new URLSearchParams(window.location.search);
+                const serviceType = urlParams.get('service_type');
+
+                const requestBody = {
+                    message: message,
+                    receiver_id: parseInt(receiverId),
+                    receiver_type: receiverType
+                };
+                
+                // Include service_type if available
+                if (serviceType) {
+                    requestBody.service_type = serviceType;
+                }
 
                 try {
                     const response = await fetch('{{ route("chat.send") }}', {
@@ -226,11 +241,7 @@
                             'Content-Type': 'application/json',
                             'X-CSRF-TOKEN': csrfToken
                         },
-                        body: JSON.stringify({
-                            message: message,
-                            receiver_id: parseInt(receiverId),
-                            receiver_type: receiverType
-                        })
+                        body: JSON.stringify(requestBody)
                     });
 
                     const data = await response.json();

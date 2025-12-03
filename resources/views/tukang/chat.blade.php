@@ -146,9 +146,13 @@
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="service-select" class="form-label">Service *</label>
+                                    <!-- This will be shown when service is NOT pre-selected -->
                                     <select id="service-select" name="service_id" class="form-select" required>
                                         <option value="">Loading services...</option>
                                     </select>
+                                    <!-- This will be shown when service IS pre-selected -->
+                                    <input type="text" id="service-text" class="form-control" readonly style="display: none;">
+                                    <input type="hidden" id="service-id-hidden" name="service_id_hidden">
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="service-price" class="form-label">Price (Rp) *</label>
@@ -269,6 +273,10 @@
             const messageForm = document.getElementById('message-form');
             const messageInput = document.getElementById('message-input');
             const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            
+            // Pre-selected service from map/customer request
+            const preselectedServiceId = {{ isset($selectedService) && $selectedService ? $selectedService->id : 'null' }};
+            console.log('Preselected Service ID:', preselectedServiceId);
 
             // Load tukang services when modal opens
             @if($receiverType === 'customer')
@@ -289,28 +297,57 @@
 
                     const data = await response.json();
 
-                    if (data.success) {
-                        const serviceSelect = document.getElementById('service-select');
-                        serviceSelect.innerHTML = '<option value="">Select a service...</option>';
+                if (data.success) {
+                    const serviceSelect = document.getElementById('service-select');
+                    serviceSelect.innerHTML = '<option value="">Select a service...</option>';
 
-                        data.services.forEach(service => {
-                            const option = document.createElement('option');
-                            option.value = service.id;
-                            option.textContent = service.name;
-                            option.dataset.price = service.custom_rate || service.base_price || 0;
-                            option.dataset.color = service.color;
-                            option.dataset.icon = service.icon;
-                            option.dataset.description = service.description || '';
-                            serviceSelect.appendChild(option);
-                        });
+                    data.services.forEach(service => {
+                        const option = document.createElement('option');
+                        option.value = service.id;
+                        option.textContent = service.name;
+                        option.dataset.price = service.custom_rate || service.base_price || 0;
+                        option.dataset.color = service.color;
+                        option.dataset.icon = service.icon;
+                        option.dataset.description = service.description || '';
+                        serviceSelect.appendChild(option);
+                    });
+                    
+                    // Auto-select and show as text input if service is pre-selected
+                    if (preselectedServiceId) {
+                        console.log('Auto-selecting service:', preselectedServiceId);
+                        serviceSelect.value = preselectedServiceId;
+                        
+                        const selectedOption = serviceSelect.options[serviceSelect.selectedIndex];
+                        const serviceName = selectedOption.textContent;
+                        const price = selectedOption.dataset.price || 0;
+                        
+                        // Hide dropdown, show text input
+                        serviceSelect.style.display = 'none';
+                        serviceSelect.removeAttribute('required');
+                        
+                        const serviceText = document.getElementById('service-text');
+                        serviceText.value = serviceName;
+                        serviceText.style.display = 'block';
+                        
+                        // Store service_id in hidden field
+                        document.getElementById('service-id-hidden').value = preselectedServiceId;
+                        
+                        // Auto-fill price
+                        document.getElementById('service-price').value = price;
+                        updatePriceSummary();
+                        
+                        console.log('Service displayed as text:', serviceName);
                     } else {
-                        document.getElementById('service-select').innerHTML = '<option value="">No services available</option>';
+                        console.log('No preselected service - service select remains enabled');
                     }
-                } catch (error) {
-                    console.error('Error loading services:', error);
-                    document.getElementById('service-select').innerHTML = '<option value="">Error loading services</option>';
+                } else {
+                    document.getElementById('service-select').innerHTML = '<option value="">No services available</option>';
                 }
+            } catch (error) {
+                console.error('Error loading services:', error);
+                document.getElementById('service-select').innerHTML = '<option value="">Error loading services</option>';
             }
+        }
 
             // Auto-fill price when service is selected
             document.getElementById('service-select').addEventListener('change', function() {
@@ -486,7 +523,7 @@
                     const formData = {
                         customer_id: document.querySelector('[name="customer_id"]').value,
                         conversation_id: document.querySelector('[name="conversation_id"]').value,
-                        service_id: document.getElementById('service-select').value,
+                        service_id: document.getElementById('service-id-hidden').value || document.getElementById('service-select').value,
                         service_description: document.getElementById('service-description').value,
                         price: document.getElementById('service-price').value,
                         expires_in_hours: document.getElementById('expires-hours').value,
