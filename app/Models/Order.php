@@ -27,6 +27,7 @@ class Order extends Model
         'expires_at',
         'accepted_at',
         'work_datetime',
+        'working_address',
         'service_details',
         'payment_status'
     ];

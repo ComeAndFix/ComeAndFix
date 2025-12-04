@@ -45,6 +45,9 @@
                                             @if($message->order->work_datetime)
                                                 <div><strong>Work Date:</strong> {{ $message->order->work_datetime->format('d M Y H:i') }}</div>
                                             @endif
+                                            @if($message->order->working_address)
+                                                <div><strong>Working Address:</strong> {{ $message->order->working_address }}</div>
+                                            @endif
                                             @if($message->order->service_description)
                                                 <div><strong>Description:</strong> {{ $message->order->service_description }}</div>
                                             @endif
@@ -165,11 +168,16 @@
                                 <textarea id="service-description" name="service_description" class="form-control" rows="3" placeholder="Describe the work to be done in detail..."></textarea>
                             </div>
 
+                            <div class="mb-3">
+                                <label for="customer-address" class="form-label">Working Address</label>
+                                <textarea id="customer-address" name="working_address" class="form-control" rows="2" placeholder="Enter the address where the work will be performed">{{ $receiver->address ?? '' }}</textarea>
+                                <small class="text-muted">Default is customer's registered address. You can edit this if work will be at a different location.</small>
+                            </div>
+
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="work-datetime" class="form-label">Work Date & Time</label>
                                     <input type="datetime-local" id="work-datetime" name="work_datetime" class="form-control">
-                                    <small class="text-muted">Optional: Specify when the work should be performed</small>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="expires-hours" class="form-label">Proposal Valid For *</label>
@@ -528,6 +536,7 @@
                         price: document.getElementById('service-price').value,
                         expires_in_hours: document.getElementById('expires-hours').value,
                         work_datetime: document.getElementById('work-datetime').value || null,
+                        working_address: document.getElementById('customer-address').value || null,
                         service_details: serviceDetails,
                         additional_items: additionalItems.length > 0 ? additionalItems : null,
                         custom_items: customItems.length > 0 ? customItems : null
@@ -688,6 +697,7 @@
                         <div><strong>Service:</strong> ${order.service ? order.service.name : 'Service'}</div>
                         <div><strong>Base Price:</strong> Rp ${parseInt(order.price).toLocaleString('id-ID')}</div>
                         ${order.work_datetime ? `<div><strong>Work Date:</strong> ${formatDateTime(order.work_datetime)}</div>` : ''}
+                        ${order.working_address ? `<div><strong>Working Address:</strong> ${order.working_address}</div>` : ''}
                         ${order.service_description ? `<div><strong>Description:</strong> ${order.service_description}</div>` : ''}
                         ${additionalItemsHtml}
                         ${customItemsHtml}

@@ -44,6 +44,9 @@
                                             @if($message->order->work_datetime)
                                                 <div><strong>Work Date:</strong> {{ $message->order->work_datetime->format('d M Y H:i') }}</div>
                                             @endif
+                                            @if($message->order->working_address)
+                                                <div><strong>Working Address:</strong> {{ $message->order->working_address }}</div>
+                                            @endif
                                             @if($message->order->service_description)
                                                 <div><strong>Description:</strong> {{ $message->order->service_description }}</div>
                                             @endif
@@ -381,6 +384,7 @@
                             <div><strong>Service:</strong> ${order.service ? order.service.name : 'Service'}</div>
                             <div><strong>Base Price:</strong> Rp ${parseInt(order.price).toLocaleString('id-ID')}</div>
                             ${order.work_datetime ? `<div><strong>Work Date:</strong> ${formatDateTime(order.work_datetime)}</div>` : ''}
+                            ${order.working_address ? `<div><strong>Working Address:</strong> ${order.working_address}</div>` : ''}
                             ${order.service_description ? `<div><strong>Description:</strong> ${order.service_description}</div>` : ''}
                             ${additionalItemsHtml}
                             ${customItemsHtml}

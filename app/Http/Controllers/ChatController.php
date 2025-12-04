@@ -312,11 +312,19 @@ class ChatController extends Controller
             'custom_items.*.item_name' => 'required_with:custom_items|string',
             'custom_items.*.item_price' => 'required_with:custom_items|numeric|min:0',
             'custom_items.*.quantity' => 'required_with:custom_items|integer|min:1',
-            'custom_items.*.description' => 'nullable|string'
+            'custom_items.*.description' => 'nullable|string',
+            'working_address' => 'nullable|string'
         ]);
 
         try {
             $tukangId = Auth::guard('tukang')->id();
+
+            // Use working_address from request, or fallback to customer's address
+            $workingAddress = $request->working_address;
+            if (empty($workingAddress)) {
+                $customer = Customer::findOrFail($request->customer_id);
+                $workingAddress = $customer->address;
+            }
 
             $order = Order::create([
                 'order_number' => 'ORD-' . strtoupper(Str::random(8)),
@@ -328,6 +336,7 @@ class ChatController extends Controller
                 'price' => $request->price,
                 'expires_at' => now()->addHours((int) $request->expires_in_hours),
                 'work_datetime' => $request->work_datetime,
+                'working_address' => $workingAddress,
                 'service_details' => $request->service_details,
                 'status' => 'pending'
             ]);
