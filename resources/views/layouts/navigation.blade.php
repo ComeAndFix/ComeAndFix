@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-body border-bottom">
     <div class="container">
         <!-- Logo -->
-        <a class="navbar-brand fw-bold text-primary" href="{{ route('dashboard') }}">
+        <a class="navbar-brand fw-bold text-primary" href="@if(Auth::guard('tukang')->check()) {{ route('tukang.dashboard') }} @elseif(Auth::guard('customer')->check()) {{ route('dashboard') }} @else {{ route('dashboard') }} @endif">
             <i class="bi bi-tools me-2"></i>Come&Fix
         </a>
 

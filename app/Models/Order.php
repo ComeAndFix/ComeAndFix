@@ -26,6 +26,8 @@ class Order extends Model
         'status',
         'expires_at',
         'accepted_at',
+        'work_datetime',
+        'working_address',
         'service_details',
         'payment_status'
     ];
@@ -33,6 +35,7 @@ class Order extends Model
     protected $casts = [
         'expires_at' => 'datetime',
         'accepted_at' => 'datetime',
+        'work_datetime' => 'datetime',
         'price' => 'decimal:2',
         'service_details' => 'array',
         'payment_status' => 'string'
@@ -94,6 +97,29 @@ class Order extends Model
     public function getServiceTitleAttribute()
     {
         return $this->service->name ?? 'Custom Service';
+    }
+
+    public function additionalItems()
+    {
+        return $this->hasMany(OrderAdditionalItem::class);
+    }
+
+    public function customItems()
+    {
+        return $this->hasMany(OrderCustomItem::class);
+    }
+
+    public function getTotalPriceAttribute()
+    {
+        $additionalItemsTotal = $this->additionalItems->sum(function ($item) {
+            return $item->item_price * $item->quantity;
+        });
+        
+        $customItemsTotal = $this->customItems->sum(function ($item) {
+            return $item->item_price * $item->quantity;
+        });
+        
+        return $this->price + $additionalItemsTotal + $customItemsTotal;
     }
 
     public function completion()

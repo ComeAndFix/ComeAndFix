@@ -10,7 +10,6 @@
             </a>
         </div>
     </x-slot>
-
     <div class="py-6">
         <div class="max-w-4xl mx-auto">
             <div class="bg-white shadow-lg rounded-lg overflow-hidden d-flex flex-column" style="height: 80vh;">
@@ -41,9 +40,43 @@
                                         </div>
                                         <div class="order-details">
                                             <div><strong>Service:</strong> {{ $message->order->service ? $message->order->service->name : 'Service' }}</div>
-                                            <div><strong>Price:</strong> Rp {{ number_format($message->order->price, 0, ',', '.') }}</div>
+                                            <div><strong>Base Price:</strong> Rp {{ number_format($message->order->price, 0, ',', '.') }}</div>
+                                            @if($message->order->work_datetime)
+                                                <div><strong>Work Date:</strong> {{ $message->order->work_datetime->format('d M Y H:i') }}</div>
+                                            @endif
+                                            @if($message->order->working_address)
+                                                <div><strong>Working Address:</strong> {{ $message->order->working_address }}</div>
+                                            @endif
                                             @if($message->order->service_description)
                                                 <div><strong>Description:</strong> {{ $message->order->service_description }}</div>
+                                            @endif
+                                            @if($message->order->additionalItems && $message->order->additionalItems->count() > 0)
+                                                <div class="mt-2">
+                                                    <strong>Additional Items:</strong>
+                                                    <ul class="mb-0 mt-1 small">
+                                                        @foreach($message->order->additionalItems as $item)
+                                                            <li>{{ $item->item_name }} ({{ $item->quantity }}x) - Rp {{ number_format($item->item_price * $item->quantity, 0, ',', '.') }}</li>
+                                                        @endforeach
+                                                    </ul>
+                                                </div>
+                                            @endif
+                                            @if($message->order->customItems && $message->order->customItems->count() > 0)
+                                                <div class="mt-2">
+                                                    <strong>Custom Items:</strong>
+                                                    <ul class="mb-0 mt-1 small">
+                                                        @foreach($message->order->customItems as $item)
+                                                            <li>
+                                                                {{ $item->item_name }} ({{ $item->quantity }}x) - Rp {{ number_format($item->item_price * $item->quantity, 0, ',', '.') }}
+                                                                @if($item->description)
+                                                                    <small class="text-muted d-block">{{ $item->description }}</small>
+                                                                @endif
+                                                            </li>
+                                                        @endforeach
+                                                    </ul>
+                                                </div>
+                                            @endif
+                                            @if(($message->order->additionalItems && $message->order->additionalItems->count() > 0) || ($message->order->customItems && $message->order->customItems->count() > 0))
+                                                <div class="mt-2"><strong>Total Price:</strong> Rp {{ number_format($message->order->total_price, 0, ',', '.') }}</div>
                                             @endif
                                             <div class="mt-2">
                                                 <small>Order #{{ $message->order->order_number }}</small><br>
@@ -65,13 +98,13 @@
                                                 <button type="button" class="btn btn-primary btn-sm ms-2" onclick="showPaymentForOrder({{ $message->order->id }}, {{ json_encode([
                                                     'id' => $message->order->id,
                                                     'service_name' => $message->order->service ? $message->order->service->name : 'Service',
-                                                    'total_amount' => $message->order->price,
+                                                    'total_amount' => $message->order->total_price,
                                                     'description' => $message->order->service_description ?? '',
                                                     'order_number' => $message->order->order_number,
                                                     'items' => [[
                                                         'name' => $message->order->service ? $message->order->service->name : 'Service',
                                                         'quantity' => 1,
-                                                        'price' => number_format($message->order->price, 0, ',', '.')
+                                                        'price' => number_format($message->order->total_price, 0, ',', '.')
                                                     ]]
                                                 ]) }})">
                                                     <i class="bi bi-credit-card"></i> Pay Now
@@ -188,6 +221,21 @@
 
                 const receiverId = document.getElementById('receiver-id').value;
                 const receiverType = document.getElementById('receiver-type').value;
+                
+                // Extract service_type from URL if present
+                const urlParams = new URLSearchParams(window.location.search);
+                const serviceType = urlParams.get('service_type');
+
+                const requestBody = {
+                    message: message,
+                    receiver_id: parseInt(receiverId),
+                    receiver_type: receiverType
+                };
+                
+                // Include service_type if available
+                if (serviceType) {
+                    requestBody.service_type = serviceType;
+                }
 
                 try {
                     const response = await fetch('{{ route("chat.send") }}', {
@@ -196,11 +244,7 @@
                             'Content-Type': 'application/json',
                             'X-CSRF-TOKEN': csrfToken
                         },
-                        body: JSON.stringify({
-                            message: message,
-                            receiver_id: parseInt(receiverId),
-                            receiver_type: receiverType
-                        })
+                        body: JSON.stringify(requestBody)
                     });
 
                     const data = await response.json();
@@ -228,6 +272,9 @@
                 if (buttonsContainer) {
                     const statusDiv = document.createElement('div');
                     statusDiv.className = 'mt-2';
+                    
+                    // Calculate total price
+                    const totalPrice = calculateOrderTotal(order);
 
                     if (order.status === 'accepted' && order.payment_status !== 'paid') {
                         statusDiv.innerHTML = `
@@ -235,13 +282,13 @@
                             <button type="button" class="btn btn-primary btn-sm ms-2" onclick="showPaymentForOrder(${order.id}, ${JSON.stringify({
                             id: order.id,
                             service_name: order.service ? order.service.name : 'Service',
-                            total_amount: order.price,
+                            total_amount: totalPrice,
                             description: order.service_description || '',
                             order_number: order.order_number,
                             items: [{
                                 name: order.service ? order.service.name : 'Service',
                                 quantity: 1,
-                                price: parseFloat(order.price).toLocaleString('id-ID')
+                                price: parseFloat(totalPrice).toLocaleString('id-ID')
                             }]
                         }).replace(/"/g, '&quot;')})">
                                 <i class="bi bi-credit-card"></i> Pay Now
@@ -262,10 +309,65 @@
                     buttonsContainer.replaceWith(statusDiv);
                 }
             }
+            
+            function calculateOrderTotal(order) {
+                let total = parseFloat(order.price) || 0;
+                
+                if (order.additional_items) {
+                    order.additional_items.forEach(item => {
+                        total += (parseFloat(item.item_price) || 0) * (parseInt(item.quantity) || 1);
+                    });
+                }
+                
+                if (order.custom_items) {
+                    order.custom_items.forEach(item => {
+                        total += (parseFloat(item.item_price) || 0) * (parseInt(item.quantity) || 1);
+                    });
+                }
+                
+                return total;
+            }
 
             function showOrderProposal(order) {
                 if(document.querySelector(`[data-order-id="${order.id}"]`)){
                     return;
+                }
+
+                // Build additional items HTML
+                let additionalItemsHtml = '';
+                if (order.additional_items && order.additional_items.length > 0) {
+                    additionalItemsHtml = '<div class="mt-2"><strong>Additional Items:</strong><ul class="mb-0 mt-1 small">';
+                    order.additional_items.forEach(item => {
+                        additionalItemsHtml += `<li>${item.item_name} (${item.quantity}x) - Rp ${(item.item_price * item.quantity).toLocaleString('id-ID')}</li>`;
+                    });
+                    additionalItemsHtml += '</ul></div>';
+                }
+                
+                // Build custom items HTML
+                let customItemsHtml = '';
+                if (order.custom_items && order.custom_items.length > 0) {
+                    customItemsHtml = '<div class="mt-2"><strong>Custom Items:</strong><ul class="mb-0 mt-1 small">';
+                    order.custom_items.forEach(item => {
+                        customItemsHtml += `<li>${item.item_name} (${item.quantity}x) - Rp ${(item.item_price * item.quantity).toLocaleString('id-ID')}`;
+                        if (item.description) {
+                            customItemsHtml += `<small class="text-muted d-block">${item.description}</small>`;
+                        }
+                        customItemsHtml += `</li>`;
+                    });
+                    customItemsHtml += '</ul></div>';
+                }
+                
+                // Calculate total price
+                let totalPrice = parseFloat(order.price) || 0;
+                if (order.additional_items) {
+                    order.additional_items.forEach(item => {
+                        totalPrice += (parseFloat(item.item_price) || 0) * (parseInt(item.quantity) || 1);
+                    });
+                }
+                if (order.custom_items) {
+                    order.custom_items.forEach(item => {
+                        totalPrice += (parseFloat(item.item_price) || 0) * (parseInt(item.quantity) || 1);
+                    });
                 }
 
                 const orderDiv = document.createElement('div');
@@ -280,8 +382,13 @@
                         </div>
                         <div class="order-details">
                             <div><strong>Service:</strong> ${order.service ? order.service.name : 'Service'}</div>
-                            <div><strong>Price:</strong> Rp ${parseInt(order.price).toLocaleString('id-ID')}</div>
+                            <div><strong>Base Price:</strong> Rp ${parseInt(order.price).toLocaleString('id-ID')}</div>
+                            ${order.work_datetime ? `<div><strong>Work Date:</strong> ${formatDateTime(order.work_datetime)}</div>` : ''}
+                            ${order.working_address ? `<div><strong>Working Address:</strong> ${order.working_address}</div>` : ''}
                             ${order.service_description ? `<div><strong>Description:</strong> ${order.service_description}</div>` : ''}
+                            ${additionalItemsHtml}
+                            ${customItemsHtml}
+                            ${(order.additional_items?.length > 0 || order.custom_items?.length > 0) ? `<div class="mt-2"><strong>Total Price:</strong> Rp ${totalPrice.toLocaleString('id-ID')}</div>` : ''}
                             <div class="mt-2">
                                 <small>Order #${order.order_number}</small><br>
                                 <small>Expires: ${formatDateTime(order.expires_at)}</small>
@@ -364,16 +471,18 @@
                     if (data.success) {
                         showSuccessAlert('Order accepted successfully!');
 
+                        const totalPrice = calculateOrderTotal(data.order);
+                        
                         const orderData = {
                             id: orderId,
                             service_name: data.order.service ? data.order.service.name : 'Service',
-                            total_amount: data.order.price,
+                            total_amount: totalPrice,
                             description: data.order.service_description || '',
                             order_number: data.order.order_number,
                             items: [{
                                 name: data.order.service ? data.order.service.name : 'Service',
                                 quantity: 1,
-                                price: parseFloat(data.order.price).toLocaleString('id-ID')
+                                price: parseFloat(totalPrice).toLocaleString('id-ID')
                             }]
                         };
 
