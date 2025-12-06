@@ -66,6 +66,12 @@ Route::middleware(['auth:customer', 'verified'])->group(function () {
 
     Route::post('/customer/orders/{order}/accept', [ChatController::class, 'acceptOrder'])->name('customer.order.accept');
     Route::post('/customer/orders/{order}/reject', [ChatController::class, 'rejectOrder'])->name('customer.order.reject');
+
+    Route::get('/orders/{order}', [\App\Http\Controllers\Customer\CustomerOrderController::class, 'show'])->name('customer.orders.show');
+    
+    // Review routes
+    Route::get('/orders/{order}/review', [\App\Http\Controllers\Customer\CustomerReviewController::class, 'create'])->name('customer.reviews.create');
+    Route::post('/orders/{order}/review', [\App\Http\Controllers\Customer\CustomerReviewController::class, 'store'])->name('customer.reviews.store');
 });
 
 // Payment notification webhook (outside auth middleware)
@@ -88,6 +94,11 @@ Route::middleware(['auth:tukang', 'verified'])->name('tukang.')->group(function 
 
     Route::post('/order/send', [ChatController::class, 'sendOrderProposal'])->name('order.send');
     Route::get('/services', [ChatController::class, 'getTukangServices'])->name('services');
+
+    Route::get('/jobs', [\App\Http\Controllers\Tukang\TukangJobController::class, 'index'])->name('jobs.index');
+    Route::get('/jobs/{order}', [\App\Http\Controllers\Tukang\TukangJobController::class, 'show'])->name('jobs.show');
+    Route::get('/jobs/{order}/complete', [\App\Http\Controllers\Tukang\TukangJobController::class, 'completeForm'])->name('jobs.complete');
+    Route::post('/jobs/{order}/complete', [\App\Http\Controllers\Tukang\TukangJobController::class, 'submitCompletion'])->name('jobs.submitCompletion');
 });
 
 // Public service routes

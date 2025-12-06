@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Services\MidtransService;
+use App\Services\MidtransService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class PaymentController extends Controller
 {
@@ -27,7 +29,7 @@ class PaymentController extends Controller
                 'amount' => 'required|numeric|min:0'
             ]);
 
-            $order = Order::with('service')->findOrFail($validated['order_id']);
+            $order = Order::with(['service', 'additionalItems', 'customItems'])->findOrFail($validated['order_id']);
 
             if ($order->customer_id !== auth()->guard('customer')->id()) {
                 return response()->json([
@@ -36,10 +38,14 @@ class PaymentController extends Controller
                 ], 403);
             }
 
-            if ((float)$request->amount !== (float)$order->price) {
+            if (abs((float)$request->amount - (float)$order->total_price) > 1) { // Allow small float difference
                 return response()->json([
                     'success' => false,
-                    'error' => 'Payment amount does not match order price'
+                    'error' => 'Payment amount does not match order price',
+                    'debug' => [
+                        'request_amount' => $request->amount,
+                        'order_total' => $order->total_price
+                    ]
                 ], 422);
             }
 
@@ -48,14 +54,12 @@ class PaymentController extends Controller
             try {
                 $customer = auth()->guard('customer')->user();
 
-                // Create Midtrans transaction
                 $midtransResult = $this->midtransService->createTransaction($order, $customer, $validated['payment_method']);
 
                 if (!$midtransResult['success']) {
                     throw new \Exception($midtransResult['error']);
                 }
 
-                // Create payment record
                 $payment = Payment::create([
                     'order_id' => $order->id,
                     'amount' => $validated['amount'],
@@ -66,7 +70,6 @@ class PaymentController extends Controller
                     'expired_at' => now()->addMinutes(15)
                 ]);
 
-                // Update order status
                 $order->update([
                     'status' => Order::STATUS_ACCEPTED,
                     'payment_status' => Order::PAYMENT_STATUS_UNPAID
@@ -123,7 +126,6 @@ class PaymentController extends Controller
                     'payment_status' => Order::PAYMENT_STATUS_PAID
                 ]);
                 
-                // Broadcast order status update via WebSocket
                 broadcast(new \App\Events\OrderStatusUpdated($order->load('service')));
             } elseif ($status === 'failed') {
                 $order->update([

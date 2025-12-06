@@ -44,7 +44,12 @@
 
     <script>
         function openChat(tukangId) {
-            window.location.href = `/chat/tukang/${tukangId}`;
+            const serviceType = '{{ $serviceType }}';
+            let url = `/chat/tukang/${tukangId}`;
+            if (serviceType) {
+                url += `?service_type=${encodeURIComponent(serviceType)}`;
+            }
+            window.location.href = url;
         }
 
         document.addEventListener('DOMContentLoaded', function() {
