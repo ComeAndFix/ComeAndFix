@@ -68,8 +68,10 @@ Route::middleware(['auth:customer', 'verified'])->group(function () {
     Route::post('/customer/orders/{order}/reject', [ChatController::class, 'rejectOrder'])->name('customer.order.reject');
 
     Route::get('/orders/{order}', [\App\Http\Controllers\Customer\CustomerOrderController::class, 'show'])->name('customer.orders.show');
-    Route::post('/orders/{order}/approve', [\App\Http\Controllers\Customer\CustomerOrderController::class, 'approveCompletion'])->name('customer.orders.approveCompletion');
-    Route::post('/orders/{order}/reject', [\App\Http\Controllers\Customer\CustomerOrderController::class, 'rejectCompletion'])->name('customer.orders.rejectCompletion');
+    
+    // Review routes
+    Route::get('/orders/{order}/review', [\App\Http\Controllers\Customer\CustomerReviewController::class, 'create'])->name('customer.reviews.create');
+    Route::post('/orders/{order}/review', [\App\Http\Controllers\Customer\CustomerReviewController::class, 'store'])->name('customer.reviews.store');
 });
 
 // Payment notification webhook (outside auth middleware)

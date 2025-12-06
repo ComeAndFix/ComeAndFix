@@ -109,17 +109,10 @@
                         <!-- Completion Section -->
                         @if($order->completion)
                             <div class="card shadow-sm mb-4">
-                                <div class="card-header bg-info text-white">
-                                    <h5 class="mb-0">Job Completion Proof</h5>
+                                <div class="card-header bg-success text-white">
+                                    <h5 class="mb-0"><i class="bi bi-check-circle"></i> Job Completion Proof</h5>
                                 </div>
                                 <div class="card-body">
-                                    <div class="mb-3">
-                                        <strong>Status:</strong>
-                                        <span class="badge bg-{{ $order->completion->status === 'approved' ? 'success' : ($order->completion->status === 'rejected' ? 'danger' : 'warning') }}">
-                                            {{ ucfirst($order->completion->status) }}
-                                        </span>
-                                    </div>
-
                                     <div class="mb-3">
                                         <strong>Description:</strong>
                                         <p class="mt-2">{{ $order->completion->description }}</p>
@@ -150,28 +143,61 @@
                                         <p class="mt-2">{{ $order->completion->submitted_at->format('d M Y H:i') }}</p>
                                     </div>
 
-                                    @if($order->completion->isRejected())
-                                        <div class="alert alert-danger">
-                                            <strong><i class="bi bi-exclamation-triangle"></i> Rejection Reason:</strong>
-                                            <p class="mb-0 mt-2">{{ $order->completion->rejection_reason }}</p>
-                                        </div>
-                                        <a href="{{ route('tukang.jobs.complete', $order) }}" class="btn btn-warning">
-                                            <i class="bi bi-arrow-clockwise"></i> Resubmit Completion Proof
-                                        </a>
-                                    @elseif($order->completion->isPending())
-                                        <div class="alert alert-info">
-                                            <i class="bi bi-clock"></i> Waiting for customer approval
-                                        </div>
-                                    @elseif($order->completion->isApproved())
+                                    @if($order->status === 'completed')
                                         <div class="alert alert-success">
-                                            <i class="bi bi-check-circle"></i> Job completion approved by customer
-                                            <br>
-                                            <small>Approved at: {{ $order->completion->reviewed_at->format('d M Y H:i') }}</small>
+                                            <i class="bi bi-check-circle-fill"></i> Job completed successfully!
                                         </div>
                                     @endif
                                 </div>
                             </div>
-                        @else
+                        @endif
+
+                        <!-- Customer Review Section -->
+                        @if($order->review)
+                            <div class="card shadow-sm mb-4">
+                                <div class="card-header bg-warning text-dark">
+                                    <h5 class="mb-0"><i class="bi bi-star-fill"></i> Customer Review</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <strong>Rating:</strong>
+                                        <div class="text-warning fs-4 mt-2">
+                                            @for($i = 1; $i <= 5; $i++)
+                                                @if($i <= $order->review->rating)
+                                                    <i class="bi bi-star-fill"></i>
+                                                @else
+                                                    <i class="bi bi-star"></i>
+                                                @endif
+                                            @endfor
+                                            <span class="text-dark fs-6 ms-2">({{ $order->review->rating }}/5)</span>
+                                        </div>
+                                    </div>
+
+                                    @if($order->review->review_text)
+                                        <div class="mb-3">
+                                            <strong>Review:</strong>
+                                            <p class="mt-2 text-muted">"{{ $order->review->review_text }}"</p>
+                                        </div>
+                                    @endif
+
+                                    <div>
+                                        <small class="text-muted">
+                                            <i class="bi bi-calendar"></i> Reviewed on {{ $order->review->created_at->format('d M Y H:i') }}
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        @elseif($order->status === 'completed')
+                            <div class="card shadow-sm mb-4">
+                                <div class="card-body text-center py-4">
+                                    <i class="bi bi-clock-history display-4 text-muted mb-3"></i>
+                                    <h6 class="text-muted">Waiting for customer review</h6>
+                                    <small class="text-muted">The customer hasn't submitted a review yet.</small>
+                                </div>
+                            </div>
+                        @endif
+
+                        @if(!$order->completion)
                             @if($order->status === \App\Models\Order::STATUS_ON_PROGRESS)
                                 <div class="card shadow-sm">
                                     <div class="card-body text-center">

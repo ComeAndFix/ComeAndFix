@@ -78,7 +78,6 @@ class PaymentController extends Controller
                 return response()->json([
                     'success' => true,
                     'message' => 'Payment initiated successfully',
-                    'redirect_url' => route('dashboard'),
                     'data' => [
                         'payment_id' => $payment->id,
                         'snap_token' => $payment->snap_token,

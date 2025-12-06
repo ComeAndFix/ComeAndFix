@@ -113,4 +113,20 @@ class Tukang extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(TukangService::class);
     }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    public function updateAverageRating()
+    {
+        $avgRating = $this->reviews()->avg('rating');
+        $totalReviews = $this->reviews()->count();
+
+        $this->update([
+            'rating' => $avgRating ? round($avgRating, 2) : null,
+            'total_reviews' => $totalReviews,
+        ]);
+    }
 }

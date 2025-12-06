@@ -17,7 +17,7 @@ class TukangJobController extends Controller
 
         $jobs = Order::where('tukang_id', $tukang->id)
             ->whereIn('status', [Order::STATUS_ON_PROGRESS, Order::STATUS_COMPLETED])
-            ->with(['customer', 'service', 'completion'])
+            ->with(['customer', 'service', 'completion', 'review'])
             ->latest()
             ->paginate(10);
 
@@ -28,7 +28,7 @@ class TukangJobController extends Controller
     {
         $this->authorizeOrder($order);
 
-        $order->load(['customer', 'service', 'completion']);
+        $order->load(['customer', 'service', 'completion', 'review']);
 
         return view('tukang.jobs.show', compact('order'));
     }
@@ -70,14 +70,17 @@ class TukangJobController extends Controller
                 'description' => $validated['description'],
                 'working_duration' => $validated['working_duration'],
                 'photos' => $photoPaths,
-                'status' => OrderCompletion::STATUS_PENDING,
                 'submitted_at' => now(),
-                'rejection_reason' => null
             ]
         );
 
+        // Automatically mark order as completed
+        $order->update([
+            'status' => Order::STATUS_COMPLETED
+        ]);
+
         return redirect()->route('tukang.jobs.show', $order)
-            ->with('success', 'Completion proof submitted successfully');
+            ->with('success', 'Completion proof submitted successfully. Order is now completed!');
     }
 
     private function authorizeOrder(Order $order)

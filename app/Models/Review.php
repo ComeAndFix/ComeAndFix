@@ -5,26 +5,34 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class OrderCompletion extends Model
+class Review extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'order_id',
-        'description',
-        'working_duration',
-        'photos',
-        'submitted_at',
+        'customer_id',
+        'tukang_id',
+        'rating',
+        'review_text',
     ];
 
     protected $casts = [
-        'photos' => 'array',
-        'submitted_at' => 'datetime',
-        'working_duration' => 'integer'
+        'rating' => 'integer',
     ];
 
     public function order()
     {
         return $this->belongsTo(Order::class);
+    }
+
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class);
+    }
+
+    public function tukang()
+    {
+        return $this->belongsTo(Tukang::class);
     }
 }

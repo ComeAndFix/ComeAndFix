@@ -247,16 +247,16 @@
                                             </div>
                                         @endif
 
-                                        @if($order->completion && $order->completion->isPending())
-                                            <div class="alert alert-info mt-2">
-                                                <i class="bi bi-clock"></i> Completion proof submitted - awaiting your review
-                                                <a href="{{ route('customer.orders.show', $order) }}" class="btn btn-sm btn-primary ms-2">
-                                                    Review Completion
+                                        @if($order->status === 'completed' && !$order->hasReview())
+                                            <div class="alert alert-success mt-2">
+                                                <i class="bi bi-check-circle"></i> Order completed! Please rate & review the tukang's work.
+                                                <a href="{{ route('customer.reviews.create', $order) }}" class="btn btn-sm btn-warning ms-2">
+                                                    <i class="bi bi-star"></i> Rate & Review
                                                 </a>
                                             </div>
-                                        @elseif($order->completion && $order->completion->isRejected())
-                                            <div class="alert alert-warning mt-2">
-                                                <i class="bi bi-exclamation-triangle"></i> Completion proof rejected - awaiting resubmission
+                                        @elseif($order->status === 'completed' && $order->hasReview())
+                                            <div class="alert alert-info mt-2">
+                                                <i class="bi bi-check-circle-fill"></i> Order completed & reviewed
                                             </div>
                                         @endif
                                     </div>

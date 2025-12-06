@@ -24,11 +24,32 @@
                                     <p class="text-muted mb-2">Order #{{ $job->order_number }}</p>
                                     <p class="mb-2">Customer: {{ $job->customer->name }}</p>
                                     <span class="badge bg-{{ $job->status_color }}">{{ ucfirst($job->status) }}</span>
-
-                                    @if($job->completion)
-                                        <span class="badge bg-{{ $job->completion->status === 'approved' ? 'success' : ($job->completion->status === 'rejected' ? 'danger' : 'warning') }} ms-2">
-                                            Completion: {{ ucfirst($job->completion->status) }}
-                                        </span>
+                                    
+                                    @if($job->review)
+                                        <div class="mt-3 p-3 bg-light rounded">
+                                            <div class="d-flex align-items-center mb-2">
+                                                <strong class="me-2">Customer Review:</strong>
+                                                <div class="text-warning">
+                                                    @for($i = 1; $i <= 5; $i++)
+                                                        @if($i <= $job->review->rating)
+                                                            <i class="bi bi-star-fill"></i>
+                                                        @else
+                                                            <i class="bi bi-star"></i>
+                                                        @endif
+                                                    @endfor
+                                                    <span class="text-dark ms-1">({{ $job->review->rating }}/5)</span>
+                                                </div>
+                                            </div>
+                                            @if($job->review->review_text)
+                                                <p class="mb-0 small text-muted">"{{ $job->review->review_text }}"</p>
+                                            @endif
+                                        </div>
+                                    @elseif($job->status === 'completed')
+                                        <div class="mt-2">
+                                            <small class="text-muted">
+                                                <i class="bi bi-clock"></i> Waiting for customer review
+                                            </small>
+                                        </div>
                                     @endif
                                 </div>
                                 <div class="col-md-4 text-end">
@@ -37,10 +58,6 @@
                                     @if($job->status === 'on_progress' && !$job->completion)
                                         <a href="{{ route('tukang.jobs.complete', $job) }}" class="btn btn-primary btn-sm">
                                             Submit Completion
-                                        </a>
-                                    @elseif($job->completion && $job->completion->isRejected())
-                                        <a href="{{ route('tukang.jobs.complete', $job) }}" class="btn btn-warning btn-sm">
-                                            Resubmit Completion
                                         </a>
                                     @endif
 
