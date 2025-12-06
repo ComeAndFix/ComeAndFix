@@ -8,6 +8,7 @@ use App\Services\MidtransService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class PaymentController extends Controller
 {
@@ -122,7 +123,7 @@ class PaymentController extends Controller
                     'status' => Order::STATUS_ON_PROGRESS,
                     'payment_status' => Order::PAYMENT_STATUS_PAID
                 ]);
-                
+
                 // Broadcast order status update via WebSocket
                 broadcast(new \App\Events\OrderStatusUpdated($order->load('service')));
             } elseif ($status === 'failed') {

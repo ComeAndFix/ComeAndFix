@@ -141,6 +141,9 @@
                             </div>
                             <div class="card-body">
                                 <div class="d-grid gap-2">
+                                    <a href="{{ route('tukang.jobs.index') }}" class="btn btn-primary">
+                                        <i class="bi bi-list-task me-2"></i>View My Jobs
+                                    </a>
                                     <button class="btn btn-primary" onclick="showNewChats()">
                                         <i class="bi bi-chat-dots me-2"></i>View Messages
                                     </button>

@@ -26,7 +26,7 @@
                         </label>
                     </div>
                     <small class="text-muted d-block mb-3">Supported: GoPay, OVO, Dana, ShopeePay, LinkAja, and more</small>
-                    
+
                     <div class="form-check mb-2">
                         <input class="form-check-input" type="radio" name="paymentMethod" id="virtualAccount" value="virtual_account">
                         <label class="form-check-label" for="virtualAccount">
