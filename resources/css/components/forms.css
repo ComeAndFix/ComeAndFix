@@ -1,0 +1,65 @@
+/* ========================================
+   REUSABLE FORM COMPONENTS
+   ======================================== */
+
+/* Custom Input Fields */
+.custom-input {
+    width: 100%;
+    padding: 0.875rem 1.25rem;
+    border: 2px solid var(--border-gray);
+    border-radius: 12px;
+    font-size: 0.9375rem;
+    transition: all 0.3s ease;
+    background: #FFFFFF;
+}
+
+.custom-input:focus {
+    outline: none;
+    border-color: var(--brand-orange);
+    box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.1);
+}
+
+.custom-input::placeholder {
+    color: #AAAAAA;
+}
+
+.input-wrapper {
+    position: relative;
+    margin-bottom: 1.25rem;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-gray);
+    padding: 0.25rem;
+}
+
+/* Custom Checkbox */
+.custom-checkbox {
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--border-gray);
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.custom-checkbox:checked {
+    background-color: var(--brand-orange);
+    border-color: var(--brand-orange);
+}
+
+/* Remember Me Label */
+.remember-me-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9375rem;
+    color: var(--brand-dark);
+    cursor: pointer;
+}
