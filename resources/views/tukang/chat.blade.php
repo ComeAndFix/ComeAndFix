@@ -5,8 +5,8 @@
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 Chat with {{ $receiver->name }}
             </h2>
-            <a href="{{ route('tukang.dashboard') }}" class="btn btn-secondary">
-                <i class="bi bi-arrow-left"></i> Back to Dashboard
+            <a href="{{ route('tukang.chatrooms.index') }}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Back to Chats
             </a>
         </div>
     </x-slot>
@@ -748,7 +748,12 @@
                         statusClass = 'bg-danger text-white';
                         break;
                     default:
-                        statusText = `Order ${order.status}`;
+                        // Replace underscore with space and capitalize
+                        const formattedStatus = order.status.replace(/_/g, ' ')
+                            .split(' ')
+                            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                            .join(' ');
+                        statusText = `Order ${formattedStatus}`;
                         statusClass = 'bg-info text-white';
                 }
 

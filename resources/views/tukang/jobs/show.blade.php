@@ -32,9 +32,15 @@
                                                 <td>{{ $order->service->name }}</td>
                                             </tr>
                                             <tr>
-                                                <th>Price:</th>
-                                                <td class="text-primary fw-bold">Rp {{ number_format($order->price, 0, ',', '.') }}</td>
+                                                <th>Base Price:</th>
+                                                <td>Rp {{ number_format($order->price, 0, ',', '.') }}</td>
                                             </tr>
+                                            @if($order->additionalItems->count() > 0 || $order->customItems->count() > 0)
+                                            <tr>
+                                                <th>Total Price:</th>
+                                                <td class="text-success fw-bold fs-5">Rp {{ number_format($order->total_price, 0, ',', '.') }}</td>
+                                            </tr>
+                                            @endif
                                             <tr>
                                                 <th>Payment Status:</th>
                                                 <td>
@@ -102,6 +108,46 @@
                                             </li>
                                         @endforeach
                                     </ul>
+                                @endif
+
+                                @if($order->additionalItems->count() > 0 || $order->customItems->count() > 0)
+                                    <hr>
+                                    <h5 class="fw-bold mb-3">Order Items Breakdown</h5>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+                                            <tbody>
+                                                <tr>
+                                                    <td><strong>Base Service Price</strong></td>
+                                                    <td class="text-end">Rp {{ number_format($order->price, 0, ',', '.') }}</td>
+                                                </tr>
+                                                @foreach($order->additionalItems as $item)
+                                                <tr>
+                                                    <td>
+                                                        {{ $item->item_name }}
+                                                        <small class="text-muted">(x{{ $item->quantity }})</small>
+                                                    </td>
+                                                    <td class="text-end">Rp {{ number_format($item->item_price * $item->quantity, 0, ',', '.') }}</td>
+                                                </tr>
+                                                @endforeach
+                                                @foreach($order->customItems as $item)
+                                                <tr>
+                                                    <td>
+                                                        {{ $item->item_name }}
+                                                        <small class="text-muted">(x{{ $item->quantity }})</small>
+                                                        @if($item->description)
+                                                            <br><small class="text-muted">{{ $item->description }}</small>
+                                                        @endif
+                                                    </td>
+                                                    <td class="text-end">Rp {{ number_format($item->item_price * $item->quantity, 0, ',', '.') }}</td>
+                                                </tr>
+                                                @endforeach
+                                                <tr class="table-success">
+                                                    <td><strong>TOTAL</strong></td>
+                                                    <td class="text-end"><strong>Rp {{ number_format($order->total_price, 0, ',', '.') }}</strong></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 @endif
                             </div>
                         </div>

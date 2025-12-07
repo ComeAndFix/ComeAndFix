@@ -21,7 +21,7 @@ class CustomerDashboardController extends Controller
                             ->doesntHave('review');
                       });
             })
-            ->with(['service', 'tukang', 'completion', 'review'])
+            ->with(['service', 'tukang', 'completion', 'review', 'additionalItems', 'customItems'])
             ->latest()
             ->take(4)
             ->get();
