@@ -3,9 +3,10 @@
     padding: 0.875rem 1.25rem;
     border: 2px solid var(--border-gray);
     border-radius: 12px;
-    font-size: 0.9375rem;
+    font-size: 0.875rem;
     transition: all 0.3s ease;
     background: #FFFFFF;
+    font-family: 'Inter', sans-serif;
 }
 
 .custom-input:focus {
@@ -52,7 +53,8 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    font-size: 0.9375rem;
+    font-size: 0.875rem;
     color: var(--brand-dark);
     cursor: pointer;
+    font-family: 'Inter', sans-serif;
 }

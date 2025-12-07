@@ -1,5 +1,5 @@
 .register-heading {
-    font-size: 3.5rem;
+    font-size: 4rem;
     font-weight: 800;
     color: var(--brand-dark);
     letter-spacing: -0.02em;
@@ -10,11 +10,12 @@
 }
 
 .register-subheading {
-    font-size: 1rem;
+    font-size: 1.25rem;
     font-weight: 500;
     color: var(--brand-dark);
     margin-bottom: 0.5rem;
     text-align: center;
+    font-family: 'Jost', sans-serif;
 }
 
 .form-row {
@@ -31,8 +32,9 @@
 .login-link {
     text-align: center;
     margin-top: 1.5rem;
-    font-size: 0.9375rem;
+    font-size: 0.875rem;
     color: var(--text-gray);
+    font-family: 'Inter', sans-serif;
 }
 
 .specialization-pills {
@@ -57,11 +59,12 @@
     background: #FFFFFF;
     border: 2px solid var(--border-gray);
     border-radius: 25px;
-    font-size: 0.9375rem;
+    font-size: 0.875rem;
     color: var(--brand-dark);
     cursor: pointer;
     transition: all 0.3s ease;
     user-select: none;
+    font-family: 'Inter', sans-serif;
 }
 
 .specialization-pill label:hover {

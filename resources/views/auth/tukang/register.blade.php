@@ -102,7 +102,7 @@
 
         <!-- Specializations -->
         <div class="input-wrapper">
-            <label style="font-size: 0.9375rem; color: var(--text-gray); margin-bottom: 0.75rem; display: block;">Specializations</label>
+            <label style="font-size: 0.875rem; color: var(--text-gray); margin-bottom: 0.75rem; display: block; font-family: 'Inter', sans-serif;">Specializations</label>
             <div class="specialization-pills">
                 <div class="specialization-pill">
                     <input type="checkbox" name="specializations[]" value="HVAC" id="spec_hvac">
