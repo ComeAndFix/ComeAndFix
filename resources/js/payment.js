@@ -205,17 +205,15 @@ class PaymentHandler {
                 const errorData = await response.json();
                 throw new Error(errorData.error || 'Payment processing failed');
             }
-
+            
             const result = await response.json();
 
             if (result.success && result.data.snap_token) {
-                // Close the current modal
                 const modal = bootstrap.Modal.getInstance(document.getElementById('paymentModal'));
                 if (modal) {
                     modal.hide();
                 }
 
-                // Open Midtrans Snap
                 window.snap.pay(result.data.snap_token, {
                     onSuccess: (result) => {
                         this.handlePaymentSuccess(result);

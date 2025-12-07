@@ -9,13 +9,13 @@ return [
         ],
         [
             'name' => 'Transportation',
-            'default_price' => 50000,
+            'default_price' => 10000,
             'unit' => 'trip'
         ],
         [
-            'name' => 'Safety Equipment',
-            'default_price' => 75000,
-            'unit' => 'set'
+            'name' => 'Parking Fee',
+            'default_price' => 5000,
+            'unit' => 'trip'
         ]
     ]
 ];

@@ -273,7 +273,6 @@
                     const statusDiv = document.createElement('div');
                     statusDiv.className = 'mt-2';
                     
-                    // Calculate total price
                     const totalPrice = calculateOrderTotal(order);
 
                     if (order.status === 'accepted' && order.payment_status !== 'paid') {

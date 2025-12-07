@@ -241,7 +241,7 @@
                             document.getElementById('new-messages-count').textContent = unreadCount;
                         })
                         .catch(error => console.error('Error refreshing message count:', error));
-                }, 30000);
+                }, 5000);
             });
     </script>
 </x-app-layout>
