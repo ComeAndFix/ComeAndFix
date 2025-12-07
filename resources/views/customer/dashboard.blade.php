@@ -196,7 +196,7 @@
                         <h2 class="fw-bold mb-0">Active Orders</h2>
                     </div>
                     <div class="col-auto">
-                        <a href="#" class="btn btn-outline-primary">View All Orders</a>
+                        <a href="{{ route('customer.orders.index') }}" class="btn btn-outline-primary">View All Orders</a>
                     </div>
                 </div>
 

@@ -85,7 +85,11 @@ Route::middleware(['auth:customer', 'verified'])->group(function () {
     Route::post('/customer/orders/{order}/accept', [ChatController::class, 'acceptOrder'])->name('customer.order.accept');
     Route::post('/customer/orders/{order}/reject', [ChatController::class, 'rejectOrder'])->name('customer.order.reject');
 
+    Route::get('/orders', [\App\Http\Controllers\Customer\CustomerOrderController::class, 'index'])->name('customer.orders.index');
     Route::get('/orders/{order}', [\App\Http\Controllers\Customer\CustomerOrderController::class, 'show'])->name('customer.orders.show');
+    
+    // Chat rooms
+    Route::get('/chat', [\App\Http\Controllers\Customer\CustomerChatRoomController::class, 'index'])->name('chat.index');
     
     // Review routes
     Route::get('/orders/{order}/review', [\App\Http\Controllers\Customer\CustomerReviewController::class, 'create'])->name('customer.reviews.create');

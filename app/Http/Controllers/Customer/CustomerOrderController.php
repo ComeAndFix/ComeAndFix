@@ -10,6 +10,16 @@ use Illuminate\Support\Facades\Auth;
 
 class CustomerOrderController extends Controller
 {
+    public function index()
+    {
+        $orders = Order::where('customer_id', Auth::guard('customer')->id())
+            ->with(['tukang', 'service'])
+            ->latest()
+            ->paginate(10);
+            
+        return view('customer.orders.index', compact('orders'));
+    }
+
     public function show(Order $order)
     {
         $this->authorizeOrder($order);

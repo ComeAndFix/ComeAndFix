@@ -171,9 +171,9 @@
                                     <a href="{{ route('tukang.chatrooms.index') }}" class="btn btn-primary">
                                         <i class="bi bi-chat-dots me-2"></i>View Messages
                                     </a>
-                                    <button class="btn btn-outline-primary">
+                                    <a href="{{ route('tukang.profile') }}" class="btn btn-outline-primary">
                                         <i class="bi bi-person-gear me-2"></i>Edit Profile
-                                    </button>
+                                    </a>
                                 </div>
                             </div>
                         </div>

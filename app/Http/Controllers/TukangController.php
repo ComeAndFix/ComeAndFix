@@ -148,7 +148,26 @@ class TukangController extends Controller
     public function profile()
     {
         $tukang = Auth::guard('tukang')->user();
-        return view('tukang.profile', compact('tukang'));
+        
+        // Calculate rating statistics
+        $reviews = \App\Models\Review::whereHas('order', function($query) use ($tukang) {
+            $query->where('tukang_id', $tukang->id);
+        })->get();
+        
+        $totalReviews = $reviews->count();
+        $averageRating = $reviews->avg('rating') ?? 0;
+        $ratingDistribution = [
+            5 => $reviews->where('rating', 5)->count(),
+            4 => $reviews->where('rating', 4)->count(),
+            3 => $reviews->where('rating', 3)->count(),
+            2 => $reviews->where('rating', 2)->count(),
+            1 => $reviews->where('rating', 1)->count(),
+        ];
+        
+        // Get all available services for editing
+        $availableServices = \App\Models\Service::where('is_active', true)->orderBy('name')->get();
+        
+        return view('tukang.profile', compact('tukang', 'totalReviews', 'averageRating', 'ratingDistribution', 'availableServices'));
     }
 
     public function updateProfile(Request $request)
