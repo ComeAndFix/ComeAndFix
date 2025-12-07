@@ -22,7 +22,7 @@
                         </div>
                         <div>
                             <h5 class="mb-0">{{ $receiver->name }}</h5>
-                            <small class="opacity-75">{{ ucfirst($receiverType) }}</small>
+                            <small class="opacity-75">{{ ucwords($receiverType) }}</small>
                         </div>
                     </div>
                 </div>
@@ -120,7 +120,7 @@
                                         @else
                                             <div class="mt-2">
                                                 <span class="badge bg-{{ $message->order->status === 'accepted' ? 'success' : ($message->order->status === 'rejected' ? 'danger' : 'warning') }}">
-                                                    {{ ucfirst($message->order->status) }}
+                                                    {{ ucwords(str_replace('_', ' ', $message->order->status)) }}
                                                 </span>
                                             </div>
                                         @endif

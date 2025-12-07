@@ -211,10 +211,10 @@
                                             <small class="text-muted">Order #{{ $order->order_number }}</small>
                                         </div>
                                         <div class="d-flex flex-column align-items-end">
-                                            <span class="badge bg-{{ $order->status_color }} mb-1">{{ ucfirst($order->status) }}</span>
+                                            <span class="badge bg-{{ $order->status_color }} mb-1">{{ ucwords(str_replace('_', ' ', $order->status)) }}</span>
                                             @if($order->payment_status)
                                                 <span class="badge bg-{{ $order->payment_status === 'paid' ? 'success' : 'warning' }} small">
-                                            {{ ucfirst($order->payment_status) }}
+                                            {{ ucwords(str_replace('_', ' ', $order->payment_status)) }}
                                         </span>
                                             @endif
                                         </div>

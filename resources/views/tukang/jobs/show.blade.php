@@ -15,7 +15,7 @@
                             <div class="card-header bg-primary text-white">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <h4 class="mb-0">Job Details</h4>
-                                    <span class="badge bg-{{ $order->status_color }}">{{ ucfirst($order->status) }}</span>
+                                    <span class="badge bg-{{ $order->status_color }}">{{ ucwords(str_replace('_', ' ', $order->status)) }}</span>
                                 </div>
                             </div>
                             <div class="card-body">
@@ -39,7 +39,7 @@
                                                 <th>Payment Status:</th>
                                                 <td>
                                                     <span class="badge bg-{{ $order->payment_status === 'paid' ? 'success' : 'warning' }}">
-                                                        {{ ucfirst($order->payment_status ?? 'unpaid') }}
+                                                        {{ ucwords(str_replace('_', ' ', $order->payment_status ?? 'unpaid')) }}
                                                     </span>
                                                 </td>
                                             </tr>

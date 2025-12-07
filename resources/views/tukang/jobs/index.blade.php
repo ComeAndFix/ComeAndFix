@@ -23,7 +23,7 @@
                                     <h5 class="fw-bold">{{ $job->service->name }}</h5>
                                     <p class="text-muted mb-2">Order #{{ $job->order_number }}</p>
                                     <p class="mb-2">Customer: {{ $job->customer->name }}</p>
-                                    <span class="badge bg-{{ $job->status_color }}">{{ ucfirst($job->status) }}</span>
+                                    <span class="badge bg-{{ $job->status_color }}">{{ ucwords(str_replace('_', ' ', $job->status)) }}</span>
                                     
                                     @if($job->review)
                                         <div class="mt-3 p-3 bg-light rounded">

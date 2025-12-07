@@ -23,7 +23,7 @@
                         </div>
                         <div>
                             <h5 class="mb-0">{{ $receiver->name }}</h5>
-                            <small class="opacity-75">{{ ucfirst($receiverType) }}</small>
+                            <small class="opacity-75">{{ ucwords($receiverType) }}</small>
                         </div>
                     </div>
                 </div>
@@ -81,7 +81,7 @@
                                             @endif
                                             <div class="mt-2">
                                                 <small>Order #{{ $message->order->order_number }}</small><br>
-                                                <small>Status: <span class="badge bg-{{ $message->order->status === 'accepted' ? 'success' : ($message->order->status === 'rejected' ? 'danger' : 'warning') }}">{{ ucfirst($message->order->status) }}</span></small><br>
+                                                <small>Status: <span class="badge bg-{{ $message->order->status === 'accepted' ? 'success' : ($message->order->status === 'rejected' ? 'danger' : 'warning') }}">{{ ucwords(str_replace('_', ' ', $message->order->status)) }}</span></small><br>
                                                 <small>Expires: {{ $message->order->expires_at->format('d M Y H:i') }}</small>
                                             </div>
                                         </div>

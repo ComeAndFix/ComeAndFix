@@ -13,7 +13,7 @@
                                 <p class="text-muted">Order #{{ $order->order_number }}</p>
                                 <p><strong>Tukang:</strong> {{ $order->tukang->name }}</p>
                                 <p><strong>Price:</strong> Rp {{ number_format($order->price, 0, ',', '.') }}</p>
-                                <span class="badge bg-{{ $order->status_color }}">{{ ucfirst($order->status) }}</span>
+                                <span class="badge bg-{{ $order->status_color }}">{{ ucwords(str_replace('_', ' ', $order->status)) }}</span>
                             </div>
                         </div>
 
