@@ -4,7 +4,7 @@
 
 <x-guest-layout>
     <!-- Create Account Heading -->
-    <div style="margin-bottom: 2.5rem;">
+    <div style="margin-bottom: 1.5rem;">
         <p class="register-subheading">CREATE AN</p>
         <h1 class="register-heading">ACCOUNT</h1>
     </div>

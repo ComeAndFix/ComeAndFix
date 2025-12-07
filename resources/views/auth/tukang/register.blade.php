@@ -1,125 +1,262 @@
+@push('styles')
+    @vite(['resources/css/auth/register.css'])
+@endpush
+
 <x-guest-layout>
-    <h3 class="fw-bold text-center mb-4">{{ __('Tukang Registration') }}</h3>
+    <!-- Create Account Heading -->
+    <div style="margin-bottom: 1.5rem;">
+        <p class="register-subheading">CREATE AN</p>
+        <h1 class="register-heading">ACCOUNT</h1>
+    </div>
 
     <form method="POST" action="{{ route('tukang.register') }}">
         @csrf
 
-        <!-- Name -->
-        <div class="mb-3">
-            <label for="name" class="form-label">{{ __('Name') }}</label>
-            <input id="name" class="form-control" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
+        <!-- Full Name -->
+        <div class="input-wrapper">
+            <input 
+                id="name" 
+                class="custom-input" 
+                type="text" 
+                name="name" 
+                value="{{ old('name') }}" 
+                placeholder="Full name"
+                required 
+                autofocus 
+                autocomplete="name" 
+            />
             <x-input-error :messages="$errors->get('name')" class="mt-2" />
         </div>
 
-        <!-- Email Address -->
-        <div class="mb-3">
-            <label for="email" class="form-label">{{ __('Email') }}</label>
-            <input id="email" class="form-control" type="email" name="email" :value="old('email')" required autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+        <!-- Email and Phone (Two Columns) -->
+        <div class="form-row">
+            <div class="input-wrapper">
+                <input 
+                    id="email" 
+                    class="custom-input" 
+                    type="email" 
+                    name="email" 
+                    value="{{ old('email') }}" 
+                    placeholder="Email"
+                    required 
+                    autocomplete="username" 
+                />
+                <x-input-error :messages="$errors->get('email')" class="mt-2" />
+            </div>
+
+            <div class="input-wrapper">
+                <input 
+                    id="phone" 
+                    class="custom-input" 
+                    type="text" 
+                    name="phone" 
+                    value="{{ old('phone') }}" 
+                    placeholder="Phone number"
+                    required 
+                />
+                <x-input-error :messages="$errors->get('phone')" class="mt-2" />
+            </div>
         </div>
 
-        <!-- Phone -->
-        <div class="mb-3">
-            <label for="phone" class="form-label">{{ __('Phone') }}</label>
-            <input id="phone" class="form-control" type="text" name="phone" :value="old('phone')" required />
-            <x-input-error :messages="$errors->get('phone')" class="mt-2" />
-        </div>
-
-        <!-- Address -->
-        <div class="mb-3">
-            <label for="address" class="form-label">{{ __('Address') }}</label>
-            <textarea id="address" name="address" class="form-control" required>{{ old('address') }}</textarea>
+        <!-- Full Home Address -->
+        <div class="input-wrapper">
+            <input 
+                id="address" 
+                class="custom-input" 
+                type="text" 
+                name="address" 
+                value="{{ old('address') }}" 
+                placeholder="Full home address"
+                required 
+            />
             <x-input-error :messages="$errors->get('address')" class="mt-2" />
         </div>
 
-        <!-- City -->
-        <div class="mb-3">
-            <label for="city" class="form-label">{{ __('City') }}</label>
-            <input id="city" class="form-control" type="text" name="city" :value="old('city')" required />
-            <x-input-error :messages="$errors->get('city')" class="mt-2" />
-        </div>
+        <!-- City and Postal Code (Two Columns) -->
+        <div class="form-row">
+            <div class="input-wrapper">
+                <input 
+                    id="city" 
+                    class="custom-input" 
+                    type="text" 
+                    name="city" 
+                    value="{{ old('city') }}" 
+                    placeholder="City"
+                    required 
+                />
+                <x-input-error :messages="$errors->get('city')" class="mt-2" />
+            </div>
 
-        <!-- Postal Code -->
-        <div class="mb-3">
-            <label for="postal_code" class="form-label">{{ __('Postal Code') }}</label>
-            <input id="postal_code" class="form-control" type="text" name="postal_code" :value="old('postal_code')" />
-            <x-input-error :messages="$errors->get('postal_code')" class="mt-2" />
+            <div class="input-wrapper">
+                <input 
+                    id="postal_code" 
+                    class="custom-input" 
+                    type="text" 
+                    name="postal_code" 
+                    value="{{ old('postal_code') }}" 
+                    placeholder="Postal code"
+                />
+                <x-input-error :messages="$errors->get('postal_code')" class="mt-2" />
+            </div>
         </div>
 
         <!-- Specializations -->
-        <div class="mb-3">
-            <label class="form-label">{{ __('Specializations') }}</label>
-            <div class="mt-2">
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="checkbox" name="specializations[]" value="HVAC" id="spec_hvac">
-                    <label class="form-check-label" for="spec_hvac">HVAC</label>
+        <div class="input-wrapper">
+            <label style="font-size: 0.9375rem; color: var(--text-gray); margin-bottom: 0.75rem; display: block;">Specializations</label>
+            <div class="specialization-pills">
+                <div class="specialization-pill">
+                    <input type="checkbox" name="specializations[]" value="HVAC" id="spec_hvac">
+                    <label for="spec_hvac">HVAC</label>
                 </div>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="checkbox" name="specializations[]" value="Electricity" id="spec_electricity">
-                    <label class="form-check-label" for="spec_electricity">Electricity</label>
+                <div class="specialization-pill">
+                    <input type="checkbox" name="specializations[]" value="Electricity" id="spec_electricity">
+                    <label for="spec_electricity">Electricity</label>
                 </div>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="checkbox" name="specializations[]" value="Plumbing" id="spec_plumbing">
-                    <label class="form-check-label" for="spec_plumbing">Plumbing</label>
+                <div class="specialization-pill">
+                    <input type="checkbox" name="specializations[]" value="Plumbing" id="spec_plumbing">
+                    <label for="spec_plumbing">Plumbing</label>
                 </div>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="checkbox" name="specializations[]" value="Carpentry" id="spec_carpentry">
-                    <label class="form-check-label" for="spec_carpentry">Carpentry</label>
+                <div class="specialization-pill">
+                    <input type="checkbox" name="specializations[]" value="Carpentry" id="spec_carpentry">
+                    <label for="spec_carpentry">Carpentry</label>
                 </div>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="checkbox" name="specializations[]" value="Painting" id="spec_painting">
-                    <label class="form-check-label" for="spec_painting">Painting</label>
+                <div class="specialization-pill">
+                    <input type="checkbox" name="specializations[]" value="Painting" id="spec_painting">
+                    <label for="spec_painting">Painting</label>
                 </div>
             </div>
         </div>
 
         <!-- Description -->
-        <div class="mb-3">
-            <label for="description" class="form-label">{{ __('Description') }}</label>
-            <textarea id="description" name="description" class="form-control">{{ old('description') }}</textarea>
+        <div class="input-wrapper">
+            <textarea 
+                id="description" 
+                class="custom-input" 
+                name="description" 
+                placeholder="Brief description about your services"
+                rows="3"
+                style="resize: vertical; min-height: 80px;"
+            >{{ old('description') }}</textarea>
             <x-input-error :messages="$errors->get('description')" class="mt-2" />
         </div>
 
-        <!-- Years of Experience -->
-        <div class="mb-3">
-            <label for="years_experience" class="form-label">{{ __('Years of Experience') }}</label>
-            <input id="years_experience" class="form-control" type="number" name="years_experience" :value="old('years_experience')" min="0" />
-            <x-input-error :messages="$errors->get('years_experience')" class="mt-2" />
-        </div>
-
-        <div class="mb-3">
-            <label for="hourly_rate" class="form-label">{{ __('Hourly Rate') }}</label>
-            <div class="input-group">
-                <span class="input-group-text">Rp.</span>
-                <input id="hourly_rate" class="form-control" type="number" name="hourly_rate" :value="old('hourly_rate')" min="0" step="0.01" placeholder="0.00" />
+        <!-- Years of Experience and Hourly Rate (Two Columns) -->
+        <div class="form-row">
+            <div class="input-wrapper">
+                <input 
+                    id="years_experience" 
+                    class="custom-input" 
+                    type="number" 
+                    name="years_experience" 
+                    value="{{ old('years_experience') }}" 
+                    placeholder="Years of experience"
+                    min="0"
+                />
+                <x-input-error :messages="$errors->get('years_experience')" class="mt-2" />
             </div>
-            <x-input-error :messages="$errors->get('hourly_rate')" class="mt-2" />
+
+            <div class="input-wrapper">
+                <div style="position: relative;">
+                    <span style="position: absolute; left: 1.25rem; top: 50%; transform: translateY(-50%); color: var(--text-gray); font-size: 0.9375rem;">Rp</span>
+                    <input 
+                        id="hourly_rate" 
+                        class="custom-input" 
+                        type="number" 
+                        name="hourly_rate" 
+                        value="{{ old('hourly_rate') }}" 
+                        placeholder="Hourly rate"
+                        min="0"
+                        step="0.01"
+                        style="padding-left: 3rem;"
+                    />
+                </div>
+                <x-input-error :messages="$errors->get('hourly_rate')" class="mt-2" />
+            </div>
         </div>
 
         <!-- Password -->
-        <div class="mb-3">
-            <label for="password" class="form-label">{{ __('Password') }}</label>
-            <input id="password" class="form-control" type="password" name="password" required autocomplete="new-password" />
+        <div class="input-wrapper">
+            <input 
+                id="password" 
+                class="custom-input" 
+                type="password" 
+                name="password" 
+                placeholder="Password"
+                required 
+                autocomplete="new-password" 
+            />
+            <button 
+                type="button" 
+                class="password-toggle" 
+                onclick="togglePassword('password', 'eye-icon-password')"
+                aria-label="Toggle password visibility"
+            >
+                <svg id="eye-icon-password" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+            </button>
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
 
         <!-- Confirm Password -->
-        <div class="mb-3">
-            <label for="password_confirmation" class="form-label">{{ __('Confirm Password') }}</label>
-            <input id="password_confirmation" class="form-control" type="password" name="password_confirmation" required autocomplete="new-password" />
+        <div class="input-wrapper">
+            <input 
+                id="password_confirmation" 
+                class="custom-input" 
+                type="password" 
+                name="password_confirmation" 
+                placeholder="Confirm password"
+                required 
+                autocomplete="new-password" 
+            />
+            <button 
+                type="button" 
+                class="password-toggle" 
+                onclick="togglePassword('password_confirmation', 'eye-icon-confirm')"
+                aria-label="Toggle password confirmation visibility"
+            >
+                <svg id="eye-icon-confirm" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+            </button>
             <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
         </div>
 
-        <div class="d-grid gap-2">
-            <button type="submit" class="btn btn-primary">
-                {{ __('Register') }}
-            </button>
-        </div>
-
-        <div class="text-center mt-3">
-            <a class="text-decoration-none" href="{{ route('tukang.login') }}">
-                {{ __('Already registered?') }}
-            </a>
-        </div>
+        <!-- Register Button -->
+        <button type="submit" class="btn-orange">
+            Register
+        </button>
     </form>
+
+    <!-- Login Link (will be moved to bottom section) -->
+    <div id="login-link-content" class="login-link">
+        Already have an account? 
+        <a href="{{ route('tukang.login') }}" class="link-orange">Login</a>
+    </div>
+
+    <script>
+        // Move login link to bottom section
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginLink = document.getElementById('login-link-content');
+            const bottomSection = document.getElementById('bottom-section');
+            if (loginLink && bottomSection) {
+                bottomSection.appendChild(loginLink);
+            }
+        });
+
+        function togglePassword(inputId, iconId) {
+            const passwordInput = document.getElementById(inputId);
+            const eyeIcon = document.getElementById(iconId);
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>';
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
+            }
+        }
+    </script>
 </x-guest-layout>

@@ -49,10 +49,15 @@
                         <span>COME AND FIX</span>
                     </a>
                     
-                    <!-- Tukang Link -->
+                    <!-- Tukang/Customer Link -->
                     <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <span style="color: #666666; font-size: 0.9375rem;">Are you a Tukang?</span>
-                        <a href="{{ route('tukang.login') }}" class="link-orange">Tukang Page</a>
+                        @if(request()->routeIs('tukang.*'))
+                            <span style="color: #666666; font-size: 0.9375rem;">Are you a Customer?</span>
+                            <a href="{{ route('customer.login') }}" class="link-orange">Customer Page</a>
+                        @else
+                            <span style="color: #666666; font-size: 0.9375rem;">Are you a Tukang?</span>
+                            <a href="{{ route('tukang.login') }}" class="link-orange">Tukang Page</a>
+                        @endif
                     </div>
                 </div>
 
