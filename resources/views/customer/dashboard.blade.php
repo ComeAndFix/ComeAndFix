@@ -237,7 +237,7 @@
                                         @endif
 
                                         <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <span class="text-primary fw-bold">Rp {{ number_format($order->price, 0, ',', '.') }}</span>
+                                            <span class="text-primary fw-bold">Rp {{ number_format($order->total_price, 0, ',', '.') }}</span>
                                             <small class="text-muted">Created: {{ $order->created_at->format('d M Y H:i') }}</small>
                                         </div>
 
