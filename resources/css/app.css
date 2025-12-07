@@ -2,9 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ========================================
-   GLOBAL CSS VARIABLES
-   ======================================== */
 :root {
     --brand-orange: #FF9800;
     --brand-orange-hover: #F57C00;
@@ -13,9 +10,6 @@
     --border-gray: #E0E0E0;
 }
 
-/* ========================================
-   GLOBAL BASE STYLES
-   ======================================== */
 body {
     font-family: 'Inter', sans-serif;
     margin: 0;
@@ -23,14 +17,6 @@ body {
     color: var(--brand-dark);
 }
 
-/* ========================================
-   GLOBAL TYPOGRAPHY
-   ======================================== */
 .heading-jost {
     font-family: 'Jost', sans-serif;
 }
-
-/* ========================================
-   IMPORT PAGE-SPECIFIC STYLES
-   ======================================== */
-/* Auth pages styles are imported in their respective layouts */

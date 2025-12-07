@@ -20,6 +20,9 @@
         'resources/css/auth/login.css',
         'resources/js/app.js'
     ])
+    
+    <!-- Page-specific styles -->
+    @stack('styles')
 
     <style>
         body {
