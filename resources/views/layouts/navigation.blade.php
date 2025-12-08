@@ -44,7 +44,12 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('customer.orders.*') ? 'active' : '' }}" href="{{ route('customer.orders.index') }}">
-                            <i class="bi bi-briefcase me-1"></i>My Bookings
+                            <i class="bi bi-clock-history me-1"></i>Bookings History
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('dashboard') }}#recent-orders">
+                            <i class="bi bi-list-check me-1"></i>Active Orders
                         </a>
                     </li>
                     <li class="nav-item">

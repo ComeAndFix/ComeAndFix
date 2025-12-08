@@ -246,19 +246,6 @@
                                                 Accepted: {{ $order->accepted_at->format('d M Y H:i') }}
                                             </div>
                                         @endif
-
-                                        @if($order->status === 'completed' && !$order->hasReview())
-                                            <div class="alert alert-success mt-2">
-                                                <i class="bi bi-check-circle"></i> Order completed! Please rate & review the tukang's work.
-                                                <a href="{{ route('customer.reviews.create', $order) }}" class="btn btn-sm btn-warning ms-2">
-                                                    <i class="bi bi-star"></i> Rate & Review
-                                                </a>
-                                            </div>
-                                        @elseif($order->status === 'completed' && $order->hasReview())
-                                            <div class="alert alert-info mt-2">
-                                                <i class="bi bi-check-circle-fill"></i> Order completed & reviewed
-                                            </div>
-                                        @endif
                                     </div>
 
                                     <div class="d-flex justify-content-between align-items-center">
@@ -281,7 +268,10 @@
                         <div class="col-12">
                             <div class="text-center py-4">
                                 <i class="bi bi-bag x-lg text-muted mb-3" style="font-size: 3rem;"></i>
-                                <p class="text-muted">No orders yet</p>
+                                <p class="text-muted">No active orders</p>
+                                <a href="{{ route('find-tukang') }}" class="btn btn-primary">
+                                    <i class="bi bi-search me-1"></i> Find Handyman
+                                </a>
                             </div>
                         </div>
                     @endforelse

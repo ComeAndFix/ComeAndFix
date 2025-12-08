@@ -12,8 +12,10 @@ class CustomerOrderController extends Controller
 {
     public function index()
     {
+        // Get only completed orders for bookings history
         $orders = Order::where('customer_id', Auth::guard('customer')->id())
-            ->with(['tukang', 'service'])
+            ->where('status', 'completed')
+            ->with(['tukang', 'service', 'review', 'additionalItems', 'customItems'])
             ->latest()
             ->paginate(10);
             
