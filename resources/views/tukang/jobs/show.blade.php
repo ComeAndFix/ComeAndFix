@@ -33,7 +33,7 @@
                                             </tr>
                                             <tr>
                                                 <th>Price:</th>
-                                                <td class="text-primary fw-bold">Rp {{ number_format($order->total_price, 0, ',', '.') }}</td>
+                                                <td class="text-primary fw-bold">Rp {{ number_format($order->price, 0, ',', '.') }}</td>
                                             </tr>
                                             <tr>
                                                 <th>Payment Status:</th>
