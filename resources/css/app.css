@@ -1,3 +1,22 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+    --brand-orange: #FF9800;
+    --brand-orange-hover: #F57C00;
+    --brand-dark: #2C2C2C;
+    --text-gray: #666666;
+    --border-gray: #E0E0E0;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+    color: var(--brand-dark);
+}
+
+.heading-jost {
+    font-family: 'Jost', sans-serif;
+}

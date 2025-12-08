@@ -1,0 +1,96 @@
+.register-heading {
+    font-size: 4rem;
+    font-weight: 800;
+    color: var(--brand-dark);
+    letter-spacing: -0.02em;
+    margin-bottom: 1.25rem;
+    line-height: 1.1;
+    text-align: center;
+    font-family: 'Jost', sans-serif;
+}
+
+.register-subheading {
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: var(--brand-dark);
+    margin-bottom: 0.5rem;
+    text-align: center;
+    font-family: 'Jost', sans-serif;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.form-row .input-wrapper {
+    margin-bottom: 0;
+}
+
+.login-link {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 0.875rem;
+    color: var(--text-gray);
+    font-family: 'Inter', sans-serif;
+}
+
+.specialization-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.specialization-pill {
+    position: relative;
+}
+
+.specialization-pill input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.specialization-pill label {
+    display: inline-block;
+    padding: 0.625rem 1.25rem;
+    background: #FFFFFF;
+    border: 2px solid var(--border-gray);
+    border-radius: 25px;
+    font-size: 0.875rem;
+    color: var(--brand-dark);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    user-select: none;
+    font-family: 'Inter', sans-serif;
+}
+
+.specialization-pill label:hover {
+    border-color: var(--brand-orange);
+    background: rgba(255, 152, 0, 0.05);
+}
+
+.specialization-pill input[type="checkbox"]:checked+label {
+    background: var(--brand-orange);
+    border-color: var(--brand-orange);
+    color: #FFFFFF;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(255, 152, 0, 0.3);
+}
+
+@media (max-width: 768px) {
+    .register-heading {
+        font-size: 2.5rem;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .form-row .input-wrapper {
+        margin-bottom: 1.25rem;
+    }
+}
