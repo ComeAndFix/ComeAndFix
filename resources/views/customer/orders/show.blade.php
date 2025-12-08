@@ -7,13 +7,73 @@
                         <h4 class="mb-0">Order Details</h4>
                     </div>
                     <div class="card-body">
+                        <!-- Order Information -->
                         <div class="row mb-4">
-                            <div class="col-md-6">
+                            <div class="col-md-12">
                                 <h5>{{ $order->service->name }}</h5>
-                                <p class="text-muted">Order #{{ $order->order_number }}</p>
-                                <p><strong>Tukang:</strong> {{ $order->tukang->name }}</p>
-                                <p><strong>Price:</strong> Rp {{ number_format($order->price, 0, ',', '.') }}</p>
-                                <span class="badge bg-{{ $order->status_color }}">{{ ucwords(str_replace('_', ' ', $order->status)) }}</span>
+                                <p class="text-muted mb-1">Order #{{ $order->order_number }}</p>
+                                <p class="mb-0"><strong>Tukang:</strong> {{ $order->tukang->name }}</p>
+                            </div>
+                        </div>
+
+                        <!-- Price Breakdown Section -->
+                        <div class="card mb-4">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0">Price Details</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-sm">
+                                        <tbody>
+                                            <tr>
+                                                <td><strong>Service Price</strong></td>
+                                                <td class="text-end">Rp {{ number_format($order->price, 0, ',', '.') }}</td>
+                                            </tr>
+                                            
+                                            @if($order->additionalItems && $order->additionalItems->count() > 0)
+                                                <tr>
+                                                    <td colspan="2" class="pt-3"><strong>Additional Items:</strong></td>
+                                                </tr>
+                                                @foreach($order->additionalItems as $item)
+                                                    <tr>
+                                                        <td class="ps-4">
+                                                            {{ $item->item_name }} 
+                                                            <span class="text-muted">({{ $item->quantity }}x @ Rp {{ number_format($item->item_price, 0, ',', '.') }})</span>
+                                                        </td>
+                                                        <td class="text-end">Rp {{ number_format($item->total_price, 0, ',', '.') }}</td>
+                                                    </tr>
+                                                @endforeach
+                                            @endif
+
+                                            @if($order->customItems && $order->customItems->count() > 0)
+                                                <tr>
+                                                    <td colspan="2" class="pt-3"><strong>Custom Items:</strong></td>
+                                                </tr>
+                                                @foreach($order->customItems as $item)
+                                                    <tr>
+                                                        <td class="ps-4">
+                                                            {{ $item->item_name }} 
+                                                            <span class="text-muted">({{ $item->quantity }}x @ Rp {{ number_format($item->item_price, 0, ',', '.') }})</span>
+                                                        </td>
+                                                        <td class="text-end">Rp {{ number_format($item->total_price, 0, ',', '.') }}</td>
+                                                    </tr>
+                                                @endforeach
+                                            @endif
+
+                                            <tr class="border-top">
+                                                <td class="pt-3"><strong class="fs-5">Total Price</strong></td>
+                                                <td class="text-end pt-3"><strong class="fs-5 text-primary">Rp {{ number_format($order->total_price, 0, ',', '.') }}</strong></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Order Status -->
+                        <div class="mb-3">
+                            <strong>Status:</strong>
+                            <span class="badge bg-{{ $order->status_color }}">{{ ucwords(str_replace('_', ' ', $order->status)) }}</span>
                             </div>
                         </div>
 

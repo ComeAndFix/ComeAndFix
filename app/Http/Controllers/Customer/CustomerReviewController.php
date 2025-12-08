@@ -24,7 +24,7 @@ class CustomerReviewController extends Controller
             return redirect()->back()->with('error', 'You have already reviewed this order');
         }
 
-        $order->load(['tukang', 'service', 'completion']);
+        $order->load(['tukang', 'service', 'completion', 'additionalItems', 'customItems']);
 
         return view('customer.reviews.create', compact('order'));
     }

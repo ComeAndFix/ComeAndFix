@@ -24,7 +24,7 @@ class CustomerOrderController extends Controller
     {
         $this->authorizeOrder($order);
 
-        $order->load(['tukang', 'service', 'completion']);
+        $order->load(['tukang', 'service', 'completion', 'additionalItems', 'customItems']);
 
         return view('customer.orders.show', compact('order'));
     }
