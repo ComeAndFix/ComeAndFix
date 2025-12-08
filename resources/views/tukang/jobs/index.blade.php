@@ -53,7 +53,7 @@
                                     @endif
                                 </div>
                                 <div class="col-md-4 text-end">
-                                    <p class="fw-bold text-primary mb-2">Rp {{ number_format($job->price, 0, ',', '.') }}</p>
+                                    <p class="fw-bold text-primary mb-2">Rp {{ number_format($job->total_price, 0, ',', '.') }}</p>
 
                                     @if($job->status === 'on_progress' && !$job->completion)
                                         <a href="{{ route('tukang.jobs.complete', $job) }}" class="btn btn-primary btn-sm">

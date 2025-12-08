@@ -14,7 +14,7 @@
                                 <div class="col-md-6">
                                     <p class="mb-2"><strong>Service:</strong> {{ $order->service->name }}</p>
                                     <p class="mb-2"><strong>Order #:</strong> {{ $order->order_number }}</p>
-                                    <p class="mb-0"><strong>Price:</strong> Rp {{ number_format($order->price, 0, ',', '.') }}</p>
+                                    <p class="mb-0"><strong>Price:</strong> Rp {{ number_format($order->total_price, 0, ',', '.') }}</p>
                                 </div>
                                 <div class="col-md-6">
                                     <p class="mb-2"><strong>Tukang:</strong> {{ $order->tukang->name }}</p>
