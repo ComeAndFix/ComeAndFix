@@ -12,16 +12,10 @@ class CustomerDashboardController extends Controller
     {
         $customerId = auth()->guard('customer')->id();
         
-        // Get on_progress orders and completed orders without reviews
+        // Get only active orders (non-completed)
         $recentOrders = Order::where('customer_id', $customerId)
-            ->where(function($query) {
-                $query->where('status', 'on_progress')
-                      ->orWhere(function($q) {
-                          $q->where('status', 'completed')
-                            ->doesntHave('review');
-                      });
-            })
-            ->with(['service', 'tukang', 'completion', 'review'])
+            ->whereIn('status', ['pending', 'accepted', 'on_progress', 'rejected'])
+            ->with(['service', 'tukang', 'additionalItems', 'customItems'])
             ->latest()
             ->take(4)
             ->get();

@@ -196,7 +196,7 @@
                         <h2 class="fw-bold mb-0">Active Orders</h2>
                     </div>
                     <div class="col-auto">
-                        <a href="#" class="btn btn-outline-primary">View All Orders</a>
+                        <a href="{{ route('customer.orders.index') }}" class="btn btn-outline-primary">View All Orders</a>
                     </div>
                 </div>
 
@@ -211,10 +211,10 @@
                                             <small class="text-muted">Order #{{ $order->order_number }}</small>
                                         </div>
                                         <div class="d-flex flex-column align-items-end">
-                                            <span class="badge bg-{{ $order->status_color }} mb-1">{{ ucfirst($order->status) }}</span>
+                                            <span class="badge bg-{{ $order->status_color }} mb-1">{{ ucwords(str_replace('_', ' ', $order->status)) }}</span>
                                             @if($order->payment_status)
                                                 <span class="badge bg-{{ $order->payment_status === 'paid' ? 'success' : 'warning' }} small">
-                                            {{ ucfirst($order->payment_status) }}
+                                            {{ ucwords(str_replace('_', ' ', $order->payment_status)) }}
                                         </span>
                                             @endif
                                         </div>
@@ -237,26 +237,13 @@
                                         @endif
 
                                         <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <span class="text-primary fw-bold">Rp {{ number_format($order->price, 0, ',', '.') }}</span>
+                                            <span class="text-primary fw-bold">Rp {{ number_format($order->total_price, 0, ',', '.') }}</span>
                                             <small class="text-muted">Created: {{ $order->created_at->format('d M Y H:i') }}</small>
                                         </div>
 
                                         @if($order->accepted_at)
                                             <div class="small text-muted">
                                                 Accepted: {{ $order->accepted_at->format('d M Y H:i') }}
-                                            </div>
-                                        @endif
-
-                                        @if($order->status === 'completed' && !$order->hasReview())
-                                            <div class="alert alert-success mt-2">
-                                                <i class="bi bi-check-circle"></i> Order completed! Please rate & review the tukang's work.
-                                                <a href="{{ route('customer.reviews.create', $order) }}" class="btn btn-sm btn-warning ms-2">
-                                                    <i class="bi bi-star"></i> Rate & Review
-                                                </a>
-                                            </div>
-                                        @elseif($order->status === 'completed' && $order->hasReview())
-                                            <div class="alert alert-info mt-2">
-                                                <i class="bi bi-check-circle-fill"></i> Order completed & reviewed
                                             </div>
                                         @endif
                                     </div>
@@ -281,7 +268,10 @@
                         <div class="col-12">
                             <div class="text-center py-4">
                                 <i class="bi bi-bag x-lg text-muted mb-3" style="font-size: 3rem;"></i>
-                                <p class="text-muted">No orders yet</p>
+                                <p class="text-muted">No active orders</p>
+                                <a href="{{ route('find-tukang') }}" class="btn btn-primary">
+                                    <i class="bi bi-search me-1"></i> Find Handyman
+                                </a>
                             </div>
                         </div>
                     @endforelse

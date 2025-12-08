@@ -8,9 +8,27 @@ use App\Http\Controllers\TukangController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\Customer\CustomerDashboardController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Tukang\TukangChatRoomController;
 
 Route::get('/', function () {
     return redirect()->route('customer.login');
+});
+
+// Temporary debug route
+Route::get('/debug-messages', function() {
+    $messages = \App\Models\ChatMessage::latest()->take(5)->get();
+    return response()->json([
+        'total_messages' => \App\Models\ChatMessage::count(),
+        'latest_5_messages' => $messages->map(fn($m) => [
+            'id' => $m->id,
+            'sender_id' => $m->sender_id,
+            'sender_type' => $m->sender_type,
+            'receiver_id' => $m->receiver_id,
+            'receiver_type' => $m->receiver_type,
+            'message' => $m->message,
+            'created_at' => $m->created_at,
+        ])
+    ]);
 });
 
 
@@ -67,7 +85,11 @@ Route::middleware(['auth:customer', 'verified'])->group(function () {
     Route::post('/customer/orders/{order}/accept', [ChatController::class, 'acceptOrder'])->name('customer.order.accept');
     Route::post('/customer/orders/{order}/reject', [ChatController::class, 'rejectOrder'])->name('customer.order.reject');
 
+    Route::get('/orders', [\App\Http\Controllers\Customer\CustomerOrderController::class, 'index'])->name('customer.orders.index');
     Route::get('/orders/{order}', [\App\Http\Controllers\Customer\CustomerOrderController::class, 'show'])->name('customer.orders.show');
+    
+    // Chat rooms
+    Route::get('/chat', [\App\Http\Controllers\Customer\CustomerChatRoomController::class, 'index'])->name('chat.index');
     
     // Review routes
     Route::get('/orders/{order}/review', [\App\Http\Controllers\Customer\CustomerReviewController::class, 'create'])->name('customer.reviews.create');
@@ -91,14 +113,19 @@ Route::middleware(['auth:tukang', 'verified'])->name('tukang.')->group(function 
     Route::get('/tukang/chat/{receiverType}/{receiverId}', [ChatController::class, 'showForTukang'])->name('chat.show');
     Route::post('/tukang/chat/send', [ChatController::class, 'sendMessageFromTukang'])->name('chat.send');
     Route::get('/tukang/messages/recent', [ChatController::class, 'getRecentMessagesForTukang'])->name('messages.recent');
+    Route::get('/tukang/chat-rooms', [TukangChatRoomController::class, 'index'])->name('chatrooms.index');
 
     Route::post('/order/send', [ChatController::class, 'sendOrderProposal'])->name('order.send');
     Route::get('/services', [ChatController::class, 'getTukangServices'])->name('services');
 
     Route::get('/jobs', [\App\Http\Controllers\Tukang\TukangJobController::class, 'index'])->name('jobs.index');
+    Route::get('/jobs/history', [\App\Http\Controllers\Tukang\TukangJobController::class, 'history'])->name('jobs.history');
     Route::get('/jobs/{order}', [\App\Http\Controllers\Tukang\TukangJobController::class, 'show'])->name('jobs.show');
     Route::get('/jobs/{order}/complete', [\App\Http\Controllers\Tukang\TukangJobController::class, 'completeForm'])->name('jobs.complete');
     Route::post('/jobs/{order}/complete', [\App\Http\Controllers\Tukang\TukangJobController::class, 'submitCompletion'])->name('jobs.submitCompletion');
+
+    Route::get('/finance', [\App\Http\Controllers\Tukang\TukangFinanceController::class, 'index'])->name('finance.index');
+    Route::post('/finance/withdraw', [\App\Http\Controllers\Tukang\TukangFinanceController::class, 'withdraw'])->name('finance.withdraw');
 });
 
 // Public service routes

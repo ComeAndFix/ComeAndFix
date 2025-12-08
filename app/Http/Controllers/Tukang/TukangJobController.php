@@ -15,13 +15,28 @@ class TukangJobController extends Controller
     {
         $tukang = Auth::guard('tukang')->user();
 
+        // Show ACTIVE order proposals only (not completed)
         $jobs = Order::where('tukang_id', $tukang->id)
-            ->whereIn('status', [Order::STATUS_ON_PROGRESS, Order::STATUS_COMPLETED])
-            ->with(['customer', 'service', 'completion', 'review'])
+            ->whereIn('status', [Order::STATUS_PENDING, Order::STATUS_ACCEPTED, Order::STATUS_ON_PROGRESS])
+            ->with(['customer', 'service'])
             ->latest()
-            ->paginate(10);
+            ->paginate(15);
 
         return view('tukang.jobs.index', compact('jobs'));
+    }
+
+    public function history()
+    {
+        $tukang = Auth::guard('tukang')->user();
+
+        // Show COMPLETED jobs only (history)
+        $jobs = Order::where('tukang_id', $tukang->id)
+            ->where('status', Order::STATUS_COMPLETED)
+            ->with(['customer', 'service', 'completion', 'review'])
+            ->latest()
+            ->paginate(15);
+
+        return view('tukang.jobs.history', compact('jobs'));
     }
 
     public function show(Order $order)
