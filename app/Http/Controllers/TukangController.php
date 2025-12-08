@@ -120,15 +120,18 @@ class TukangController extends Controller
                 return $order->work_datetime->format('Y-m-d');
             });
 
-        // Calculate wallet balance (all completed orders)
+        // Calculate wallet balance (all completed orders minus withdrawals)
         $completedOrders = \App\Models\Order::where('tukang_id', $tukang->id)
             ->where('status', 'completed')
             ->with(['additionalItems', 'customItems'])
             ->get();
         
-        $walletBalance = $completedOrders->sum(function($order) {
+        $totalEarnings = $completedOrders->sum(function($order) {
             return $order->total_price;
         });
+        
+        $withdrawnAmount = \Illuminate\Support\Facades\Session::get('tukang_withdrawn_' . $tukang->id, 0);
+        $walletBalance = $totalEarnings - $withdrawnAmount;
 
         // Calculate this month's income
         $monthlyOrders = \App\Models\Order::where('tukang_id', $tukang->id)
