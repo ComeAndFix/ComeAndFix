@@ -22,7 +22,7 @@
                         </div>
                         <div>
                             <h5 class="mb-0">{{ $receiver->name }}</h5>
-                            <small class="opacity-75">{{ ucfirst($receiverType) }}</small>
+                            <small class="opacity-75">{{ ucwords($receiverType) }}</small>
                         </div>
                     </div>
                 </div>
@@ -110,6 +110,12 @@
                                                     <i class="bi bi-credit-card"></i> Pay Now
                                                 </button>
                                             </div>
+                                        @elseif($message->order->status === 'completed')
+                                            <div class="mt-2">
+                                                <span class="badge bg-success">
+                                                    <i class="bi bi-check-all"></i> Completed
+                                                </span>
+                                            </div>
                                         @elseif($message->order->payment_status === 'paid')
                                             <div class="mt-2">
                                                 <span class="badge bg-info">On Progress</span>
@@ -120,7 +126,7 @@
                                         @else
                                             <div class="mt-2">
                                                 <span class="badge bg-{{ $message->order->status === 'accepted' ? 'success' : ($message->order->status === 'rejected' ? 'danger' : 'warning') }}">
-                                                    {{ ucfirst($message->order->status) }}
+                                                    {{ ucwords(str_replace('_', ' ', $message->order->status)) }}
                                                 </span>
                                             </div>
                                         @endif
@@ -276,7 +282,13 @@
                     // Calculate total price
                     const totalPrice = calculateOrderTotal(order);
 
-                    if (order.status === 'accepted' && order.payment_status !== 'paid') {
+                    if (order.status === 'completed') {
+                        statusDiv.innerHTML = `
+                            <span class="badge bg-success">
+                                <i class="bi bi-check-all"></i> Completed
+                            </span>
+                        `;
+                    } else if (order.status === 'accepted' && order.payment_status !== 'paid') {
                         statusDiv.innerHTML = `
                             <span class="badge bg-success">Accepted</span>
                             <button type="button" class="btn btn-primary btn-sm ms-2" onclick="showPaymentForOrder(${order.id}, ${JSON.stringify({
@@ -294,7 +306,7 @@
                                 <i class="bi bi-credit-card"></i> Pay Now
                             </button>
                         `;
-                    } else if (order.payment_status === 'paid') {
+                    } else if (order.payment_status === 'paid' && order.status !== 'completed') {
                         statusDiv.innerHTML = `
                             <span class="badge bg-info">On Progress</span>
                             <span class="badge bg-success ms-1">

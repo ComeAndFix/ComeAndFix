@@ -196,7 +196,7 @@
                         <h2 class="fw-bold mb-0">Active Orders</h2>
                     </div>
                     <div class="col-auto">
-                        <a href="#" class="btn btn-outline-primary">View All Orders</a>
+                        <a href="{{ route('customer.orders.index') }}" class="btn btn-outline-primary">View All Orders</a>
                     </div>
                 </div>
 
@@ -211,10 +211,10 @@
                                             <small class="text-muted">Order #{{ $order->order_number }}</small>
                                         </div>
                                         <div class="d-flex flex-column align-items-end">
-                                            <span class="badge bg-{{ $order->status_color }} mb-1">{{ ucfirst($order->status) }}</span>
+                                            <span class="badge bg-{{ $order->status_color }} mb-1">{{ ucwords(str_replace('_', ' ', $order->status)) }}</span>
                                             @if($order->payment_status)
                                                 <span class="badge bg-{{ $order->payment_status === 'paid' ? 'success' : 'warning' }} small">
-                                            {{ ucfirst($order->payment_status) }}
+                                            {{ ucwords(str_replace('_', ' ', $order->payment_status)) }}
                                         </span>
                                             @endif
                                         </div>
@@ -237,7 +237,7 @@
                                         @endif
 
                                         <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <span class="text-primary fw-bold">Rp {{ number_format($order->price, 0, ',', '.') }}</span>
+                                            <span class="text-primary fw-bold">Rp {{ number_format($order->total_price, 0, ',', '.') }}</span>
                                             <small class="text-muted">Created: {{ $order->created_at->format('d M Y H:i') }}</small>
                                         </div>
 

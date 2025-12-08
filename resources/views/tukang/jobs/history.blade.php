@@ -2,16 +2,11 @@
     <div class="container py-4">
         <div class="row mb-4 align-items-center">
             <div class="col">
-                <a href="{{ route('tukang.dashboard') }}" class="btn btn-outline-secondary mb-2">
-                    <i class="bi bi-arrow-left"></i> Back to Dashboard
+                <a href="{{ route('tukang.jobs.index') }}" class="btn btn-outline-secondary mb-2">
+                    <i class="bi bi-arrow-left"></i> Back to Active Jobs
                 </a>
-                <h2 class="fw-bold mb-0">Active Jobs</h2>
-                <p class="text-muted">Order proposals and ongoing jobs</p>
-            </div>
-            <div class="col-auto">
-                <a href="{{ route('tukang.jobs.history') }}" class="btn btn-outline-primary">
-                    <i class="bi bi-clock-history"></i> View History
-                </a>
+                <h2 class="fw-bold mb-0">Jobs History</h2>
+                <p class="text-muted">Completed jobs</p>
             </div>
         </div>
 

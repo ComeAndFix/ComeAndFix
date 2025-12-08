@@ -12,13 +12,11 @@
                         <p class="mb-0">Welcome back, {{ Auth::guard('tukang')->user()->name }}! Here's your job overview for today.</p>
                     </div>
                     <div class="col-lg-4 text-end">
-                        <div class="badge bg-success fs-6 me-2">
-                            <i class="bi bi-check-circle me-1"></i>
-                            Available
-                        </div>
-                        <button class="btn btn-outline-light btn-sm">
-                            <i class="bi bi-gear me-1"></i>
-                            Settings
+                        <button id="availability-toggle" class="badge fs-6 me-2 border-0" 
+                                style="cursor: pointer; {{ Auth::guard('tukang')->user()->is_available ? 'background-color: #198754;' : 'background-color: #dc3545;' }}"
+                                onclick="toggleAvailability()">
+                            <i class="bi {{ Auth::guard('tukang')->user()->is_available ? 'bi-check-circle' : 'bi-x-circle' }} me-1"></i>
+                            <span id="availability-text">{{ Auth::guard('tukang')->user()->is_available ? 'Available' : 'Unavailable' }}</span>
                         </button>
                     </div>
                 </div>
@@ -29,41 +27,40 @@
         <section class="py-4 bg-light border-bottom">
             <div class="container">
                 <div class="row g-3">
-                    <div class="col-md-3">
-                        <div class="card bg-warning text-dark border-0 h-100 cursor-pointer" onclick="showNewChats()">
-                            <div class="card-body text-center">
-                                <i class="bi bi-chat-dots display-6 mb-2"></i>
-                                <h3 class="fw-bold mb-1" id="new-messages-count">{{ $newMessagesCount }}</h3>
-                                <p class="mb-0 small">New Messages</p>
+                    <div class="col-md-4">
+                        <a href="{{ route('tukang.jobs.index') }}" class="text-decoration-none">
+                            <div class="card bg-info text-white border-0 h-100 cursor-pointer">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-play-circle display-6 mb-2"></i>
+                                    <h3 class="fw-bold mb-1">{{ $activeJobsCount }}</h3>
+                                    <p class="mb-0 small">Active Jobs</p>
+                                </div>
                             </div>
-                        </div>
+                        </a>
                     </div>
-                    <div class="col-md-3">
-                        <div class="card bg-info text-white border-0 h-100">
-                            <div class="card-body text-center">
-                                <i class="bi bi-play-circle display-6 mb-2"></i>
-                                <h3 class="fw-bold mb-1">0</h3>
-                                <p class="mb-0 small">Active Jobs</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card bg-success text-white border-0 h-100">
-                            <div class="card-body text-center">
-                                <i class="bi bi-check-circle display-6 mb-2"></i>
-                                <h3 class="fw-bold mb-1">0</h3>
-                                <p class="mb-0 small">Completed</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <div class="card bg-primary text-white border-0 h-100">
-                            <div class="card-body text-center">
-                                <i class="bi bi-currency-dollar display-6 mb-2"></i>
-                                <h3 class="fw-bold mb-1">Rp 0</h3>
-                                <p class="mb-0 small">This Month</p>
+                            <div class="card-body">
+                                <h6 class="mb-3"><i class="bi bi-calendar-check me-2"></i>Job Schedule</h6>
+                                <div id="job-calendar" class="calendar-container small"></div>
                             </div>
                         </div>
+                    </div>
+                    <div class="col-md-4">
+                        <a href="{{ route('tukang.finance.index') }}" class="text-decoration-none">
+                            <div class="card bg-success text-white border-0 h-100 cursor-pointer">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-wallet2 display-6 mb-3"></i>
+                                    <h3 class="fw-bold mb-1">Rp {{ number_format($walletBalance, 0, ',', '.') }}</h3>
+                                    <p class="mb-3 small">Wallet Balance</p>
+                                    <div class="bg-warning rounded p-3">
+                                        <i class="bi bi-graph-up mb-2" style="font-size: 1.5rem;"></i>
+                                        <h5 class="fw-bold mb-1">Rp {{ number_format($monthlyIncome, 0, ',', '.') }}</h5>
+                                        <p class="mb-0 small">This Month's Income</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -75,23 +72,6 @@
                 <div class="row g-4">
                     <!-- Left Column -->
                     <div class="col-lg-8">
-                        <!-- Chat Messages Container -->
-                        <div class="card border-0 shadow-sm mb-4" id="chat-container" style="display: none;">
-                            <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0 fw-bold">
-                                    <i class="bi bi-chat-dots me-2"></i>
-                                    Recent Messages
-                                </h5>
-                                <button class="btn btn-sm btn-outline-secondary" onclick="hideChatContainer()">
-                                    <i class="bi bi-x"></i>
-                                </button>
-                            </div>
-                            <div class="card-body p-0">
-                                <div id="messages-list">
-                                    <!-- Messages will be loaded here -->
-                                </div>
-                            </div>
-                        </div>
 
                         <!-- Incoming Job Requests -->
                         <div class="card border-0 shadow-sm mb-4">
@@ -101,30 +81,74 @@
                                     Incoming Job Requests
                                 </h5>
                             </div>
+                            
+                            <!-- Filter Form -->
+                            <div class="card-body border-bottom bg-light">
+                                <form method="GET" action="{{ route('tukang.dashboard') }}" class="row g-2">
+                                    <div class="col-md-5">
+                                        <input type="text" name="customer_name" class="form-control form-control-sm" 
+                                            placeholder="Search by customer name..." 
+                                            value="{{ request('customer_name') }}">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select name="service_filter" class="form-select form-select-sm">
+                                            <option value="">All Services</option>
+                                            @foreach($availableServices as $service)
+                                                <option value="{{ $service->id }}" {{ request('service_filter') == $service->id ? 'selected' : '' }}>
+                                                    {{ $service->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <button type="submit" class="btn btn-primary btn-sm w-100">
+                                            <i class="bi bi-funnel"></i> Filter
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                            
                             <div class="card-body p-0">
                                 <div id="job-requests-list">
-                                    @forelse($recentMessages as $message)
-                                        <div class="border-bottom p-3 hover-bg-light cursor-pointer" onclick="openChat('customer', {{ $message->sender_id }})">
+                                    @forelse($jobRequests as $request)
+                                        <div class="border-bottom p-3 hover-bg-light cursor-pointer" 
+                                            onclick="openChatWithService('customer', {{ $request->sender_id }}, {{ $request->conversation_service_id ?? 'null' }})">
                                             <div class="d-flex align-items-start">
                                                 <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; font-size: 14px; font-weight: bold;">
-                                                    {{ substr($message->sender->name, 0, 1) }}
+                                                    {{ substr($request->sender->name, 0, 1) }}
                                                 </div>
                                                 <div class="flex-grow-1">
                                                     <div class="d-flex justify-content-between align-items-start mb-1">
-                                                        <h6 class="mb-0 fw-bold">{{ $message->sender->name }}</h6>
-                                                        <small class="text-muted">{{ $message->created_at->diffForHumans() }}</small>
+                                                        <h6 class="mb-0 fw-bold">{{ $request->sender->name }}</h6>
+                                                        <small class="text-muted">{{ $request->created_at->diffForHumans() }}</small>
                                                     </div>
-                                                    <p class="mb-1 text-muted">{{ Str::limit($message->message, 60) }}</p>
-                                                    @if(!$message->read_at)
+                                                    @if($request->service)
+                                                        <p class="mb-1 text-muted small">
+                                                            <i class="bi bi-wrench me-1"></i>
+                                                            {{ $request->service->name }}
+                                                        </p>
+                                                    @else
+                                                        <p class="mb-1 text-muted small">
+                                                            <i class="bi bi-chat-dots me-1"></i>
+                                                            General Inquiry
+                                                        </p>
+                                                    @endif
+                                                    @if($request->sender->address || $request->sender->city)
+                                                        <p class="mb-1 text-muted small">
+                                                            <i class="bi bi-geo-alt me-1"></i>
+                                                            {{ $request->sender->address ?? 'No address' }}@if($request->sender->city), {{ $request->sender->city }}@endif
+                                                        </p>
+                                                    @endif
+                                                    @if(!$request->read_at)
                                                         <span class="badge bg-warning text-dark">New</span>
                                                     @endif
                                                 </div>
                                             </div>
                                         </div>
                                     @empty
-                                        <div class="text-center py-4 text-muted">
-                                            <i class="bi bi-inbox display-4 mb-2"></i>
-                                            <p>No job requests yet</p>
+                                        <div class="text-center py-4">
+                                            <i class="bi bi-inbox text-muted" style="font-size: 3rem;"></i>
+                                            <p class="text-muted mt-2">No incoming job requests</p>
                                         </div>
                                     @endforelse
                                 </div>
@@ -141,18 +165,15 @@
                             </div>
                             <div class="card-body">
                                 <div class="d-grid gap-2">
-                                    <a href="{{ route('tukang.jobs.index') }}" class="btn btn-primary">
-                                        <i class="bi bi-list-task me-2"></i>View My Jobs
+                                    <a href="{{ route('tukang.jobs.history') }}" class="btn btn-primary">
+                                        <i class="bi bi-clock-history me-2"></i>View Jobs History
                                     </a>
-                                    <button class="btn btn-primary" onclick="showNewChats()">
+                                    <a href="{{ route('tukang.chatrooms.index') }}" class="btn btn-primary">
                                         <i class="bi bi-chat-dots me-2"></i>View Messages
-                                    </button>
-                                    <button class="btn btn-outline-primary">
-                                        <i class="bi bi-calendar-plus me-2"></i>Update Schedule
-                                    </button>
-                                    <button class="btn btn-outline-primary">
+                                    </a>
+                                    <a href="{{ route('tukang.profile') }}" class="btn btn-outline-primary">
                                         <i class="bi bi-person-gear me-2"></i>Edit Profile
-                                    </button>
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -162,89 +183,299 @@
         </section>
     </div>
 
+    <!-- Floating Message Button -->
+    <a href="{{ route('tukang.chatrooms.index') }}" class="floating-message-btn" id="floatingMessageBtn">
+        <i class="bi bi-chat-dots-fill"></i>
+        <span class="notification-badge" id="notificationBadge" style="display: none;"></span>
+    </a>
+
     <style>
         .cursor-pointer { cursor: pointer; }
         .hover-bg-light:hover { background-color: #f8f9fa; }
+
+        .floating-message-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            text-decoration: none;
+        }
+
+        .floating-message-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            color: white;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: #dc3545;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            border: 2px solid white;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* Calendar styles */
+        .calendar-container {
+            color: white;
+        }
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+        }
+        .calendar-day-header {
+            text-align: center;
+            font-size: 10px;
+            padding: 2px;
+            opacity: 0.7;
+        }
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            border-radius: 4px;
+            position: relative;
+            cursor: pointer;
+        }
+        .calendar-day.other-month {
+            opacity: 0.3;
+        }
+        .calendar-day.has-job {
+            background: rgba(255, 255, 255, 0.2);
+            font-weight: bold;
+        }
+        .calendar-day.has-job::after {
+            content: '';
+            position: absolute;
+            bottom: 2px;
+            width: 4px;
+            height: 4px;
+            background: #ffc107;
+            border-radius: 50%;
+        }
+        .job-tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            z-index: 1000;
+            pointer-events: none;
+            white-space: nowrap;
+            display: none;
+        }
     </style>
 
     <script>
-            function showNewChats() {
-                const chatContainer = document.getElementById('chat-container');
-                chatContainer.style.display = 'block';
-                loadRecentMessages();
-            }
-
-            function hideChatContainer() {
-                const chatContainer = document.getElementById('chat-container');
-                chatContainer.style.display = 'none';
+            function openChatWithService(receiverType, receiverId, serviceId) {
+                let url = `/tukang/chat/${receiverType}/${receiverId}`;
+                if (serviceId) {
+                    url += `?service_id=${serviceId}`;
+                }
+                window.location.href = url;
             }
 
             function openChat(receiverType, receiverId) {
                 window.location.href = `/tukang/chat/${receiverType}/${receiverId}`;
             }
 
-            function loadRecentMessages() {
-                const messagesList = document.getElementById('messages-list');
-                messagesList.innerHTML = '<div class="text-center py-3"><div class="spinner-border text-primary" role="status"></div></div>';
-
+            // Update message count
+            function updateMessageCount() {
                 fetch('{{ route("tukang.messages.recent") }}')
                     .then(response => response.json())
                     .then(messages => {
-                        if (messages.length === 0) {
-                            messagesList.innerHTML = `
-                                <div class="text-center py-4 text-muted">
-                                    <i class="bi bi-chat-dots display-4 mb-2"></i>
-                                    <p>No messages yet</p>
-                                </div>
-                            `;
-                            return;
+                        const unreadCount = messages.filter(msg => !msg.read_at).length;
+                        const badge = document.getElementById('notificationBadge');
+                        
+                        if (unreadCount > 0) {
+                            badge.textContent = unreadCount > 9 ? '9+' : unreadCount;
+                            badge.style.display = 'flex';
+                        } else {
+                            badge.style.display = 'none';
                         }
-
-                        messagesList.innerHTML = messages.map(message => `
-                            <div class="border-bottom p-3 hover-bg-light cursor-pointer" onclick="openChat('customer', ${message.sender_id})">
-                                <div class="d-flex align-items-start">
-                                    <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; font-size: 14px; font-weight: bold;">
-                                        ${message.sender.name.charAt(0)}
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <div class="d-flex justify-content-between align-items-start mb-1">
-                                            <h6 class="mb-0 fw-bold">${message.sender.name}</h6>
-                                            <small class="text-muted">${formatTime(message.created_at)}</small>
-                                        </div>
-                                        <p class="mb-1 text-muted">${message.message.substring(0, 60)}${message.message.length > 60 ? '...' : ''}</p>
-                                        ${!message.read_at ? '<span class="badge bg-warning text-dark">New</span>' : ''}
-                                    </div>
-                                </div>
-                            </div>
-                        `).join('');
                     })
-                    .catch(error => {
-                        console.error('Error loading messages:', error);
-                        messagesList.innerHTML = '<div class="text-center py-3 text-danger">Error loading messages</div>';
-                    });
-            }
-
-            function formatTime(timestamp) {
-                const date = new Date(timestamp);
-                const now = new Date();
-                const diff = now - date;
-                const hours = Math.floor(diff / (1000 * 60 * 60));
-
-                if (hours < 1) return 'Just now';
-                if (hours < 24) return `${hours}h ago`;
-                return date.toLocaleDateString();
+                    .catch(error => console.error('Error refreshing message count:', error));
             }
 
             document.addEventListener('DOMContentLoaded', function() {
-                setInterval(function() {
-                    fetch('{{ route("tukang.messages.recent") }}')
-                        .then(response => response.json())
-                        .then(messages => {
-                            const unreadCount = messages.filter(msg => !msg.read_at).length;
-                            document.getElementById('new-messages-count').textContent = unreadCount;
-                        })
-                        .catch(error => console.error('Error refreshing message count:', error));
-                }, 30000);
+                // Initial load
+                updateMessageCount();
+                
+                // Update every 30 seconds
+                setInterval(updateMessageCount, 30000);
+
+                // Initialize calendar
+                renderCalendar();
             });
+
+            // Calendar implementation
+            const scheduledJobs = @json($scheduledJobs);
+
+            function renderCalendar() {
+                const calendar = document.getElementById('job-calendar');
+                const now = new Date();
+                const year = now.getFullYear();
+                const month = now.getMonth();
+
+                // Get first day of month and last day
+                const firstDay = new Date(year, month, 1);
+                const lastDay = new Date(year, month + 1, 0);
+                const daysInMonth = lastDay.getDate();
+                const startDay = firstDay.getDay(); // 0 = Sunday
+
+                // Calendar header
+                const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                let html = `<div class="calendar-header">${monthNames[month]} ${year}</div>`;
+
+                // Day headers
+                html += '<div class="calendar-grid">';
+                ['S', 'M', 'T', 'W', 'T', 'F', 'S'].forEach(day => {
+                    html += `<div class="calendar-day-header">${day}</div>`;
+                });
+
+                // Empty cells before first day
+                for (let i = 0; i < startDay; i++) {
+                    html += '<div class="calendar-day other-month"></div>';
+                }
+
+                // Days of the month
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+                    const hasJob = scheduledJobs[dateStr] !== undefined;
+                    const jobClass = hasJob ? 'has-job' : '';
+                    
+                    html += `<div class="calendar-day ${jobClass}" data-date="${dateStr}">${day}</div>`;
+                }
+
+                html += '</div>';
+                calendar.innerHTML = html;
+
+                // Add hover events to days with jobs
+                document.querySelectorAll('.calendar-day.has-job').forEach(dayEl => {
+                    dayEl.addEventListener('mouseenter', showJobTooltip);
+                    dayEl.addEventListener('mouseleave', hideJobTooltip);
+                });
+            }
+
+            let tooltip = null;
+
+            function showJobTooltip(e) {
+                const date = e.target.dataset.date;
+                const jobs = scheduledJobs[date];
+                
+                if (!jobs || jobs.length === 0) return;
+
+                // Create tooltip if doesn't exist
+                if (!tooltip) {
+                    tooltip = document.createElement('div');
+                    tooltip.className = 'job-tooltip';
+                    document.body.appendChild(tooltip);
+                }
+
+                // Build tooltip content
+                let content = jobs.map(job => {
+                    const time = new Date(job.work_datetime).toLocaleTimeString('id-ID', {hour: '2-digit', minute: '2-digit'});
+                    return `<div style="margin-bottom: 4px;"><strong>${job.customer.name}</strong><br>${job.service.name} - ${time}</div>`;
+                }).join('');
+
+                tooltip.innerHTML = content;
+                tooltip.style.display = 'block';
+
+                // Position tooltip
+                const rect = e.target.getBoundingClientRect();
+                tooltip.style.left = rect.left + (rect.width / 2) - (tooltip.offsetWidth / 2) + 'px';
+                tooltip.style.top = rect.bottom + 5 + 'px';
+            }
+
+            function hideJobTooltip() {
+                if (tooltip) {
+                    tooltip.style.display = 'none';
+                }
+            }
+
+            function toggleAvailability() {
+                const toggle = document.getElementById('availability-toggle');
+                const text = document.getElementById('availability-text');
+                const icon = toggle.querySelector('i');
+                
+                fetch('{{ route('tukang.toggle.availability') }}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        if (data.is_available) {
+                            toggle.style.backgroundColor = '#198754'; // green
+                            icon.className = 'bi bi-check-circle me-1';
+                            text.textContent = 'Available';
+                        } else {
+                            toggle.style.backgroundColor = '#dc3545'; // red
+                            icon.className = 'bi bi-x-circle me-1';
+                            text.textContent = 'Unavailable';
+                        }
+                        
+                        // Show success toast/alert
+                        showToast(data.message || 'Availability updated');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast('Failed to update availability', 'error');
+                });
+            }
+
+            function showToast(message, type = 'success') {
+                const toast = document.createElement('div');
+                toast.className = `alert alert-${type === 'success' ? 'success' : 'danger'} position-fixed top-0 end-0 m-3`;
+                toast.style.zIndex = '9999';
+                toast.textContent = message;
+                document.body.appendChild(toast);
+                
+                setTimeout(() => {
+                    toast.remove();
+                }, 3000);
+            }
     </script>
 </x-app-layout>

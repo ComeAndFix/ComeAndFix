@@ -86,16 +86,12 @@ class ChatController extends Controller
             $conversationServiceId = null;
             
             if ($request->service_type) {
-                // New service_type provided - look up and UPDATE conversation service
+                // New service_type provided - use it for THIS message
                 $service = \App\Models\Service::where('name', 'LIKE', $request->service_type . '%')
                     ->where('is_active', true)
                     ->first();
                 if ($service) {
                     $conversationServiceId = $service->id;
-                    
-                    // Update all existing messages in this conversation to the new service
-                    ChatMessage::where('conversation_id', $conversationId)
-                        ->update(['conversation_service_id' => $conversationServiceId]);
                 }
             }
             
@@ -103,6 +99,7 @@ class ChatController extends Controller
             if (!$conversationServiceId) {
                 $existingMessage = ChatMessage::where('conversation_id', $conversationId)
                     ->whereNotNull('conversation_service_id')
+                    ->orderBy('created_at', 'desc')
                     ->first();
                 if ($existingMessage) {
                     $conversationServiceId = $existingMessage->conversation_service_id;
@@ -180,19 +177,24 @@ class ChatController extends Controller
                 ->whereNull('read_at')
                 ->update(['read_at' => now()]);
 
-            // Extract service context from query parameter or conversation
+            // Extract service context - PRIORITY: service_id > service_type > conversation messages
+            $serviceId = request()->query('service_id');
             $serviceType = request()->query('service_type');
             $selectedService = null;
             
-            if ($serviceType) {
+            // Priority 1: service_id from URL (from incoming job request click)
+            if ($serviceId) {
+                $selectedService = \App\Models\Service::find($serviceId);
+            }
+            // Priority 2: service_type from URL
+            elseif ($serviceType) {
                 // Use LIKE to match service names (e.g., "Plumbing" matches "Plumbing Services")
                 $selectedService = \App\Models\Service::where('name', 'LIKE', $serviceType . '%')
                     ->where('is_active', true)
                     ->first();
             }
-            
-            // If no service from URL, check conversation's stored service
-            if (!$selectedService) {
+            // Priority 3: existing conversation service
+            else {
                 $messageWithService = ChatMessage::where('conversation_id', $conversationId)
                     ->whereNotNull('conversation_service_id')
                     ->first();

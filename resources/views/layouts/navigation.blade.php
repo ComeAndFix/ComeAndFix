@@ -13,36 +13,46 @@
         <!-- Navigation items -->
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                {{--                <li class="nav-item">--}}
-                {{--                    <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">--}}
-                {{--                        <i class="bi bi-house me-1"></i>Home--}}
-                {{--                    </a>--}}
-                {{--                </li>--}}
-                <li class="nav-item">
-                    <a class="nav-link" href="#services">
-                        <i class="bi bi-wrench me-1"></i>Services
-                    </a>
-                </li>
-                {{--                <li class="nav-item">--}}
-                {{--                    <a class="nav-link" href="#how-it-works">--}}
-                {{--                        <i class="bi bi-info-circle me-1"></i>How It Works--}}
-                {{--                    </a>--}}
-                {{--                </li>--}}
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <i class="bi bi-calendar-check me-1"></i>My Bookings
-                    </a>
-                </li>
-                {{--                <li class="nav-item">--}}
-                {{--                    <a class="nav-link" href="#">--}}
-                {{--                        <i class="bi bi-chat-dots me-1"></i>Messages--}}
-                {{--                    </a>--}}
-                {{--                </li>--}}
-                {{--                <li class="nav-item">--}}
-                {{--                    <a class="nav-link" href="#emergency">--}}
-                {{--                        <i class="bi bi-exclamation-triangle me-1"></i>Emergency--}}
-                {{--                    </a>--}}
-                {{--                </li>--}}
+                @if(Auth::guard('tukang')->check())
+                    <!-- Tukang Navigation -->
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('tukang.dashboard') ? 'active' : '' }}" href="{{ route('tukang.dashboard') }}">
+                            <i class="bi bi-speedometer2 me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('tukang.jobs.*') ? 'active' : '' }}" href="{{ route('tukang.jobs.index') }}">
+                            <i class="bi bi-briefcase me-1"></i>Active Jobs
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('tukang.chatrooms.*') ? 'active' : '' }}" href="{{ route('tukang.chatrooms.index') }}">
+                            <i class="bi bi-chat-dots me-1"></i>Messages
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('tukang.finance.*') ? 'active' : '' }}" href="{{ route('tukang.finance.index') }}">
+                            <i class="bi bi-wallet2 me-1"></i>Finance
+                        </a>
+                    </li>
+                @elseif(Auth::guard('customer')->check())
+                    <!-- Customer Navigation -->
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
+                            <i class="bi bi-house me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('customer.orders.*') ? 'active' : '' }}" href="{{ route('customer.orders.index') }}">
+                            <i class="bi bi-briefcase me-1"></i>My Bookings
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('chat.*') ? 'active' : '' }}" href="{{ route('chat.index') }}">
+                            <i class="bi bi-chat-dots me-1"></i>Messages
+                        </a>
+                    </li>
+                @endif
             </ul>
 
             <!-- Right side items -->
@@ -69,11 +79,31 @@
                 <!-- User menu -->
                 <div class="dropdown">
                     <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
-                        <img src="https://via.placeholder.com/32x32/007bff/ffffff?text=U" alt="User" class="rounded-circle me-2" style="width: 32px; height: 32px;">
-                        <span class="d-none d-lg-inline">{{ Auth::user()->name }}</span>
+                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px; font-size: 14px; font-weight: bold;">
+                            @if(Auth::guard('tukang')->check())
+                                {{ substr(Auth::guard('tukang')->user()->name, 0, 1) }}
+                            @elseif(Auth::guard('customer')->check())
+                                {{ substr(Auth::guard('customer')->user()->name, 0, 1) }}
+                            @else
+                                {{ substr(Auth::user()->name, 0, 1) }}
+                            @endif
+                        </div>
+                        <span class="d-none d-lg-inline">
+                            @if(Auth::guard('tukang')->check())
+                                {{ Auth::guard('tukang')->user()->name }}
+                            @elseif(Auth::guard('customer')->check())
+                                {{ Auth::guard('customer')->user()->name }}
+                            @else
+                                {{ Auth::user()->name }}
+                            @endif
+                        </span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="{{ route('profile.show') }}"><i class="bi bi-person me-2"></i>Profile</a></li>
+                        <li>
+                            <a class="dropdown-item" href="@if(Auth::guard('tukang')->check()) {{ route('tukang.profile') }} @else {{ route('profile.show') }} @endif">
+                                <i class="bi bi-person me-2"></i>Profile
+                            </a>
+                        </li>
                         {{--                        <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i>Settings</a></li>--}}
                         <li><hr class="dropdown-divider"></li>
                         <li>
