@@ -1,312 +1,172 @@
-<x-app-layout>
-    <div class="container-fluid px-0">
-        <!-- Hero Section -->
-        <section class="bg-primary text-white py-5">
-            <div class="container">
-                <div class="row align-items-center">
-                    <div class="col-lg-6">
-                        <h1 class="display-4 fw-bold mb-3">Find Trusted Handymen Near You</h1>
-                        <p class="lead mb-4">Get your home repairs done by verified professionals. Quick, reliable, and affordable services at your doorstep.</p>
-
-                        <!-- Search Bar -->
-                        <div class="card shadow">
-                            <div class="card-body p-4">
-                                <form class="row g-3">
-                                    <div class="col-md-6">
-                                        <input type="text" class="form-control form-control-lg" placeholder="What service do you need?">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <input type="text" class="form-control form-control-lg" placeholder="Your location">
-                                    </div>
-                                    <div class="col-md-2">
-                                        <button class="btn btn-warning btn-lg w-100" type="submit">
-                                            <i class="bi bi-search"></i>
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-6 text-center">
-                        <img src="/images/handyman-hero.svg" alt="Handyman Services" class="img-fluid">
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Popular Services -->
-        <section id="services" class="py-5 bg-body">
-            <div class="container">
-                <div class="text-center mb-5">
-                    <h2 class="fw-bold text-body">Popular Services</h2>
-                    <p class="text-body-secondary">Choose from our most requested handyman services</p>
-                </div>
-
-                <div class="row g-4">
-                    <div class="col-lg-3 col-md-6">
-                        <a href="{{ route('find-tukang', ['service_type' => 'Plumbing']) }}" class="text-decoration-none">
-                            <div class="card h-100 border-0 shadow-sm hover-shadow">
-                                <div class="card-body text-center p-4">
-                                    <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
-                                        <i class="bi bi-wrench text-primary" style="font-size: 2rem;"></i>
-                                    </div>
-                                    <h5 class="fw-bold text-body">Plumbing</h5>
-                                    <p class="text-body-secondary small mb-3">Pipe repairs, leaks, installations</p>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-
-                    <div class="col-lg-3 col-md-6">
-                        <a href="{{ route('find-tukang', ['service_type' => 'Electricity']) }}" class="text-decoration-none">
-                            <div class="card h-100 border-0 shadow-sm hover-shadow">
-                                <div class="card-body text-center p-4">
-                                    <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
-                                        <i class="bi bi-lightning text-success" style="font-size: 2rem;"></i>
-                                    </div>
-                                    <h5 class="fw-bold text-body">Electrical</h5>
-                                    <p class="text-body-secondary small mb-3">Wiring, outlets, lighting fixes</p>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-
-                    <div class="col-lg-3 col-md-6">
-                        <a href="{{ route('find-tukang', ['service_type' => 'HVAC']) }}" class="text-decoration-none">
-                            <div class="card h-100 border-0 shadow-sm hover-shadow">
-                                <div class="card-body text-center p-4">
-                                    <div class="bg-info bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
-                                        <i class="bi bi-fan text-info" style="font-size: 2rem;"></i>
-                                    </div>
-                                    <h5 class="fw-bold text-body">AC Service</h5>
-                                    <p class="text-body-secondary small mb-3">Installation, repair, maintenance</p>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-
-                    <div class="col-lg-3 col-md-6">
-                        <a href="{{ route('find-tukang', ['service_type' => 'Painting']) }}" class="text-decoration-none">
-                            <div class="card h-100 border-0 shadow-sm hover-shadow">
-                                <div class="card-body text-center p-4">
-                                    <div class="bg-warning bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
-                                        <i class="bi bi-paint-bucket text-warning" style="font-size: 2rem;"></i>
-                                    </div>
-                                    <h5 class="fw-bold text-body">Painting</h5>
-                                    <p class="text-body-secondary small mb-3">Interior, exterior, touch-ups</p>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-
-                    <div class="col-lg-3 col-md-6">
-                        <a href="{{ route('find-tukang', ['service_type' => 'Carpentry']) }}" class="text-decoration-none">
-                            <div class="card h-100 border-0 shadow-sm hover-shadow">
-                                <div class="card-body text-center p-4">
-                                    <div class="bg-danger bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
-                                        <i class="bi bi-hammer text-danger" style="font-size: 2rem;"></i>
-                                    </div>
-                                    <h5 class="fw-bold text-body">Carpentry</h5>
-                                    <p class="text-body-secondary small mb-3">Furniture repair, custom work</p>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-
-                    <div class="col-lg-3 col-md-6">
-                        <div class="card h-100 border-0 shadow-sm hover-shadow">
-                            <div class="card-body text-center p-4">
-                                <div class="bg-secondary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
-                                    <i class="bi bi-tools text-secondary" style="font-size: 2rem;"></i>
-                                </div>
-                                <h5 class="fw-bold text-body">Appliance Repair</h5>
-                                <p class="text-body-secondary small mb-3">Washing machine, fridge, etc.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-3 col-md-6">
-                        <div class="card h-100 border-0 shadow-sm hover-shadow">
-                            <div class="card-body text-center p-4">
-                                <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
-                                    <i class="bi bi-house-gear text-success" style="font-size: 2rem;"></i>
-                                </div>
-                                <h5 class="fw-bold text-body">Home Maintenance</h5>
-                                <p class="text-body-secondary small mb-3">General repairs, upkeep</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-3 col-md-6">
-                        <div class="card h-100 border-0 shadow-sm hover-shadow">
-                            <div class="card-body text-center p-4">
-                                <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
-                                    <i class="bi bi-plus-circle text-primary" style="font-size: 2rem;"></i>
-                                </div>
-                                <h5 class="fw-bold text-body">View All</h5>
-                                <p class="text-body-secondary small mb-3">Explore more services</p>
-                                <a href="#" class="btn btn-outline-primary btn-sm">See More</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- How It Works -->
-        <section class="py-5 bg-light">
-            <div class="container">
-                <div class="text-center mb-5">
-                    <h2 class="fw-bold">How It Works</h2>
-                    <p class="text-muted">Get your job done in 3 simple steps</p>
-                </div>
-
-                <div class="row g-4">
-                    <div class="col-md-4 text-center">
-                        <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
-                            <span class="fw-bold">1</span>
-                        </div>
-                        <h5 class="fw-bold">Describe Your Job</h5>
-                        <p class="text-muted">Tell us what you need done and when</p>
-                    </div>
-                    <div class="col-md-4 text-center">
-                        <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
-                            <span class="fw-bold">2</span>
-                        </div>
-                        <h5 class="fw-bold">Get Matched</h5>
-                        <p class="text-muted">We'll connect you with qualified handymen</p>
-                    </div>
-                    <div class="col-md-4 text-center">
-                        <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
-                            <span class="fw-bold">3</span>
-                        </div>
-                        <h5 class="fw-bold">Job Done</h5>
-                        <p class="text-muted">Pay securely after the work is completed</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-
-        <!-- Recent Orders -->
-        <section id="recent-orders" class="py-5 bg-light">
-            <div class="container">
-                <div class="row align-items-center mb-4">
-                    <div class="col">
-                        <h2 class="fw-bold mb-0">Active Orders</h2>
-                    </div>
-                    <div class="col-auto">
-                        <a href="{{ route('customer.orders.index') }}" class="btn btn-outline-primary">View All Orders</a>
-                    </div>
-                </div>
-
-                <div class="row g-4">
-                    @forelse($recentOrders as $order)
-                        <div class="col-md-6">
-                            <div class="card border-0 shadow-sm h-100">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-start mb-3">
-                                        <div>
-                                            <h5 class="fw-bold mb-1">{{ $order->service->name }}</h5>
-                                            <small class="text-muted">Order #{{ $order->order_number }}</small>
-                                        </div>
-                                        <div class="d-flex flex-column align-items-end">
-                                            <span class="badge bg-{{ $order->status_color }} mb-1">{{ ucwords(str_replace('_', ' ', $order->status)) }}</span>
-                                            @if($order->payment_status)
-                                                <span class="badge bg-{{ $order->payment_status === 'paid' ? 'success' : 'warning' }} small">
-                                            {{ ucwords(str_replace('_', ' ', $order->payment_status)) }}
-                                        </span>
-                                            @endif
-                                        </div>
-                                    </div>
-
-                                    <div class="mb-3">
-                                        @if($order->service_description)
-                                            <p class="small text-muted mb-2">{{ $order->service_description }}</p>
-                                        @endif
-
-                                        @if($order->service_details)
-                                            <div class="small text-muted mb-2">
-                                                <strong>Service Details:</strong>
-                                                <ul class="list-unstyled ms-3 mb-2">
-                                                    @foreach($order->service_details as $key => $value)
-                                                        <li>- {{ ucfirst(str_replace('_', ' ', $key)) }}: {{ $value }}</li>
-                                                    @endforeach
-                                                </ul>
-                                            </div>
-                                        @endif
-
-                                        <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <span class="text-primary fw-bold">Rp {{ number_format($order->total_price, 0, ',', '.') }}</span>
-                                            <small class="text-muted">Created: {{ $order->created_at->format('d M Y H:i') }}</small>
-                                        </div>
-
-                                        @if($order->accepted_at)
-                                            <div class="small text-muted">
-                                                Accepted: {{ $order->accepted_at->format('d M Y H:i') }}
-                                            </div>
-                                        @endif
-                                    </div>
-
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div class="d-flex align-items-center">
-                                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-2"
-                                                 style="width: 32px; height: 32px;">
-                                                {{ substr($order->tukang->name, 0, 1) }}
-                                            </div>
-                                            <span class="small">{{ $order->tukang->name }}</span>
-                                        </div>
-                                        <a href="{{ route('chat.show', ['receiverType' => 'tukang', 'receiverId' => $order->tukang_id]) }}"
-                                           class="btn btn-sm btn-outline-primary">
-                                            <i class="bi bi-chat"></i> Contact
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    @empty
-                        <div class="col-12">
-                            <div class="text-center py-4">
-                                <i class="bi bi-bag x-lg text-muted mb-3" style="font-size: 3rem;"></i>
-                                <p class="text-muted">No active orders</p>
-                                <a href="{{ route('find-tukang') }}" class="btn btn-primary">
-                                    <i class="bi bi-search me-1"></i> Find Handyman
-                                </a>
-                            </div>
-                        </div>
-                    @endforelse
-                </div>
-            </div>
-        </section>
-
-    </div>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Check if there's a scroll_to parameter in the URL
-            const urlParams = new URLSearchParams(window.location.search);
-            const scrollTo = urlParams.get('scroll_to');
-
-            if (scrollTo === 'recent-orders') {
-                const element = document.getElementById('recent-orders');
-                if (element) {
-                    element.scrollIntoView({ behavior: 'smooth' });
-                }
-            }
-        });
-    </script>
-
+@push('styles')
+    @vite(['resources/css/customer/dashboard.css'])
     <style>
-        .hover-shadow {
-            transition: all 0.3s ease;
-        }
-
-        .hover-shadow:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
-        }
-
-        .card {
-            transition: all 0.3s ease;
+        body {
+            background: #F1F2F4 !important;
         }
     </style>
+@endpush
+
+<x-app-layout>
+    <!-- Top Section: Hero + Orders (Light Gray Background) -->
+    <div style="background: #F1F2F4; padding-bottom: 1rem; margin-top: -2rem; padding-top: 2rem;">
+        <!-- Hero Section -->
+        <section class="hero-section" style="background-image: url('{{ asset('images/workshop-tools.png') }}');">
+            <div class="hero-content">
+                <p class="hero-greeting">Hello! Welcome back,</p>
+                <h1 class="hero-name">{{ strtoupper(Auth::guard('customer')->user()->name) }}</h1>
+            </div>
+        </section>
+
+        <!-- Active Orders Section (only show if there are active orders) -->
+        @if($recentOrders->count() > 0)
+        <section class="orders-section">
+            <div style="max-width: 1200px; margin: 0 auto;">
+                <h2 class="section-title">Your Ongoing Order</h2>
+                
+                @foreach($recentOrders->take(1) as $order)
+                <a href="{{ route('customer.orders.show', $order) }}" class="order-card">
+                    <div class="order-info">
+                        <p class="order-type-label">Order Type</p>
+                        <h3 class="order-type">{{ $order->service->name }}</h3>
+                        
+                        <div class="order-badges">
+                            <span class="order-badge status">{{ ucwords(str_replace('_', ' ', $order->status)) }}</span>
+                            @if($order->payment_status)
+                            <span class="order-badge payment">{{ ucwords($order->payment_status) }}</span>
+                            @endif
+                        </div>
+                        
+                        <div class="order-tukang">
+                            <img src="{{ $order->tukang->profile_photo_url ?? asset('images/default-avatar.png') }}" alt="{{ $order->tukang->name }}" class="tukang-avatar">
+                            <div>
+                                <p class="tukang-label">Tukang</p>
+                                <p class="tukang-name">{{ $order->tukang->name }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="order-arrow">
+                        <i class="bi bi-chevron-right"></i>
+                    </div>
+                </a>
+                @endforeach
+            </div>
+        </section>
+        @endif
+    </div>
+
+    <!-- Bottom Section: Services + Info (White Background) -->
+    <div style="background: #FFFFFF; min-height: 60vh;">
+        <!-- Main Content: Services on Left, Info on Right -->
+        <section class="bottom-section" style="padding: 3rem 2rem;">
+            <div class="main-content-grid" style="max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr; gap: 4rem;">
+                
+                <!-- LEFT: Services Section -->
+                <div class="services-section">
+                    <h2 class="section-title">{{ $recentOrders->count() > 0 ? 'Services We Offer' : 'Choose Service' }}</h2>
+                    <p class="section-subtitle">Choose from a selection of our available handyman services</p>
+                    
+                    <div class="services-grid">
+                        <!-- Plumbing -->
+                        <a href="{{ route('find-tukang', ['service_type' => 'Plumbing']) }}" class="service-card">
+                            <svg class="service-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M16 32L24 24L28 28L40 16L48 24L36 36L40 40L32 48L28 44L24 48L16 40L20 36L16 32Z" stroke="#2C2C2C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <h3 class="service-name">PLUMBING</h3>
+                            <p class="service-description">Pipe repairs, leaks, installations</p>
+                        </a>
+                        
+                        <!-- Electricity -->
+                        <a href="{{ route('find-tukang', ['service_type' => 'Electricity']) }}" class="service-card">
+                            <svg class="service-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M16 32L24 24L28 28L40 16L48 24L36 36L40 40L32 48L28 44L24 48L16 40L20 36L16 32Z" stroke="#2C2C2C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <h3 class="service-name">ELECTRICITY</h3>
+                            <p class="service-description">Wiring, outlets, lighting fixes</p>
+                        </a>
+                        
+                        <!-- AC Unit -->
+                        <a href="{{ route('find-tukang', ['service_type' => 'HVAC']) }}" class="service-card">
+                            <svg class="service-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M16 32L24 24L28 28L40 16L48 24L36 36L40 40L32 48L28 44L24 48L16 40L20 36L16 32Z" stroke="#2C2C2C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <h3 class="service-name">AC UNIT</h3>
+                            <p class="service-description">Installation, repairs, maintenance</p>
+                        </a>
+                        
+                        <!-- Painting -->
+                        <a href="{{ route('find-tukang', ['service_type' => 'Painting']) }}" class="service-card">
+                            <svg class="service-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M16 32L24 24L28 28L40 16L48 24L36 36L40 40L32 48L28 44L24 48L16 40L20 36L16 32Z" stroke="#2C2C2C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <h3 class="service-name">PAINTING</h3>
+                            <p class="service-description">Interior, exterior, touch-ups</p>
+                        </a>
+                        
+                        <!-- Appliance Repair -->
+                        <a href="{{ route('find-tukang', ['service_type' => 'Appliance Repair']) }}" class="service-card">
+                            <svg class="service-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M16 32L24 24L28 28L40 16L48 24L36 36L40 40L32 48L28 44L24 48L16 40L20 36L16 32Z" stroke="#2C2C2C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <h3 class="service-name">APPLIANCE REPAIR</h3>
+                            <p class="service-description">Washing machine, fridge, etc</p>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- RIGHT: Find Trusted Handymen + How It Works -->
+                <div style="display: flex; flex-direction: column; gap: 3rem;">
+                    
+                    <!-- Find Trusted Handymen -->
+                    <div>
+                        <h2 class="section-title">Find trusted<br>handymen near you</h2>
+                        <p class="section-subtitle" style="margin-bottom: 0;">
+                            Get your home repairs done by professionals. <strong>Quick, reliable,</strong> and <strong>affordable</strong> services at your doorstep.
+                        </p>
+                    </div>
+                    
+                    <!-- How It Works -->
+                    <div class="how-it-works-section" style="padding: 0;">
+                        <h3 class="section-title" style="font-size: 1.5rem; margin-bottom: 1.5rem;">How it Works</h3>
+                        
+                        <div class="steps-container">
+                            <div class="step">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <h4>Step 1 - <strong>Choose your service</strong></h4>
+                                    <p>Choose the services you need from the panel on the left.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="step">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <h4>Step 2 - <strong>Choose your tukang</strong></h4>
+                                    <p>Choose your preferred Tukang based on their portfolio.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="step">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <h4>Step 3 - <strong>Describe and negotiate</strong></h4>
+                                    <p>Describe and negotiate with the Tukang to find your desired price.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="step">
+                                <div class="step-number">4</div>
+                                <div class="step-content">
+                                    <h4>Step 4 - <strong>Come and Fix!</strong></h4>
+                                    <p>Your Tukang will Come and Fix your problems for you!</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </section>
+    </div>
 </x-app-layout>

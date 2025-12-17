@@ -1,0 +1,330 @@
+/* Hero Section */
+.hero-section {
+    background-size: cover;
+    background-position: center;
+    border-radius: 30px;
+    padding: 4rem 3rem;
+    margin: 2rem;
+    position: relative;
+    min-height: 320px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 30px;
+}
+
+/* Progressive blur at bottom */
+.hero-section::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 150px;
+    background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.3));
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    mask-image: linear-gradient(to bottom, transparent, black);
+    -webkit-mask-image: linear-gradient(to bottom, transparent, black);
+    border-radius: 0 0 30px 30px;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 1;
+    color: white;
+}
+
+.hero-greeting {
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    font-family: 'Inter', sans-serif;
+}
+
+.hero-name {
+    font-size: 3rem;
+    font-weight: 800;
+    line-height: 1.2;
+    font-family: 'Jost', sans-serif;
+}
+
+/* Service Cards Section */
+.services-section {
+    padding: 3rem;
+    background: #F1F2F4;
+    border-radius: 20px;
+}
+
+.section-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--brand-dark);
+    margin-bottom: 0.5rem;
+    font-family: 'Inter', sans-serif;
+}
+
+.section-subtitle {
+    font-size: 0.875rem;
+    color: var(--text-gray);
+    margin-bottom: 2rem;
+    font-family: 'Inter', sans-serif;
+}
+
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+}
+
+.service-card {
+    background: white;
+    border-radius: 16px;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    border-color: var(--brand-orange);
+}
+
+.service-card.featured {
+    background: var(--brand-orange);
+    color: white;
+}
+
+.service-card.featured .service-name {
+    color: white;
+}
+
+.service-card.featured .service-description {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.service-icon {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 1rem;
+}
+
+.service-name {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--brand-dark);
+    margin-bottom: 0.5rem;
+    font-family: 'Inter', sans-serif;
+}
+
+.service-description {
+    font-size: 0.75rem;
+    color: var(--text-gray);
+    font-family: 'Inter', sans-serif;
+}
+
+/* How It Works Section */
+.how-it-works-section {
+    padding: 3rem 2rem;
+}
+
+.steps-container {
+    max-width: 600px;
+}
+
+.step {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    position: relative;
+}
+
+.step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 40px;
+    bottom: -32px;
+    width: 2px;
+    background: #E0E0E0;
+}
+
+.step-number {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    background: var(--brand-orange);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 0.875rem;
+    font-family: 'Inter', sans-serif;
+    position: relative;
+    z-index: 1;
+}
+
+.step-content h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--brand-dark);
+    margin-bottom: 0.25rem;
+    font-family: 'Inter', sans-serif;
+}
+
+.step-content p {
+    font-size: 0.875rem;
+    color: var(--text-gray);
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+}
+
+/* Active Orders Section */
+.orders-section {
+    padding: 3rem 2rem;
+}
+
+.order-card {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    max-width: 600px;
+}
+
+.order-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.order-info {
+    flex: 1;
+}
+
+.order-type-label {
+    font-size: 0.75rem;
+    color: var(--text-gray);
+    margin-bottom: 0.25rem;
+    font-family: 'Inter', sans-serif;
+}
+
+.order-type {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--brand-orange);
+    margin-bottom: 0.5rem;
+    font-family: 'Inter', sans-serif;
+}
+
+.order-badges {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.order-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+}
+
+.order-badge.status {
+    background: #E3F2FD;
+    color: #1976D2;
+}
+
+.order-badge.payment {
+    background: #E8F5E9;
+    color: #388E3C;
+}
+
+.order-tukang {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.tukang-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #E0E0E0;
+}
+
+.tukang-label {
+    font-size: 0.75rem;
+    color: var(--text-gray);
+    font-family: 'Inter', sans-serif;
+}
+
+.tukang-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--brand-dark);
+    font-family: 'Inter', sans-serif;
+}
+
+.order-arrow {
+    color: var(--text-gray);
+    font-size: 1.5rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 3rem 2rem;
+        margin: 1rem;
+    }
+
+    .hero-name {
+        font-size: 2rem;
+    }
+
+    .services-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .services-section {
+        padding: 2rem 1.5rem;
+    }
+
+    .service-card {
+        padding: 2rem 1.5rem;
+    }
+
+    /* Make bottom section stack vertically on mobile */
+    .main-content-grid {
+        grid-template-columns: 1fr !important;
+        gap: 2rem !important;
+    }
+
+    /* Reduce section padding on mobile */
+    .bottom-section {
+        padding: 2rem 1rem !important;
+    }
+}
