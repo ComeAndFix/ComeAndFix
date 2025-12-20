@@ -53,7 +53,9 @@
 
             $tukang->sendEmailVerificationNotification();
 
-            return redirect()->route('tukang.login')->with('success', 'Registration successful! Please check your email to verify your account before logging in.');
+            Auth::guard('tukang')->login($tukang);
+
+            return redirect()->route('tukang.verification.notice');
         }
 
         public function login(Request $request)
@@ -63,30 +65,19 @@
                 'password' => ['required'],
             ]);
 
-            $tukang = Tukang::where('email', $request->email)->first();
-
-            if (!$tukang) {
-                return back()->withErrors([
-                    'email' => 'The provided credentials do not match our records.',
-                ])->onlyInput('email');
-            }
-
             if (Auth::guard('tukang')->attempt($request->only('email', 'password'), $request->boolean('remember'))) {
-                $user = Auth::guard('tukang')->user();
+                $request->session()->regenerate();
 
+                $user = Auth::guard('tukang')->user();
                 if (!$user->hasVerifiedEmail()) {
-                    Auth::guard('tukang')->logout();
-                    return back()->withErrors([
-                        'email' => 'Please verify your email address before logging in.',
-                    ])->onlyInput('email');
+                    return redirect()->route('tukang.verification.notice');
                 }
 
-                $request->session()->regenerate();
                 return redirect()->intended(route('tukang.dashboard'));
             }
 
             return back()->withErrors([
-                'password' => 'The password you entered is incorrect.',
+                'email' => 'The provided credentials do not match our records.',
             ])->onlyInput('email');
         }
 

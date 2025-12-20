@@ -49,10 +49,6 @@ Route::middleware('guest:tukang')->name('tukang.')->group(function () {
     Route::post('/register/tukang', [TukangAuthController::class, 'register']);
 });
 
-Route::middleware('auth:tukang')->name('tukang.')->group(function () {
-    Route::post('/logout/tukang', [TukangAuthController::class, 'logout'])->name('logout');
-});
-
 // Customer Dashboard
 Route::middleware(['auth:customer', 'verified'])->group(function () {
     Route::get('/dashboard', function () {

@@ -30,6 +30,6 @@ class CustomerEmailVerificationController extends Controller
             event(new Verified($customer));
         }
 
-        return redirect()->route('customer.login')->with('success', 'Email verified successfully! You can now log in.');
+        return redirect()->route('dashboard')->with('success', 'Email verified successfully!');
     }
 }

@@ -61,40 +61,41 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware('auth:customer')->group(function () {
-    Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
+    Route::post('customer/logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('customer.logout');
 });
 
 Route::middleware('auth:tukang')->group(function () {
-    Route::post('logout/tukang', [AuthenticatedSessionController::class, 'destroy'])
+    Route::post('tukang/logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('tukang.logout');
 });
 
 // Add these routes for customer email verification
-Route::middleware('guest:customer')->group(function () {
+Route::middleware('auth:customer')->group(function () {
     Route::get('customer/verify-email', [EmailVerificationPromptController::class, '__invoke'])
         ->name('customer.verification.notice');
-
-    Route::get('customer/verify-email/{id}/{hash}', CustomerEmailVerificationController::class)
-        ->middleware(['signed', 'throttle:6,1'])
-        ->name('customer.verification.verify');
 
     Route::post('customer/email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
         ->middleware('throttle:6,1')
         ->name('customer.verification.send');
 });
 
+// Verification link handles its own auth or is signed
+Route::get('customer/verify-email/{id}/{hash}', CustomerEmailVerificationController::class)
+    ->middleware(['signed', 'throttle:6,1'])
+    ->name('customer.verification.verify');
+
 // Add these routes for tukang email verification
-Route::middleware('guest:tukang')->group(function () {
+Route::middleware('auth:tukang')->group(function () {
     Route::get('tukang/verify-email', [EmailVerificationPromptController::class, '__invoke'])
         ->name('tukang.verification.notice');
-
-    Route::get('tukang/verify-email/{id}/{hash}', TukangEmailVerificationController::class)
-        ->middleware(['signed', 'throttle:6,1'])
-        ->name('tukang.verification.verify');
 
     Route::post('tukang/email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
         ->middleware('throttle:6,1')
         ->name('tukang.verification.send');
 });
+
+Route::get('tukang/verify-email/{id}/{hash}', TukangEmailVerificationController::class)
+    ->middleware(['signed', 'throttle:6,1'])
+    ->name('tukang.verification.verify');
 
