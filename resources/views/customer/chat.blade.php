@@ -1,167 +1,134 @@
 <x-app-layout>
     @include('components.payment-popup')
-    <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Chat with {{ $receiver->name }}
-            </h2>
-            <a href="{{ route('find-tukang') }}" class="btn btn-secondary">
-                <i class="bi bi-arrow-left"></i> Back to Map
-            </a>
-        </div>
-    </x-slot>
-    <div class="py-6">
-        <div class="max-w-4xl mx-auto">
-            <div class="bg-white shadow-lg rounded-lg overflow-hidden d-flex flex-column" style="height: 80vh;">
-                <!-- Header -->
-                <div class="bg-primary text-white p-4 border-b flex-shrink-0">
-                    <div class="flex items-center">
-                        <div class="rounded-circle me-3 bg-light text-primary d-flex align-items-center justify-content-center"
-                             style="width: 40px; height: 40px; font-weight: bold;">
-                            {{ substr($receiver->name, 0, 1) }}
-                        </div>
-                        <div>
-                            <h5 class="mb-0">{{ $receiver->name }}</h5>
-                            <small class="opacity-75">{{ ucwords($receiverType) }}</small>
-                        </div>
+    @push('styles')
+        @vite(['resources/css/components/chat.css'])
+    @endpush
+
+    <div class="chat-page-wrapper">
+        <div class="chat-container">
+            <!-- Header -->
+            <div class="chat-header">
+                <div class="chat-header-avatar">
+                    {{ substr($receiver->name, 0, 1) }}
+                </div>
+                <div class="chat-header-info">
+                    <h2 class="chat-header-name">{{ $receiver->name }}</h2>
+                    <div class="chat-header-status">
+                         <span class="chat-status-dot"></span>
+                         {{ ucwords($receiverType) }} • Online
                     </div>
                 </div>
+                <a href="{{ route('find-tukang') }}" class="btn btn-outline-secondary btn-sm rounded-pill">
+                    <i class="bi bi-arrow-left"></i> Map
+                </a>
+            </div>
 
-                <!-- Messages Container -->
-                <div id="messages-container" class="flex-1 p-4 overflow-y-auto">
-                    <div id="messages">
-                        @foreach($messages as $message)
-                            @if($message->message_type === 'order_proposal' && $message->order)
-                                <div class="order-proposal mb-3 text-start" data-order-id="{{ $message->order->id }}">
-                                    <div class="d-inline-block bg-warning text-dark p-3 rounded border" style="max-width: 75%;">
-                                        <div class="d-flex align-items-center mb-2">
-                                            <i class="bi bi-briefcase me-2"></i>
-                                            <strong>Order Proposal</strong>
-                                        </div>
-                                        <div class="order-details">
-                                            <div><strong>Service:</strong> {{ $message->order->service ? $message->order->service->name : 'Service' }}</div>
-                                            <div><strong>Base Price:</strong> Rp {{ number_format($message->order->price, 0, ',', '.') }}</div>
-                                            @if($message->order->work_datetime)
-                                                <div><strong>Work Date:</strong> {{ $message->order->work_datetime->format('d M Y H:i') }}</div>
-                                            @endif
-                                            @if($message->order->working_address)
-                                                <div><strong>Working Address:</strong> {{ $message->order->working_address }}</div>
-                                            @endif
-                                            @if($message->order->service_description)
-                                                <div><strong>Description:</strong> {{ $message->order->service_description }}</div>
-                                            @endif
-                                            @if($message->order->additionalItems && $message->order->additionalItems->count() > 0)
-                                                <div class="mt-2">
-                                                    <strong>Additional Items:</strong>
-                                                    <ul class="mb-0 mt-1 small">
-                                                        @foreach($message->order->additionalItems as $item)
-                                                            <li>{{ $item->item_name }} ({{ $item->quantity }}x) - Rp {{ number_format($item->item_price * $item->quantity, 0, ',', '.') }}</li>
-                                                        @endforeach
-                                                    </ul>
-                                                </div>
-                                            @endif
-                                            @if($message->order->customItems && $message->order->customItems->count() > 0)
-                                                <div class="mt-2">
-                                                    <strong>Custom Items:</strong>
-                                                    <ul class="mb-0 mt-1 small">
-                                                        @foreach($message->order->customItems as $item)
-                                                            <li>
-                                                                {{ $item->item_name }} ({{ $item->quantity }}x) - Rp {{ number_format($item->item_price * $item->quantity, 0, ',', '.') }}
-                                                                @if($item->description)
-                                                                    <small class="text-muted d-block">{{ $item->description }}</small>
-                                                                @endif
-                                                            </li>
-                                                        @endforeach
-                                                    </ul>
-                                                </div>
-                                            @endif
-                                            @if(($message->order->additionalItems && $message->order->additionalItems->count() > 0) || ($message->order->customItems && $message->order->customItems->count() > 0))
-                                                <div class="mt-2"><strong>Total Price:</strong> Rp {{ number_format($message->order->total_price, 0, ',', '.') }}</div>
-                                            @endif
-                                            <div class="mt-2">
-                                                <small>Order #{{ $message->order->order_number }}</small><br>
-                                                <small>Expires: {{ $message->order->expires_at->format('d M Y H:i') }}</small>
-                                            </div>
-                                        </div>
-                                        @if($message->order->status === 'pending' && !$message->order->isExpired())
-                                            <div class="d-flex gap-2 mt-3">
-                                                <button type="button" class="btn btn-success btn-sm" onclick="acceptOrder({{ $message->order->id }})">
-                                                    <i class="bi bi-check-circle"></i> Accept
-                                                </button>
-                                                <button type="button" class="btn btn-danger btn-sm" onclick="rejectOrder({{ $message->order->id }})">
-                                                    <i class="bi bi-x-circle"></i> Reject
-                                                </button>
-                                            </div>
-                                        @elseif($message->order->status === 'accepted' && $message->order->payment_status !== 'paid')
-                                            <div class="mt-2">
-                                                <span class="badge bg-success">Accepted</span>
-                                                <button type="button" class="btn btn-primary btn-sm ms-2" onclick="showPaymentForOrder({{ $message->order->id }}, {{ json_encode([
-                                                    'id' => $message->order->id,
-                                                    'service_name' => $message->order->service ? $message->order->service->name : 'Service',
-                                                    'total_amount' => $message->order->total_price,
-                                                    'description' => $message->order->service_description ?? '',
-                                                    'order_number' => $message->order->order_number,
-                                                    'items' => [[
-                                                        'name' => $message->order->service ? $message->order->service->name : 'Service',
-                                                        'quantity' => 1,
-                                                        'price' => number_format($message->order->total_price, 0, ',', '.')
-                                                    ]]
-                                                ]) }})">
-                                                    <i class="bi bi-credit-card"></i> Pay Now
-                                                </button>
-                                            </div>
-                                        @elseif($message->order->status === 'completed')
-                                            <div class="mt-2">
-                                                <span class="badge bg-success">
-                                                    <i class="bi bi-check-all"></i> Completed
-                                                </span>
-                                            </div>
-                                        @elseif($message->order->payment_status === 'paid')
-                                            <div class="mt-2">
-                                                <span class="badge bg-info">On Progress</span>
-                                                <span class="badge bg-success ms-1">
-                                                    <i class="bi bi-check-circle"></i> Paid
-                                                </span>
-                                            </div>
-                                        @else
-                                            <div class="mt-2">
-                                                <span class="badge bg-{{ $message->order->status === 'accepted' ? 'success' : ($message->order->status === 'rejected' ? 'danger' : 'warning') }}">
-                                                    {{ ucwords(str_replace('_', ' ', $message->order->status)) }}
-                                                </span>
-                                            </div>
-                                        @endif
-                                    </div>
+            <!-- Messages Container -->
+            <div id="messages-container" class="messages-container">
+                <div id="messages">
+                    @foreach($messages as $message)
+                        @if($message->message_type === 'order_proposal' && $message->order)
+                            <div class="order-proposal-card received" data-order-id="{{ $message->order->id }}">
+                                <div class="proposal-badge">
+                                    <i class="bi bi-briefcase-fill"></i> Order Proposal
                                 </div>
-                            @else
-                                <div class="message mb-3 {{ $message->sender_type === 'App\Models\Customer' ? 'text-end' : 'text-start' }}">
-                                    <div class="d-inline-block {{ $message->sender_type === 'App\Models\Customer' ? 'bg-primary text-white' : 'bg-light' }} p-3 rounded" style="max-width: 75%;">
-                                        <div class="message-text">{{ $message->message }}</div>
-                                        <small class="d-block mt-1 {{ $message->sender_type === 'App\Models\Customer' ? 'text-white-50' : 'text-muted' }}">
-                                            {{ $message->created_at->format('H:i') }}
-                                        </small>
+                                <h3 class="proposal-title">{{ $message->order->service ? $message->order->service->name : 'Service' }}</h3>
+                                
+                                <div class="proposal-details">
+                                    <div class="proposal-detail">
+                                        <span class="detail-label">Order Number</span>
+                                        <span class="detail-value">#{{ $message->order->order_number }}</span>
                                     </div>
+                                    @if($message->order->work_datetime)
+                                    <div class="proposal-detail">
+                                        <span class="detail-label">Expected Date</span>
+                                        <span class="detail-value">{{ $message->order->work_datetime->format('d M Y, H:i') }}</span>
+                                    </div>
+                                    @endif
+                                    @if($message->order->working_address)
+                                    <div class="proposal-detail">
+                                        <span class="detail-label">Location</span>
+                                        <span class="detail-value text-end" style="max-width: 60%">{{ $message->order->working_address }}</span>
+                                    </div>
+                                    @endif
                                 </div>
-                            @endif
-                        @endforeach
-                    </div>
+
+                                @if(($message->order->additionalItems && $message->order->additionalItems->count() > 0) || ($message->order->customItems && $message->order->customItems->count() > 0))
+                                <div class="proposal-price-tag">
+                                    <span class="price-label">Total Estimate</span>
+                                    <span class="price-amount">Rp {{ number_format($message->order->total_price, 0, ',', '.') }}</span>
+                                </div>
+                                @else
+                                <div class="proposal-price-tag">
+                                    <span class="price-label">Base Price</span>
+                                    <span class="price-amount">Rp {{ number_format($message->order->price, 0, ',', '.') }}</span>
+                                </div>
+                                @endif
+
+                                <div class="proposal-actions">
+                                    @if($message->order->status === 'pending' && !$message->order->isExpired())
+                                        <button type="button" class="btn btn-success rounded-pill" onclick="acceptOrder({{ $message->order->id }})">
+                                            Accept
+                                        </button>
+                                        <button type="button" class="btn btn-outline-danger rounded-pill" onclick="rejectOrder({{ $message->order->id }})">
+                                            Decline
+                                        </button>
+                                    @elseif($message->order->status === 'accepted' && $message->order->payment_status !== 'paid')
+                                        <button type="button" class="btn btn-primary rounded-pill w-100" style="grid-column: span 2" onclick="showPaymentForOrder({{ $message->order->id }}, {{ json_encode([
+                                            'id' => $message->order->id,
+                                            'service_name' => $message->order->service ? $message->order->service->name : 'Service',
+                                            'total_amount' => $message->order->total_price,
+                                            'description' => $message->order->service_description ?? '',
+                                            'order_number' => $message->order->order_number,
+                                            'items' => [[
+                                                'name' => $message->order->service ? $message->order->service->name : 'Service',
+                                                'quantity' => 1,
+                                                'price' => number_format($message->order->total_price, 0, ',', '.')
+                                            ]]
+                                        ]) }})">
+                                            <i class="bi bi-credit-card"></i> Pay Now
+                                        </button>
+                                    @else
+                                        <div class="w-100 text-center" style="grid-column: span 2">
+                                            <span class="status-badge status-badge-{{ $message->order->status === 'accepted' || $message->order->status === 'completed' ? 'success' : ($message->order->status === 'rejected' ? 'danger' : 'warning') }}">
+                                                {{ ucwords(str_replace('_', ' ', $message->order->status)) }}
+                                            </span>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        @else
+                            <div class="message-wrapper {{ $message->sender_type === 'App\Models\Customer' ? 'sent' : 'received' }}">
+                                <div class="message-bubble">
+                                    {{ $message->message }}
+                                </div>
+                                <div class="message-time">
+                                    {{ $message->created_at->format('H:i') }}
+                                </div>
+                            </div>
+                        @endif
+                    @endforeach
                 </div>
+            </div>
 
-                <!-- Input Form -->
-                <div class="border-top p-3 flex-shrink-0">
-                    <form id="message-form" class="d-flex gap-2">
-                        @csrf
+            <!-- Input Form -->
+            <div class="chat-input-area">
+                <form id="message-form">
+                    @csrf
+                    <div class="message-form-container">
                         <input type="hidden" id="receiver-id" value="{{ $receiver->id }}">
                         <input type="hidden" id="receiver-type" value="{{ $receiverType }}">
                         <input type="text"
                                id="message-input"
-                               class="form-control"
-                               placeholder="Type your message..."
+                               class="chat-input"
+                               placeholder="Message {{ $receiver->name }}..."
+                               autocomplete="off"
                                required>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-send"></i>
+                        <button type="submit" class="chat-send-btn">
+                            <i class="bi bi-send-fill"></i>
                         </button>
-                    </form>
-                </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -283,53 +250,44 @@
                 const orderElement = document.querySelector(`[data-order-id="${order.id}"]`);
                 if (!orderElement) return;
 
-                const buttonsContainer = orderElement.querySelector('.d-flex.gap-2') ||
-                    orderElement.querySelector('.mt-2:last-child');
-
-                if (buttonsContainer) {
-                    const statusDiv = document.createElement('div');
-                    statusDiv.className = 'mt-2';
-                    
-                    // Calculate total price
+                const actionsContainer = orderElement.querySelector('.proposal-actions');
+                
+                if (actionsContainer) {
                     const totalPrice = calculateOrderTotal(order);
+                    let html = '';
 
                     if (order.status === 'completed') {
-                        statusDiv.innerHTML = `
-                            <span class="badge bg-success">
-                                <i class="bi bi-check-all"></i> Completed
-                            </span>
-                        `;
+                        html = `<div class="w-100 text-center" style="grid-column: span 2"><span class="status-badge status-badge-success">Completed</span></div>`;
                     } else if (order.status === 'accepted' && order.payment_status !== 'paid') {
-                        statusDiv.innerHTML = `
-                            <span class="badge bg-success">Accepted</span>
-                            <button type="button" class="btn btn-primary btn-sm ms-2" onclick="showPaymentForOrder(${order.id}, ${JSON.stringify({
-                            id: order.id,
-                            service_name: order.service ? order.service.name : 'Service',
-                            total_amount: totalPrice,
-                            description: order.service_description || '',
-                            order_number: order.order_number,
-                            items: [{
-                                name: order.service ? order.service.name : 'Service',
-                                quantity: 1,
-                                price: parseFloat(totalPrice).toLocaleString('id-ID')
-                            }]
-                        }).replace(/"/g, '&quot;')})">
+                        html = `
+                            <button type="button" class="btn btn-primary rounded-pill w-100" style="grid-column: span 2" onclick="showPaymentForOrder(${order.id}, ${JSON.stringify({
+                                id: order.id,
+                                service_name: order.service ? order.service.name : 'Service',
+                                total_amount: totalPrice,
+                                description: order.service_description || '',
+                                order_number: order.order_number,
+                                items: [{
+                                    name: order.service ? order.service.name : 'Service',
+                                    quantity: 1,
+                                    price: parseFloat(totalPrice).toLocaleString('id-ID')
+                                }]
+                            }).replace(/"/g, '&quot;')})">
                                 <i class="bi bi-credit-card"></i> Pay Now
                             </button>
                         `;
                     } else if (order.payment_status === 'paid' && order.status !== 'completed') {
-                        statusDiv.innerHTML = `
-                            <span class="badge bg-info">On Progress</span>
-                            <span class="badge bg-success ms-1">
-                                <i class="bi bi-check-circle"></i> Paid
-                            </span>
+                        html = `
+                            <div class="w-100 text-center" style="grid-column: span 2">
+                                <span class="status-badge status-badge-info">On Progress</span>
+                                <span class="status-badge status-badge-success ms-1">Paid</span>
+                            </div>
                         `;
                     } else {
-                        const badgeClass = order.status === 'rejected' ? 'bg-danger' : 'bg-warning';
-                        statusDiv.innerHTML = `<span class="badge ${badgeClass}">${order.status.charAt(0).toUpperCase() + order.status.slice(1)}</span>`;
+                        const badgeClass = order.status === 'rejected' ? 'danger' : 'warning';
+                        html = `<div class="w-100 text-center" style="grid-column: span 2"><span class="status-badge status-badge-${badgeClass}">${order.status.charAt(0).toUpperCase() + order.status.slice(1)}</span></div>`;
                     }
 
-                    buttonsContainer.replaceWith(statusDiv);
+                    actionsContainer.innerHTML = html;
                 }
             }
             
@@ -351,80 +309,55 @@
                 return total;
             }
 
+
             function showOrderProposal(order) {
                 if(document.querySelector(`[data-order-id="${order.id}"]`)){
                     return;
                 }
 
-                // Build additional items HTML
-                let additionalItemsHtml = '';
-                if (order.additional_items && order.additional_items.length > 0) {
-                    additionalItemsHtml = '<div class="mt-2"><strong>Additional Items:</strong><ul class="mb-0 mt-1 small">';
-                    order.additional_items.forEach(item => {
-                        additionalItemsHtml += `<li>${item.item_name} (${item.quantity}x) - Rp ${(item.item_price * item.quantity).toLocaleString('id-ID')}</li>`;
-                    });
-                    additionalItemsHtml += '</ul></div>';
-                }
-                
-                // Build custom items HTML
-                let customItemsHtml = '';
-                if (order.custom_items && order.custom_items.length > 0) {
-                    customItemsHtml = '<div class="mt-2"><strong>Custom Items:</strong><ul class="mb-0 mt-1 small">';
-                    order.custom_items.forEach(item => {
-                        customItemsHtml += `<li>${item.item_name} (${item.quantity}x) - Rp ${(item.item_price * item.quantity).toLocaleString('id-ID')}`;
-                        if (item.description) {
-                            customItemsHtml += `<small class="text-muted d-block">${item.description}</small>`;
-                        }
-                        customItemsHtml += `</li>`;
-                    });
-                    customItemsHtml += '</ul></div>';
-                }
-                
                 // Calculate total price
-                let totalPrice = parseFloat(order.price) || 0;
-                if (order.additional_items) {
-                    order.additional_items.forEach(item => {
-                        totalPrice += (parseFloat(item.item_price) || 0) * (parseInt(item.quantity) || 1);
-                    });
-                }
-                if (order.custom_items) {
-                    order.custom_items.forEach(item => {
-                        totalPrice += (parseFloat(item.item_price) || 0) * (parseInt(item.quantity) || 1);
-                    });
-                }
+                const totalPrice = calculateOrderTotal(order);
+                const displayPrice = (totalPrice || order.price);
 
                 const orderDiv = document.createElement('div');
-                orderDiv.className = 'order-proposal mb-3 text-start';
+                orderDiv.className = 'order-proposal-card received';
                 orderDiv.setAttribute('data-order-id', order.id);
 
                 orderDiv.innerHTML = `
-                    <div class="d-inline-block bg-warning border p-3 rounded" style="max-width: 75%;">
-                        <div class="d-flex align-items-center mb-2">
-                            <i class="bi bi-briefcase me-2"></i>
-                            <strong>Order Proposal</strong>
+                    <div class="proposal-badge">
+                        <i class="bi bi-briefcase-fill"></i> Order Proposal
+                    </div>
+                    <h3 class="proposal-title">${order.service ? order.service.name : 'Service'}</h3>
+                    
+                    <div class="proposal-details">
+                        <div class="proposal-detail">
+                            <span class="detail-label">Order Number</span>
+                            <span class="detail-value">#${order.order_number}</span>
                         </div>
-                        <div class="order-details">
-                            <div><strong>Service:</strong> ${order.service ? order.service.name : 'Service'}</div>
-                            <div><strong>Base Price:</strong> Rp ${parseInt(order.price).toLocaleString('id-ID')}</div>
-                            ${order.work_datetime ? `<div><strong>Work Date:</strong> ${formatDateTime(order.work_datetime)}</div>` : ''}
-                            ${order.working_address ? `<div><strong>Working Address:</strong> ${order.working_address}</div>` : ''}
-                            ${order.service_description ? `<div><strong>Description:</strong> ${order.service_description}</div>` : ''}
-                            ${additionalItemsHtml}
-                            ${customItemsHtml}
-                            ${(order.additional_items?.length > 0 || order.custom_items?.length > 0) ? `<div class="mt-2"><strong>Total Price:</strong> Rp ${totalPrice.toLocaleString('id-ID')}</div>` : ''}
-                            <div class="mt-2">
-                                <small>Order #${order.order_number}</small><br>
-                                <small>Expires: ${formatDateTime(order.expires_at)}</small>
-                            </div>
-                        </div>
-                        <div class="d-flex gap-2 mt-3">
-                            <button type="button" class="btn btn-success btn-sm" onclick="acceptOrder(${order.id})">
-                                <i class="bi bi-check-circle"></i> Accept
-                            </button>
-                            <button type="button" class="btn btn-danger btn-sm" onclick="rejectOrder(${order.id})">
-                                <i class="bi bi-x-circle"></i> Reject
-                            </button>
-                        </div>
+                        ${order.work_datetime ? `
+                        <div class="proposal-detail">
+                            <span class="detail-label">Expected Date</span>
+                            <span class="detail-value">${formatDateTime(order.work_datetime)}</span>
+                        </div>` : ''}
+                        ${order.working_address ? `
+                        <div class="proposal-detail">
+                            <span class="detail-label">Location</span>
+                            <span class="detail-value text-end" style="max-width: 60%">${order.working_address}</span>
+                        </div>` : ''}
+                    </div>
+
+                    <div class="proposal-price-tag">
+                        <span class="price-label">Total Estimate</span>
+                        <span class="price-amount">Rp ${parseInt(displayPrice).toLocaleString('id-ID')}</span>
+                    </div>
+
+                    <div class="proposal-actions">
+                        <button type="button" class="btn btn-success rounded-pill" onclick="acceptOrder(${order.id})">
+                            Accept
+                        </button>
+                        <button type="button" class="btn btn-outline-danger rounded-pill" onclick="rejectOrder(${order.id})">
+                            Decline
+                        </button>
                     </div>
                 `;
 
@@ -437,31 +370,34 @@
                 statusDiv.className = 'order-status mb-3 text-center';
 
                 let statusText = '';
-                let statusClass = '';
+                let statusClass = 'info';
 
                 switch(order.status) {
                     case 'accepted':
                         if (order.payment_status === 'paid') {
                             statusText = 'Payment completed! Order is now in progress 🎉';
-                            statusClass = 'bg-success text-white';
+                            statusClass = 'success';
                         } else {
                             statusText = 'You accepted the order! Please complete payment 💳';
-                            statusClass = 'bg-success text-white';
+                            statusClass = 'success';
                         }
                         break;
                     case 'rejected':
                         statusText = 'You rejected the order';
-                        statusClass = 'bg-danger text-white';
+                        statusClass = 'danger';
+                        break;
+                    case 'completed':
+                        statusText = 'Work completed! Hope you are happy with the results ✨';
+                        statusClass = 'success';
                         break;
                     default:
                         statusText = `Order ${order.status}`;
-                        statusClass = 'bg-info text-white';
                 }
 
                 statusDiv.innerHTML = `
-                    <div class="d-inline-block ${statusClass} p-2 rounded">
-                        <small>${statusText} - Order #${order.order_number}</small>
-                    </div>
+                    <span class="status-badge status-badge-${statusClass}">
+                        ${statusText} • #${order.order_number}
+                    </span>
                 `;
                 messagesContainer.appendChild(statusDiv);
                 scrollToBottom();
@@ -581,17 +517,17 @@
             function addMessageToChat(message, isSender) {
                 console.log('Adding message to chat:', message, 'isSender:', isSender);
 
-                const messageDiv = document.createElement('div');
-                messageDiv.className = `message mb-3 ${isSender ? 'text-end' : 'text-start'}`;
-                messageDiv.innerHTML = `
-                    <div class="d-inline-block ${isSender ? 'bg-primary text-white' : 'bg-light'} p-3 rounded" style="max-width: 75%;">
-                        <div class="message-text">${escapeHtml(message.message)}</div>
-                        <small class="d-block mt-1 ${isSender ? 'text-white-50' : 'text-muted'}">
-                            ${formatTime(message.created_at)}
-                        </small>
+                const messageWrapper = document.createElement('div');
+                messageWrapper.className = `message-wrapper ${isSender ? 'sent' : 'received'}`;
+                messageWrapper.innerHTML = `
+                    <div class="message-bubble">
+                        ${escapeHtml(message.message)}
+                    </div>
+                    <div class="message-time">
+                        ${formatTime(message.created_at)}
                     </div>
                 `;
-                messagesContainer.appendChild(messageDiv);
+                messagesContainer.appendChild(messageWrapper);
             }
 
             function escapeHtml(text) {
@@ -696,63 +632,9 @@
     </script>
 
     <style>
-        .d-flex.flex-column {
-            display: flex !important;
-            flex-direction: column !important;
-        }
-
-        .flex-1 {
-            flex: 1 !important;
-            min-height: 0;
-        }
-
-        .flex-shrink-0 {
-            flex-shrink: 0 !important;
-        }
-
-        #messages-container {
-            overflow-y: auto;
-            max-height: 100%;
-        }
-
-        .order-proposal {
-            animation: slideInLeft 0.3s ease-out;
-        }
-
-        .order-status {
-            animation: fadeIn 0.3s ease-out;
-        }
-
-        @keyframes slideInLeft {
-            from {
-                transform: translateX(-100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
-        }
-
-        @media (max-height: 600px) {
-            .bg-white.shadow-lg.rounded-lg {
-                height: 85vh !important;
-            }
-        }
-
-        @media (max-height: 500px) {
-            .bg-white.shadow-lg.rounded-lg {
-                height: 90vh !important;
-            }
+        /* Small overrides or specific adjustments if needed */
+        .chat-container {
+            max-width: 1000px;
         }
     </style>
 
