@@ -83,6 +83,44 @@
                 </div>
             </div>
         </div>
+        
+        <!-- Tukang Details Popup -->
+        <div class="tukang-popup" id="tukangPopup">
+            <div class="popup-content">
+                <div class="popup-loading" id="popupLoading">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+                
+                <div class="popup-body" id="popupBody" style="display: none;">
+                    <!-- Profile Header -->
+                    <div class="popup-header">
+                        <div class="popup-avatar" id="popupAvatar"></div>
+                        <div class="popup-header-info">
+                            <h3 class="popup-name" id="popupName"></h3>
+                            <div class="popup-rating" id="popupRating"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Specializations -->
+                    <div class="popup-section">
+                        <div class="popup-specializations" id="popupSpecializations"></div>
+                    </div>
+                    
+                    <!-- Previous Works -->
+                    <div class="popup-section">
+                        <h4 class="popup-section-title">Previous Works</h4>
+                        <div class="popup-portfolio" id="popupPortfolio"></div>
+                    </div>
+                    
+                    <!-- Chat Button -->
+                    <button class="popup-chat-btn" id="popupChatBtn">
+                        <i class="bi bi-chat-dots"></i> Chat and Order
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Bootstrap JS -->
@@ -124,6 +162,16 @@
             L.control.zoom({
                 position: 'bottomright'
             }).addTo(map);
+            
+            // Add map interaction listeners to close popup
+            map.on('dragstart', closeTukangPopup);
+            map.on('zoomstart', closeTukangPopup);
+            map.on('click', function(e) {
+                // Only close if clicking on the map itself, not on markers
+                if (e.originalEvent.target === e.originalEvent.currentTarget) {
+                    closeTukangPopup();
+                }
+            });
         }
 
         function getUserLocationAndLoadTukangs() {
@@ -338,7 +386,7 @@
                 }
             });
             
-            // Update markers
+            // Update markers and center map
             Object.entries(markers).forEach(([id, marker]) => {
                 const markerElement = marker.getElement();
                 if (parseInt(id) === tukangId) {
@@ -349,6 +397,11 @@
                     markerElement.classList.remove('active');
                 }
             });
+            
+            // Show popup after a delay to allow map to center
+            setTimeout(() => {
+                showTukangPopup(tukangId);
+            }, 300);
         }
 
         function setupSortDropdown() {
@@ -436,6 +489,131 @@
                     <button class="btn btn-primary" onclick="getUserLocationAndLoadTukangs()">Retry</button>
                 </div>
             `;
+        }
+        
+        function showTukangPopup(tukangId) {
+            const popup = document.getElementById('tukangPopup');
+            const popupLoading = document.getElementById('popupLoading');
+            const popupBody = document.getElementById('popupBody');
+            
+            // Show popup with loading state
+            popup.classList.add('active');
+            popupLoading.style.display = 'flex';
+            popupBody.style.display = 'none';
+            
+            // Position popup next to the marker
+            positionPopup(tukangId);
+            
+            // Fetch tukang details
+            fetch(`/api/tukangs/${tukangId}`, {
+                credentials: 'same-origin',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(tukang => {
+                console.log('Tukang details:', tukang);
+                populatePopup(tukang);
+                popupLoading.style.display = 'none';
+                popupBody.style.display = 'block';
+            })
+            .catch(error => {
+                console.error('Error loading tukang details:', error);
+                popup.classList.remove('active');
+            });
+        }
+        
+        function positionPopup(tukangId) {
+            const popup = document.getElementById('tukangPopup');
+            const marker = markers[tukangId];
+            
+            if (marker) {
+                const markerLatLng = marker.getLatLng();
+                const point = map.latLngToContainerPoint(markerLatLng);
+                
+                // Position popup to the right of the marker
+                const offsetX = 50; // Distance from marker
+                const offsetY = -150; // Vertical centering adjustment
+                
+                popup.style.left = `${point.x + offsetX}px`;
+                popup.style.top = `${point.y + offsetY}px`;
+            }
+        }
+        
+        function populatePopup(tukang) {
+            const serviceType = '{{ $serviceType }}';
+            
+            // Avatar
+            const initial = tukang.name.charAt(0).toUpperCase();
+            document.getElementById('popupAvatar').innerHTML = 
+                `<img src="https://via.placeholder.com/80x80/${tukang.id % 2 === 0 ? 'FF9800' : '2196F3'}/ffffff?text=${initial}" 
+                     alt="${tukang.name}">`;
+            
+            // Name
+            document.getElementById('popupName').textContent = tukang.name;
+            
+            // Rating
+            const rating = parseFloat(tukang.rating) || 0;
+            const reviews = tukang.total_reviews || 0;
+            document.getElementById('popupRating').innerHTML = `
+                <i class="bi bi-star-fill"></i>
+                ${rating.toFixed(1)} (${reviews} Reviews)
+            `;
+            
+            // Specializations
+            const specializations = Array.isArray(tukang.specializations) 
+                ? tukang.specializations 
+                : (tukang.specializations ? JSON.parse(tukang.specializations) : []);
+            
+            const specializationsHtml = specializations.map(spec => 
+                `<span class="specialization-badge">${spec}</span>`
+            ).join('');
+            document.getElementById('popupSpecializations').innerHTML = specializationsHtml;
+            
+            // Portfolio
+            const portfolioContainer = document.getElementById('popupPortfolio');
+            if (tukang.portfolios && tukang.portfolios.length > 0) {
+                const portfolioHtml = tukang.portfolios.slice(0, 3).map(portfolio => {
+                    const imageUrl = portfolio.images && portfolio.images.length > 0 
+                        ? `/storage/${portfolio.images[0].image_path}`
+                        : 'https://via.placeholder.com/200x150/E0E0E0/757575?text=No+Image';
+                    
+                    return `
+                        <div class="portfolio-item">
+                            <img src="${imageUrl}" alt="${portfolio.title}">
+                            <div class="portfolio-info">
+                                <h5>${portfolio.title}</h5>
+                                <p>${portfolio.description ? portfolio.description.substring(0, 60) + '...' : ''}</p>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                portfolioContainer.innerHTML = portfolioHtml;
+            } else {
+                portfolioContainer.innerHTML = '<p class="no-portfolio">No previous work available</p>';
+            }
+            
+            // Chat button
+            const chatBtn = document.getElementById('popupChatBtn');
+            chatBtn.onclick = function() {
+                openChat(tukang.id);
+            };
+        }
+        
+        function closeTukangPopup() {
+            const popup = document.getElementById('tukangPopup');
+            popup.classList.remove('active');
+        }
+        
+        function openChat(tukangId) {
+            const serviceType = '{{ $serviceType }}';
+            let url = `/chat/tukang/${tukangId}`;
+            if (serviceType) {
+                url += `?service_type=${encodeURIComponent(serviceType)}`;
+            }
+            window.location.href = url;
         }
     </script>
 </body>
