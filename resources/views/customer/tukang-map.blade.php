@@ -391,10 +391,12 @@
                 const markerElement = marker.getElement();
                 if (parseInt(id) === tukangId) {
                     markerElement.classList.add('active');
+                    marker.setZIndexOffset(1000); // Bring to front
                     // Pan to marker
                     map.panTo(marker.getLatLng());
                 } else {
                     markerElement.classList.remove('active');
+                    marker.setZIndexOffset(0); // Reset
                 }
             });
             
@@ -496,12 +498,21 @@
             const popupLoading = document.getElementById('popupLoading');
             const popupBody = document.getElementById('popupBody');
             
-            // Show popup with loading state
-            popup.classList.add('active');
-            popupLoading.style.display = 'flex';
-            popupBody.style.display = 'none';
+            const isAlreadyActive = popup.classList.contains('active');
             
-            // Position popup next to the marker
+            if (isAlreadyActive) {
+                // If switching, fade out the current content slightly first
+                popupBody.style.opacity = '0.5';
+                popupBody.style.transform = 'scale(0.98)';
+                popupBody.style.transition = 'all 0.2s ease';
+            } else {
+                // First time opening
+                popup.classList.add('active');
+                popupLoading.style.display = 'flex';
+                popupBody.style.display = 'none';
+            }
+            
+            // This will now "glide" the popup to the new position thanks to CSS transitions
             positionPopup(tukangId);
             
             // Fetch tukang details
@@ -516,12 +527,16 @@
             .then(tukang => {
                 console.log('Tukang details:', tukang);
                 populatePopup(tukang);
+                
+                // Reset styles and show content
                 popupLoading.style.display = 'none';
                 popupBody.style.display = 'block';
+                popupBody.style.opacity = '1';
+                popupBody.style.transform = 'scale(1)';
             })
             .catch(error => {
                 console.error('Error loading tukang details:', error);
-                popup.classList.remove('active');
+                if (!isAlreadyActive) popup.classList.remove('active');
             });
         }
         
