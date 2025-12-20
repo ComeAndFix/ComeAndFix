@@ -614,6 +614,14 @@
                         console.log('Order status updated event received from WebSocket:', e);
                         showOrderStatusUpdate(e.order);
                         scrollToBottom();
+
+                        // Redirect to job detail if payment is completed
+                        if (e.order.payment_status === 'paid') {
+                            showSuccessAlert('Payment verified! Redirecting to job details...');
+                            setTimeout(() => {
+                                window.location.href = `/jobs/${e.order.id}`;
+                            }, 2000);
+                        }
                     });
             } else {
                 console.error('Echo is not available on window object');
@@ -731,6 +739,10 @@
                         statusText = 'Order Accepted by Customer! 🎉';
                         statusClass = 'success';
                         break;
+                    case 'on_progress':
+                        statusText = 'Order Paid! You can start working now 🛠️';
+                        statusClass = 'success';
+                        break;
                     case 'rejected':
                         statusText = 'Order Rejected by Customer';
                         statusClass = 'danger';
@@ -748,10 +760,22 @@
                         statusText = `Order ${formattedStatus}`;
                 }
 
+                let actionBtn = '';
+                if (order.status === 'on_progress') {
+                    actionBtn = `
+                        <div class="mt-2">
+                            <a href="/jobs/${order.id}" class="btn btn-brand-orange btn-sm rounded-pill px-3">
+                                <i class="bi bi-eye-fill me-1"></i> View Job Details
+                            </a>
+                        </div>
+                    `;
+                }
+
                 statusDiv.innerHTML = `
                     <span class="status-badge status-badge-${statusClass}">
                         ${statusText} • #${order.order_number}
                     </span>
+                    ${actionBtn}
                 `;
                 messagesContainer.appendChild(statusDiv);
                 scrollToBottom();

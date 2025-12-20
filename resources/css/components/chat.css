@@ -641,10 +641,18 @@
     }
 }
 
-.success-icon {
+.success-icon,
+.error-icon {
     font-size: 3.5rem;
-    color: #22C55E;
     animation: successPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.success-icon {
+    color: #22C55E;
+}
+
+.error-icon {
+    color: #EF4444;
 }
 
 @keyframes successPop {

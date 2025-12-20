@@ -54,6 +54,7 @@
         <div class="payment-spinner-container mb-4">
             <div class="payment-spinner"></div>
             <i class="bi bi-check-circle-fill success-icon" style="display: none;"></i>
+            <i class="bi bi-x-circle-fill error-icon" style="display: none;"></i>
         </div>
         <h4 class="font-jost fw-bold mb-2" id="paymentOverlayTitle">Processing Payment</h4>
         <p class="text-muted mb-0" id="paymentOverlayMessage">Please don't close this window...</p>

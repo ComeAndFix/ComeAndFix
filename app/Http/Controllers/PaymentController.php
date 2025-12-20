@@ -156,11 +156,13 @@ class PaymentController extends Controller
 
                 $payment->update(['status' => $status]);
 
-                if ($status === 'completed') {
+                if ($status === 'completed' && $payment->order->payment_status !== Order::PAYMENT_STATUS_PAID) {
                     $payment->order->update([
                         'status' => Order::STATUS_ON_PROGRESS,
                         'payment_status' => Order::PAYMENT_STATUS_PAID
                     ]);
+                    
+                    broadcast(new \App\Events\OrderStatusUpdated($payment->order->load('service')));
                 }
 
                 return response()->json([

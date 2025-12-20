@@ -2,6 +2,12 @@ class PaymentHandler {
     constructor() {
         this.currentOrder = null;
         this.initialized = false;
+        // Bind methods to maintain context
+        this.handlePaymentSuccess = this.handlePaymentSuccess.bind(this);
+        this.handlePaymentPending = this.handlePaymentPending.bind(this);
+        this.handlePaymentError = this.handlePaymentError.bind(this);
+        this.handlePaymentClose = this.handlePaymentClose.bind(this);
+        this.preventModalClose = this.preventModalClose.bind(this);
     }
 
     init() {
@@ -218,8 +224,14 @@ class PaymentHandler {
             const result = await response.json();
 
             if (result.success && result.data.snap_token) {
+                // Remove the preventModalClose listener so we can hide the modal
+                const modalElement = document.getElementById('paymentModal');
+                if (modalElement) {
+                    modalElement.removeEventListener('hide.bs.modal', this.preventModalClose);
+                }
+
                 // Close the current modal
-                const modal = bootstrap.Modal.getInstance(document.getElementById('paymentModal'));
+                const modal = bootstrap.Modal.getInstance(modalElement);
                 if (modal) {
                     modal.hide();
                 }
@@ -259,7 +271,11 @@ class PaymentHandler {
         this.updatePayButtonToPaid();
 
         setTimeout(() => {
-            window.location.reload();
+            if (this.currentOrder && this.currentOrder.id) {
+                window.location.href = `/orders/${this.currentOrder.id}`;
+            } else {
+                window.location.reload();
+            }
         }, 2500);
     }
 
@@ -271,13 +287,30 @@ class PaymentHandler {
 
     handlePaymentError(result) {
         console.error('Payment error:', result);
-        this.hideOverlay();
-        this.showErrorMessage('Payment failed. Please try again.');
+        this.updateOverlayStatus('error', 'Payment Failed', 'Something went wrong. Please try again.');
+
+        setTimeout(() => {
+            this.hideOverlay();
+        }, 2000);
     }
 
     handlePaymentClose() {
-        this.hideOverlay();
-        this.showMessage('Payment window closed. You can pay later from your orders.', 'info');
+        console.log('Payment window closed by user');
+        this.updateOverlayStatus('error', 'Payment Cancelled', 'You closed the payment window. Click anywhere to dismiss.');
+
+        // Add one-time click listener to overlay for manual dismissal
+        const overlay = document.getElementById('paymentProcessingOverlay');
+        if (overlay) {
+            const dismiss = () => {
+                this.hideOverlay();
+                overlay.removeEventListener('click', dismiss);
+            };
+            overlay.addEventListener('click', dismiss);
+        }
+
+        setTimeout(() => {
+            this.hideOverlay();
+        }, 3000);
     }
 
     // Overlay Management
@@ -285,6 +318,9 @@ class PaymentHandler {
         const overlay = document.getElementById('paymentProcessingOverlay');
         if (overlay) {
             overlay.style.display = 'flex';
+            overlay.style.background = 'rgba(0, 0, 0, 0.25)';
+            overlay.style.backdropFilter = 'blur(5px)';
+            overlay.style.cursor = 'default';
             this.updateOverlayStatus('processing');
         }
     }
@@ -300,26 +336,37 @@ class PaymentHandler {
         const overlay = document.getElementById('paymentProcessingOverlay');
         const spinner = overlay?.querySelector('.payment-spinner');
         const successIcon = overlay?.querySelector('.success-icon');
+        const errorIcon = overlay?.querySelector('.error-icon');
         const titleEl = document.getElementById('paymentOverlayTitle');
         const messageEl = document.getElementById('paymentOverlayMessage');
 
         if (!overlay) return;
 
+        // Reset all icons
+        if (spinner) spinner.style.display = 'none';
+        if (successIcon) successIcon.style.display = 'none';
+        if (errorIcon) errorIcon.style.display = 'none';
+
         if (status === 'processing') {
             if (spinner) spinner.style.display = 'block';
-            if (successIcon) successIcon.style.display = 'none';
             if (titleEl) titleEl.textContent = title || 'Processing Payment';
             if (messageEl) messageEl.textContent = message || 'Please don\'t close this window...';
         } else if (status === 'pending') {
             if (spinner) spinner.style.display = 'block';
-            if (successIcon) successIcon.style.display = 'none';
             if (titleEl) titleEl.textContent = title || 'Verification Pending';
             if (messageEl) messageEl.textContent = message || 'We are verifying your payment...';
         } else if (status === 'success') {
-            if (spinner) spinner.style.display = 'none';
             if (successIcon) successIcon.style.display = 'block';
             if (titleEl) titleEl.textContent = title || 'Payment Success!';
             if (messageEl) messageEl.textContent = message || 'Redirecting...';
+        } else if (status === 'error') {
+            if (errorIcon) errorIcon.style.display = 'block';
+            if (titleEl) titleEl.textContent = title || 'Payment Issue';
+            if (messageEl) messageEl.textContent = message || 'Transaction was not completed.';
+            // Make background darker but remove blur so text is super clear
+            overlay.style.background = 'rgba(0, 0, 0, 0.7)';
+            overlay.style.backdropFilter = 'none';
+            overlay.style.cursor = 'pointer';
         }
     }
 
@@ -346,14 +393,22 @@ class PaymentHandler {
                 this.updatePayButtonToPaid();
 
                 setTimeout(() => {
-                    window.location.reload();
+                    if (this.currentOrder && this.currentOrder.id) {
+                        window.location.href = `/orders/${this.currentOrder.id}`;
+                    } else {
+                        window.location.reload();
+                    }
                 }, 2000);
             } else if (result.payment_status === 'pending') {
                 setTimeout(() => {
                     this.pollPaymentStatus(paymentId, attempts + 1);
                 }, 3000);
             } else {
-                this.showErrorMessage('Payment verification failed.');
+                this.updateOverlayStatus('error', 'Verification Failed', 'Could not confirm payment status.');
+                setTimeout(() => {
+                    this.hideOverlay();
+                    this.showErrorMessage('Payment verification failed.');
+                }, 2000);
             }
         } catch (error) {
             console.error('Error polling payment status:', error);
@@ -371,9 +426,12 @@ class PaymentHandler {
     showMessage(message, type) {
         const alertDiv = document.createElement('div');
         alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
-        alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; max-width: 300px;';
+        alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 10001; max-width: 300px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);';
         alertDiv.innerHTML = `
-            ${message}
+            <div class="d-flex align-items-center">
+                <i class="bi bi-${type === 'success' ? 'check-circle' : 'exclamation-circle'}-fill me-2"></i>
+                <div>${message}</div>
+            </div>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         `;
         document.body.appendChild(alertDiv);
