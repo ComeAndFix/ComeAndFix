@@ -598,23 +598,34 @@
 
             // WebSocket listeners
             if (window.Echo) {
+                console.log('Echo listener started for channel:', `chat.${conversationId}`);
                 window.Echo.channel(`chat.${conversationId}`)
                     .listen('MessageSent', (e) => {
-                        console.log('New message received:', e);
+                        console.log('New message received from WebSocket:', e);
                         const currentUserId = {{ Auth::guard('tukang')->user()->id }};
-                        if (e.message && e.message.sender_id !== currentUserId) {
+                        const currentUserType = 'App\\Models\\Tukang';
+                        
+                        // Only add if it's not from the current user (to avoid duplicates)
+                        if (e.message && (e.message.sender_id !== currentUserId || e.message.sender_type !== currentUserType)) {
+                            console.log('Appending received message to chat');
                             addMessageToChat(e.message, false);
                             scrollToBottom();
+                        } else {
+                            console.log('Message is from current user, skipping WebSocket append');
                         }
                     })
                     .listen('OrderProposalSent', (e) => {
-                        console.log('Order proposal sent:', e);
+                        console.log('Order proposal received from WebSocket:', e);
                         showOrderProposalSent(e.order);
+                        scrollToBottom();
                     })
                     .listen('OrderStatusUpdated', (e) => {
-                        console.log('Order status updated:', e);
+                        console.log('Order status updated event received from WebSocket:', e);
                         showOrderStatusUpdate(e.order);
+                        scrollToBottom();
                     });
+            } else {
+                console.error('Echo is not available on window object');
             }
 
             // Message form handler
@@ -644,10 +655,12 @@
                     const data = await response.json();
 
                     if (response.ok && data.success) {
+                        console.log('Message sent successfully via AJAX:', data.message);
                         addMessageToChat(data.message, true);
                         messageInput.value = '';
                         scrollToBottom();
                     } else {
+                        console.error('Failed to send message:', data);
                         showErrorAlert('Failed to send message: ' + (data.error || 'Unknown error'));
                     }
                 } catch (error) {
@@ -767,6 +780,7 @@
             }
 
             function addMessageToChat(message, isSender) {
+                console.log('Adding message to chat:', message, 'isSender:', isSender);
                 const messageDiv = document.createElement('div');
                 messageDiv.className = `message mb-3 ${isSender ? 'text-end' : 'text-start'}`;
                 messageDiv.innerHTML = `
@@ -865,7 +879,13 @@
 
             function scrollToBottom() {
                 const container = document.getElementById('messages-container');
-                container.scrollTop = container.scrollHeight;
+                if (container) {
+                    // Small delay to allow DOM to update
+                    setTimeout(() => {
+                        container.scrollTop = container.scrollHeight;
+                        console.log('Scrolled to bottom, scrollHeight:', container.scrollHeight);
+                    }, 50);
+                }
             }
 
             scrollToBottom();
@@ -943,5 +963,4 @@
         }
     </style>
 
-    @vite(['resources/js/app.js'])
 </x-app-layout>
