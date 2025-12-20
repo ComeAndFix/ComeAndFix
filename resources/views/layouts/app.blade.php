@@ -20,6 +20,7 @@
     @vite([
         'resources/css/app.css',
         'resources/css/components/navigation.css',
+        'resources/css/components/location-modal.css',
         'resources/js/app.js'
     ])
     
@@ -117,6 +118,9 @@
 <main>
     {{ $slot }}
 </main>
+
+<!-- Location Setup Modal for Customers -->
+@include('components.location-setup-modal')
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

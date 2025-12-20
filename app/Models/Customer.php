@@ -19,6 +19,8 @@ class Customer extends Authenticatable implements MustVerifyEmail
         'address',
         'city',
         'postal_code',
+        'latitude',
+        'longitude',
         'password',
     ];
 
@@ -32,6 +34,8 @@ class Customer extends Authenticatable implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'latitude' => 'decimal:8',
+            'longitude' => 'decimal:8',
         ];
     }
 

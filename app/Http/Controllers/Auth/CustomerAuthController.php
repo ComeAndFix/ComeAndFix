@@ -27,21 +27,15 @@
                 'name' => ['required', 'string', 'max:255'],
                 'email' => ['required', 'string', 'email', 'max:255', 'unique:customers'],
                 'phone' => ['nullable', 'string', 'max:255'],
-                'address' => ['nullable', 'string'],
-                'city' => ['nullable', 'string', 'max:255'],
-                'postal_code' => ['nullable', 'string', 'max:10'],
                 'password' => ['required', 'confirmed', Rules\Password::defaults()],
             ]);
 
             $customer = Customer::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'phone' => $request->phone,
-                'address' => $request->address,
-                'city' => $request->city,
-                'postal_code' => $request->postal_code,
-                'password' => Hash::make($request->password),
-            ]);
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'password' => Hash::make($request->password),
+        ]);
 
             $customer->sendEmailVerificationNotification();
 

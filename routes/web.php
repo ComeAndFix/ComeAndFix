@@ -94,6 +94,9 @@ Route::middleware(['auth:customer', 'verified'])->group(function () {
     // Review routes
     Route::get('/orders/{order}/review', [\App\Http\Controllers\Customer\CustomerReviewController::class, 'create'])->name('customer.reviews.create');
     Route::post('/orders/{order}/review', [\App\Http\Controllers\Customer\CustomerReviewController::class, 'store'])->name('customer.reviews.store');
+    
+    // Location update route
+    Route::post('/customer/location/update', [\App\Http\Controllers\Customer\CustomerLocationController::class, 'updateLocation'])->name('customer.location.update');
 });
 
 // Payment notification webhook (outside auth middleware)

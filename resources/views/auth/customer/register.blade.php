@@ -58,49 +58,6 @@
             </div>
         </div>
 
-        <!-- Full Home Address -->
-        <div class="input-wrapper">
-            <input 
-                id="address" 
-                class="custom-input" 
-                type="text" 
-                name="address" 
-                value="{{ old('address') }}" 
-                placeholder="Full home address"
-                required 
-            />
-            <x-input-error :messages="$errors->get('address')" class="mt-2" />
-        </div>
-
-        <!-- City and Postal Code (Two Columns) -->
-        <div class="form-row">
-            <div class="input-wrapper">
-                <input 
-                    id="city" 
-                    class="custom-input" 
-                    type="text" 
-                    name="city" 
-                    value="{{ old('city') }}" 
-                    placeholder="City"
-                    required 
-                />
-                <x-input-error :messages="$errors->get('city')" class="mt-2" />
-            </div>
-
-            <div class="input-wrapper">
-                <input 
-                    id="postal_code" 
-                    class="custom-input" 
-                    type="text" 
-                    name="postal_code" 
-                    value="{{ old('postal_code') }}" 
-                    placeholder="Postal code"
-                    required 
-                />
-                <x-input-error :messages="$errors->get('postal_code')" class="mt-2" />
-            </div>
-        </div>
-
         <!-- Password -->
         <div class="input-wrapper">
             <input 
