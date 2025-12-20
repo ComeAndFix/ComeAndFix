@@ -1,0 +1,355 @@
+/* Location Setup Modal */
+.location-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 1rem;
+}
+
+.location-modal {
+    background: white;
+    border-radius: 24px;
+    max-width: 500px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    animation: modalSlideUp 0.3s ease-out;
+}
+
+@keyframes modalSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.location-modal-header {
+    padding: 2rem 2rem 1.5rem;
+    text-align: center;
+    border-bottom: 1px solid var(--border-gray);
+}
+
+.location-modal-icon {
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, var(--brand-orange), var(--brand-orange-hover));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
+}
+
+.location-modal-icon i {
+    color: white;
+    font-size: 2rem;
+}
+
+.location-modal-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--brand-dark);
+    margin-bottom: 0.5rem;
+    font-family: 'Jost', sans-serif;
+}
+
+.location-modal-subtitle {
+    font-size: 0.875rem;
+    color: var(--text-gray);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.5;
+}
+
+.location-modal-body {
+    padding: 2rem;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+/* Form Sections */
+.location-form-section {
+    margin-bottom: 2rem;
+}
+
+.location-form-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--brand-dark);
+    margin-bottom: 1rem;
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.location-form-label::before {
+    content: '';
+    width: 4px;
+    height: 16px;
+    background: var(--brand-orange);
+    border-radius: 2px;
+}
+
+/* Input Fields */
+.location-input-wrapper {
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+.location-input-wrapper i {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-gray);
+    font-size: 1.125rem;
+}
+
+.location-input {
+    width: 100%;
+    padding: 0.875rem 1rem 0.875rem 3rem;
+    border: 2px solid var(--border-gray);
+    border-radius: 12px;
+    font-size: 0.875rem;
+    font-family: 'Inter', sans-serif;
+    color: var(--brand-dark);
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.location-input:focus {
+    outline: none;
+    border-color: var(--brand-orange);
+    box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.1);
+}
+
+.location-input::placeholder {
+    color: var(--text-gray);
+}
+
+.location-input-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.location-input-row .location-input-wrapper {
+    margin-bottom: 0;
+}
+
+
+.location-map-container {
+    width: 100%;
+    height: 300px;
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+    border: 2px solid var(--border-gray);
+    position: relative;
+}
+
+.location-map-loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #f5f5f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.location-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--border-gray);
+    border-top-color: var(--brand-orange);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.location-address-display {
+    background: #F1F2F4;
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.location-address-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-gray);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.5rem;
+    font-family: 'Inter', sans-serif;
+}
+
+.location-address-text {
+    font-size: 0.875rem;
+    color: var(--brand-dark);
+    font-weight: 500;
+    font-family: 'Inter', sans-serif;
+    line-height: 1.5;
+    display: flex;
+    align-items: start;
+    gap: 0.5rem;
+}
+
+.location-address-text i {
+    color: var(--brand-orange);
+    margin-top: 0.25rem;
+    flex-shrink: 0;
+}
+
+.location-address-placeholder {
+    color: var(--text-gray);
+    font-style: italic;
+}
+
+.location-modal-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.location-btn {
+    flex: 1;
+    padding: 0.875rem 1.5rem;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.location-btn-primary {
+    background: var(--brand-orange);
+    color: white;
+    box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
+}
+
+.location-btn-primary:hover:not(:disabled) {
+    background: var(--brand-orange-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(255, 152, 0, 0.4);
+}
+
+.location-btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.location-btn-secondary {
+    background: white;
+    color: var(--brand-dark);
+    border: 2px solid var(--border-gray);
+}
+
+.location-btn-secondary:hover {
+    border-color: var(--brand-orange);
+    color: var(--brand-orange);
+}
+
+.location-error {
+    background: #FFEBEE;
+    border: 1px solid #EF5350;
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: start;
+    gap: 0.75rem;
+}
+
+.location-error i {
+    color: #EF5350;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.location-error-text {
+    font-size: 0.875rem;
+    color: #C62828;
+    font-family: 'Inter', sans-serif;
+    line-height: 1.5;
+}
+
+/* Leaflet map customization */
+.location-map-container .leaflet-control-attribution {
+    font-size: 0.625rem;
+}
+
+.location-map-container .leaflet-marker-icon {
+    filter: hue-rotate(20deg);
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+    .location-modal {
+        margin: 1rem;
+        border-radius: 20px;
+    }
+
+    .location-modal-header {
+        padding: 1.5rem 1.5rem 1rem;
+    }
+
+    .location-modal-body {
+        padding: 1.5rem;
+    }
+
+    .location-map-container {
+        height: 250px;
+    }
+
+    .location-modal-title {
+        font-size: 1.25rem;
+    }
+
+    .location-modal-actions {
+        flex-direction: column;
+    }
+
+    .location-btn {
+        width: 100%;
+    }
+
+    .location-input-row {
+        grid-template-columns: 1fr;
+    }
+
+    .location-input-row .location-input-wrapper {
+        margin-bottom: 1rem;
+    }
+
+    .location-input-row .location-input-wrapper:last-child {
+        margin-bottom: 0;
+    }
+}

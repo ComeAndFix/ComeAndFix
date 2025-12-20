@@ -1,11 +1,22 @@
-@import 'tailwindcss';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
-@source '../**/*.blade.php';
-@source '../**/*.js';
+:root {
+    --brand-orange: #FF9800;
+    --brand-orange-hover: #F57C00;
+    --brand-dark: #2C2C2C;
+    --text-gray: #666666;
+    --border-gray: #E0E0E0;
+}
 
-@theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+body {
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+    color: var(--brand-dark);
+}
+
+.heading-jost {
+    font-family: 'Jost', sans-serif;
 }
