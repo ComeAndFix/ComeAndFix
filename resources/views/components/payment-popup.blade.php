@@ -47,3 +47,15 @@
         </div>
     </div>
 </div>
+
+<!-- Payment Processing Overlay -->
+<div id="paymentProcessingOverlay" class="payment-overlay" style="display: none;">
+    <div class="payment-overlay-content">
+        <div class="payment-spinner-container mb-4">
+            <div class="payment-spinner"></div>
+            <i class="bi bi-check-circle-fill success-icon" style="display: none;"></i>
+        </div>
+        <h4 class="font-jost fw-bold mb-2" id="paymentOverlayTitle">Processing Payment</h4>
+        <p class="text-muted mb-0" id="paymentOverlayMessage">Please don't close this window...</p>
+    </div>
+</div>

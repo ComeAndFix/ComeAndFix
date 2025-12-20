@@ -225,6 +225,7 @@ class PaymentHandler {
                 }
 
                 // Open Midtrans Snap
+                this.showOverlay();
                 window.snap.pay(result.data.snap_token, {
                     onSuccess: (result) => {
                         this.handlePaymentSuccess(result);
@@ -253,31 +254,73 @@ class PaymentHandler {
 
     handlePaymentSuccess(result) {
         console.log('Payment success:', result);
-        this.showSuccessMessage('Payment completed successfully!');
 
-        // Update the Pay Now button to show Paid status immediately
+        this.updateOverlayStatus('success', 'Payment Successful!', 'Your order has been updated. Reloading...');
         this.updatePayButtonToPaid();
 
-        // Reload page after showing success state
         setTimeout(() => {
             window.location.reload();
-        }, 2000);
+        }, 2500);
     }
 
     handlePaymentPending(result) {
         console.log('Payment pending:', result);
-        this.showMessage('Payment is being processed. Please wait...', 'info');
-        // Poll payment status
+        this.updateOverlayStatus('pending', 'Payment Pending', 'Waiting for verification. Please wait...');
         this.pollPaymentStatus(result.order_id);
     }
 
     handlePaymentError(result) {
         console.error('Payment error:', result);
+        this.hideOverlay();
         this.showErrorMessage('Payment failed. Please try again.');
     }
 
     handlePaymentClose() {
+        this.hideOverlay();
         this.showMessage('Payment window closed. You can pay later from your orders.', 'info');
+    }
+
+    // Overlay Management
+    showOverlay() {
+        const overlay = document.getElementById('paymentProcessingOverlay');
+        if (overlay) {
+            overlay.style.display = 'flex';
+            this.updateOverlayStatus('processing');
+        }
+    }
+
+    hideOverlay() {
+        const overlay = document.getElementById('paymentProcessingOverlay');
+        if (overlay) {
+            overlay.style.display = 'none';
+        }
+    }
+
+    updateOverlayStatus(status, title = '', message = '') {
+        const overlay = document.getElementById('paymentProcessingOverlay');
+        const spinner = overlay?.querySelector('.payment-spinner');
+        const successIcon = overlay?.querySelector('.success-icon');
+        const titleEl = document.getElementById('paymentOverlayTitle');
+        const messageEl = document.getElementById('paymentOverlayMessage');
+
+        if (!overlay) return;
+
+        if (status === 'processing') {
+            if (spinner) spinner.style.display = 'block';
+            if (successIcon) successIcon.style.display = 'none';
+            if (titleEl) titleEl.textContent = title || 'Processing Payment';
+            if (messageEl) messageEl.textContent = message || 'Please don\'t close this window...';
+        } else if (status === 'pending') {
+            if (spinner) spinner.style.display = 'block';
+            if (successIcon) successIcon.style.display = 'none';
+            if (titleEl) titleEl.textContent = title || 'Verification Pending';
+            if (messageEl) messageEl.textContent = message || 'We are verifying your payment...';
+        } else if (status === 'success') {
+            if (spinner) spinner.style.display = 'none';
+            if (successIcon) successIcon.style.display = 'block';
+            if (titleEl) titleEl.textContent = title || 'Payment Success!';
+            if (messageEl) messageEl.textContent = message || 'Redirecting...';
+        }
     }
 
     async pollPaymentStatus(paymentId, attempts = 0) {
@@ -297,7 +340,7 @@ class PaymentHandler {
             const result = await response.json();
 
             if (result.success && result.payment_status === 'completed') {
-                this.showSuccessMessage('Payment confirmed!');
+                this.updateOverlayStatus('success', 'Payment Verified!', 'Your order has been updated. Reloading...');
 
                 // Update the Pay Now button to show Paid status immediately
                 this.updatePayButtonToPaid();
