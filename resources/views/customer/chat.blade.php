@@ -74,17 +74,30 @@
                                             Decline
                                         </button>
                                     @elseif($message->order->status === 'accepted' && $message->order->payment_status !== 'paid')
-                                        <button type="button" class="btn btn-primary rounded-pill w-100" style="grid-column: span 2" onclick="showPaymentForOrder({{ $message->order->id }}, {{ json_encode([
+                                        <button type="button" class="btn btn-brand-orange rounded-pill w-100 px-4 fw-bold" style="grid-column: span 2" onclick="showPaymentForOrder({{ $message->order->id }}, {{ json_encode([
                                             'id' => $message->order->id,
                                             'service_name' => $message->order->service ? $message->order->service->name : 'Service',
                                             'total_amount' => $message->order->total_price,
                                             'description' => $message->order->service_description ?? '',
                                             'order_number' => $message->order->order_number,
-                                            'items' => [[
-                                                'name' => $message->order->service ? $message->order->service->name : 'Service',
-                                                'quantity' => 1,
-                                                'price' => number_format($message->order->total_price, 0, ',', '.')
-                                            ]]
+                                            'items' => array_merge(
+                                                [[
+                                                    'name' => $message->order->service ? $message->order->service->name : 'Base Service',
+                                                    'quantity' => 1,
+                                                    'price' => $message->order->price,
+                                                    'is_base' => true
+                                                ]],
+                                                $message->order->additionalItems->map(fn($item) => [
+                                                    'name' => $item->item_name,
+                                                    'quantity' => $item->quantity,
+                                                    'price' => $item->item_price
+                                                ])->toArray(),
+                                                $message->order->customItems->map(fn($item) => [
+                                                    'name' => $item->item_name,
+                                                    'quantity' => $item->quantity,
+                                                    'price' => $item->item_price
+                                                ])->toArray()
+                                            )
                                         ]) }})">
                                             <i class="bi bi-credit-card"></i> Pay Now
                                         </button>
@@ -259,19 +272,50 @@
                     if (order.status === 'completed') {
                         html = `<div class="w-100 text-center" style="grid-column: span 2"><span class="status-badge status-badge-success">Completed</span></div>`;
                     } else if (order.status === 'accepted' && order.payment_status !== 'paid') {
+                        // Construct line items for the payment modal
+                        const lineItems = [];
+                        
+                        // 1. Base Service
+                        lineItems.push({
+                            name: order.service ? order.service.name : 'Base Service',
+                            quantity: 1,
+                            price: parseFloat(order.price || 0),
+                            is_base: true
+                        });
+
+                        // 2. Additional Items
+                        if (order.additional_items) {
+                            order.additional_items.forEach(item => {
+                                lineItems.push({
+                                    name: item.item_name,
+                                    quantity: parseInt(item.quantity) || 1,
+                                    price: parseFloat(item.item_price)
+                                });
+                            });
+                        }
+
+                        // 3. Custom Items
+                        if (order.custom_items) {
+                            order.custom_items.forEach(item => {
+                                lineItems.push({
+                                    name: item.item_name,
+                                    quantity: parseInt(item.quantity) || 1,
+                                    price: parseFloat(item.item_price)
+                                });
+                            });
+                        }
+
+                        const orderData = {
+                            id: order.id,
+                            service_name: order.service ? order.service.name : 'Service',
+                            total_amount: totalPrice,
+                            description: order.service_description || '',
+                            order_number: order.order_number,
+                            items: lineItems
+                        };
+
                         html = `
-                            <button type="button" class="btn btn-primary rounded-pill w-100" style="grid-column: span 2" onclick="showPaymentForOrder(${order.id}, ${JSON.stringify({
-                                id: order.id,
-                                service_name: order.service ? order.service.name : 'Service',
-                                total_amount: totalPrice,
-                                description: order.service_description || '',
-                                order_number: order.order_number,
-                                items: [{
-                                    name: order.service ? order.service.name : 'Service',
-                                    quantity: 1,
-                                    price: parseFloat(totalPrice).toLocaleString('id-ID')
-                                }]
-                            }).replace(/"/g, '&quot;')})">
+                            <button type="button" class="btn btn-brand-orange rounded-pill w-100 px-4 fw-bold" style="grid-column: span 2" onclick='showPaymentForOrder(${order.id}, ${JSON.stringify(orderData).replace(/'/g, "&apos;")})'>
                                 <i class="bi bi-credit-card"></i> Pay Now
                             </button>
                         `;
@@ -432,17 +476,46 @@
 
                         const totalPrice = calculateOrderTotal(data.order);
                         
+                        // Construct line items for the payment modal summary
+                        const lineItems = [];
+                        
+                        // 1. Base Service Price
+                        lineItems.push({
+                            name: data.order.service ? data.order.service.name : 'Base Service',
+                            quantity: 1,
+                            price: parseFloat(data.order.price || 0),
+                            is_base: true
+                        });
+
+                        // 2. Additional Items
+                        if (data.order.additional_items) {
+                            data.order.additional_items.forEach(item => {
+                                lineItems.push({
+                                    name: item.item_name,
+                                    quantity: parseInt(item.quantity) || 1,
+                                    price: parseFloat(item.item_price)
+                                });
+                            });
+                        }
+
+                        // 3. Custom Items
+                        if (data.order.custom_items) {
+                            data.order.custom_items.forEach(item => {
+                                lineItems.push({
+                                    name: item.item_name,
+                                    quantity: parseInt(item.quantity) || 1,
+                                    price: parseFloat(item.item_price)
+                                });
+                            });
+                        }
+
                         const orderData = {
                             id: orderId,
                             service_name: data.order.service ? data.order.service.name : 'Service',
                             total_amount: totalPrice,
                             description: data.order.service_description || '',
                             order_number: data.order.order_number,
-                            items: [{
-                                name: data.order.service ? data.order.service.name : 'Service',
-                                quantity: 1,
-                                price: parseFloat(totalPrice).toLocaleString('id-ID')
-                            }]
+                            items: lineItems
                         };
 
                         setTimeout(() => {

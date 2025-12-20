@@ -29,6 +29,14 @@ class PaymentHandler {
 
         paymentMethods.forEach(radio => {
             radio.addEventListener('change', () => {
+                // Remove active class from all cards
+                document.querySelectorAll('.payment-method-card').forEach(card => {
+                    card.classList.remove('active');
+                });
+
+                // Add active class to selected card
+                radio.closest('.payment-method-card').classList.add('active');
+
                 if (payButton) {
                     payButton.disabled = false;
                 }
@@ -131,27 +139,28 @@ class PaymentHandler {
     }
 
     buildOrderHTML(orderData) {
-        let html = '<div class="order-items">';
+        let html = '<div class="order-summary-list">';
         if (orderData.items && orderData.items.length > 0) {
             orderData.items.forEach(item => {
+                const isBase = item.is_base === true;
                 html += `
-                    <div class="order-item d-flex justify-content-between mb-2">
-                        <span>${item.name} x ${item.quantity || 1}</span>
-                        <span>Rp ${typeof item.price === 'string' ? item.price : parseFloat(item.price).toLocaleString('id-ID')}</span>
+                    <div class="summary-item d-flex justify-content-between align-items-center mb-2 ${isBase ? 'base-service-item pt-1' : 'opacity-75'}">
+                        <span class="${isBase ? 'fw-bold text-dark fs-6' : 'text-muted small'}">${item.name} ${isBase ? '' : `<span class="smaller">(x${item.quantity || 1})</span>`}</span>
+                        <span class="${isBase ? 'fw-bold text-dark fs-6' : 'fw-semibold text-muted'}">Rp ${parseFloat(item.price || 0).toLocaleString('id-ID')}</span>
                     </div>
                 `;
             });
         } else {
             html += `
-                <div class="order-item d-flex justify-content-between mb-2">
-                    <span>${orderData.service_name || 'Service'}</span>
-                    <span>Rp ${parseFloat(orderData.total_amount).toLocaleString('id-ID')}</span>
+                <div class="summary-item d-flex justify-content-between mb-2">
+                    <span class="text-muted">${orderData.service_name || 'Service'}</span>
+                    <span class="fw-bold text-dark">Rp ${parseFloat(orderData.total_amount).toLocaleString('id-ID')}</span>
                 </div>
             `;
         }
 
         if (orderData.description) {
-            html += `<div class="mt-2"><small class="text-muted">${orderData.description}</small></div>`;
+            html += `<div class="mt-2 pt-2 border-top border-dashed"><small class="text-muted italic">"${orderData.description}"</small></div>`;
         }
 
         html += '</div>';
