@@ -25,6 +25,11 @@
     z-index: 1000;
 }
 
+/* Override navigation margin when in map overlay */
+.map-nav-overlay .main-nav {
+    margin: 0;
+}
+
 /* Tukang List Sidebar */
 .tukang-list-sidebar {
     position: absolute;
