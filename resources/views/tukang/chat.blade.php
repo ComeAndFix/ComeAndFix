@@ -128,7 +128,7 @@
                                 </div>
                                 <div class="col-md-6 mb-4">
                                     <label for="service-price" class="form-label">Base Rate (Rp) *</label>
-                                    <input type="text" id="service-price" name="price" class="form-control currency-input" placeholder="e.g. 150.000" required>
+                                    <input type="text" id="service-price" name="price" class="form-control bg-light text-muted fw-semibold border-dashed" placeholder="0" readonly style="cursor: not-allowed;" required>
                                 </div>
                             </div>
 
@@ -354,11 +354,6 @@
                 }
             });
 
-            // Update price when base price changes
-            document.getElementById('service-price').addEventListener('input', function() {
-                this.value = formatIDR(parseCurrency(this.value));
-                updatePriceSummary();
-            });
 
             // Handle additional items checkboxes
             document.querySelectorAll('.additional-item-checkbox').forEach(checkbox => {
