@@ -70,45 +70,45 @@
                     <div class="services-grid">
                         <!-- Plumbing -->
                         <a href="{{ route('find-tukang', ['service_type' => 'Plumbing']) }}" class="service-card">
-                            <svg class="service-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M16 32L24 24L28 28L40 16L48 24L36 36L40 40L32 48L28 44L24 48L16 40L20 36L16 32Z" stroke="#2C2C2C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
+                            <div class="service-icon-wrapper">
+                                <i class="bi bi-droplet-fill service-icon"></i>
+                            </div>
                             <h3 class="service-name">PLUMBING</h3>
                             <p class="service-description">Pipe repairs, leaks, installations</p>
                         </a>
                         
                         <!-- Electricity -->
                         <a href="{{ route('find-tukang', ['service_type' => 'Electricity']) }}" class="service-card">
-                            <svg class="service-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M16 32L24 24L28 28L40 16L48 24L36 36L40 40L32 48L28 44L24 48L16 40L20 36L16 32Z" stroke="#2C2C2C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
+                            <div class="service-icon-wrapper">
+                                <i class="bi bi-lightning-charge-fill service-icon"></i>
+                            </div>
                             <h3 class="service-name">ELECTRICITY</h3>
                             <p class="service-description">Wiring, outlets, lighting fixes</p>
                         </a>
                         
                         <!-- AC Unit -->
                         <a href="{{ route('find-tukang', ['service_type' => 'HVAC']) }}" class="service-card">
-                            <svg class="service-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M16 32L24 24L28 28L40 16L48 24L36 36L40 40L32 48L28 44L24 48L16 40L20 36L16 32Z" stroke="#2C2C2C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
+                            <div class="service-icon-wrapper">
+                                <i class="bi bi-snow service-icon"></i>
+                            </div>
                             <h3 class="service-name">AC UNIT</h3>
                             <p class="service-description">Installation, repairs, maintenance</p>
                         </a>
                         
                         <!-- Painting -->
                         <a href="{{ route('find-tukang', ['service_type' => 'Painting']) }}" class="service-card">
-                            <svg class="service-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M16 32L24 24L28 28L40 16L48 24L36 36L40 40L32 48L28 44L24 48L16 40L20 36L16 32Z" stroke="#2C2C2C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
+                            <div class="service-icon-wrapper">
+                                <i class="bi bi-paint-bucket service-icon"></i>
+                            </div>
                             <h3 class="service-name">PAINTING</h3>
                             <p class="service-description">Interior, exterior, touch-ups</p>
                         </a>
                         
                         <!-- Appliance Repair -->
                         <a href="{{ route('find-tukang', ['service_type' => 'Appliance Repair']) }}" class="service-card">
-                            <svg class="service-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M16 32L24 24L28 28L40 16L48 24L36 36L40 40L32 48L28 44L24 48L16 40L20 36L16 32Z" stroke="#2C2C2C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
+                            <div class="service-icon-wrapper">
+                                <i class="bi bi-tools service-icon"></i>
+                            </div>
                             <h3 class="service-name">APPLIANCE REPAIR</h3>
                             <p class="service-description">Washing machine, fridge, etc</p>
                         </a>
