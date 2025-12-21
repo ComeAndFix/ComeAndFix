@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use Illuminate\Auth\Notifications\VerifyEmail as BaseVerifyEmail;
+use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\URL;
@@ -19,5 +20,14 @@ class CustomerVerifyEmail extends BaseVerifyEmail
                 'hash' => sha1($notifiable->getEmailForVerification()),
             ]
         );
+    }
+
+    public function toMail($notifiable)
+    {
+        $verificationUrl = $this->verificationUrl($notifiable);
+
+        return (new MailMessage)
+            ->subject('Verify Your Email Address - Come & Fix')
+            ->view('emails.verify-email', ['url' => $verificationUrl]);
     }
 }
