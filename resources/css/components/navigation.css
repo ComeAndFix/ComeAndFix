@@ -22,6 +22,47 @@
     font-size: 1.25rem;
     font-weight: 600;
     color: var(--brand-dark);
+    position: relative;
+}
+
+.nav-logo img {
+    transition: transform 0.3s ease;
+    position: relative;
+    z-index: 2;
+    /* Logo stays on top */
+}
+
+.nav-logo:hover img {
+    transform: scale(1.1);
+}
+
+.nav-logo span {
+    position: absolute;
+    left: 0;
+    /* Start from the left (behind the logo) */
+    max-width: 0;
+    opacity: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    transition: left 0.4s ease, max-width 0.4s ease, opacity 0.15s ease;
+    /* Faster opacity fade out */
+    z-index: 1;
+    /* Text stays behind the logo */
+    pointer-events: none;
+    /* Prevent interaction during animation */
+}
+
+.nav-logo:hover span {
+    left: 48px;
+    /* Slide to the right of the logo */
+    max-width: 200px;
+    opacity: 1;
+    transition: left 0.4s ease, max-width 0.4s ease, opacity 0.3s ease;
+    /* Slower opacity fade in */
+}
+
+.nav-logo:active span {
+    transition: left 0.2s ease, max-width 0.2s ease, opacity 0.1s ease;
 }
 
 .nav-logo-circle {
