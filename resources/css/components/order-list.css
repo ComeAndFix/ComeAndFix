@@ -22,25 +22,51 @@
     gap: 0.75rem;
 }
 
-.booking-card {
+.booking-card-wrapper {
+    margin-bottom: 1.5rem;
     background: white;
     border-radius: 20px;
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
     border: 1px solid #EAEAEA;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
     transition: all 0.15s ease;
+    overflow: hidden;
+}
+
+.booking-card-wrapper:hover {
+    border-color: var(--brand-orange, #FF9800);
+    box-shadow: 0 0 0 2px var(--brand-orange, #FF9800);
+}
+
+.booking-card {
+    background: transparent;
+    border-radius: 0;
+    padding: 1.5rem;
+    margin-bottom: 0;
+    border: none;
+    box-shadow: none;
+    transition: none;
     text-decoration: none;
     display: block;
     color: inherit;
     position: relative;
+}
+
+/* Standalone booking cards (not in wrapper) */
+.booking-card:not(.booking-card-wrapper > .booking-card) {
+    background: white;
+    border-radius: 20px;
+    margin-bottom: 1.5rem;
+    border: 1px solid #EAEAEA;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    transition: all 0.15s ease;
     overflow: hidden;
 }
 
-.booking-card:hover {
+.booking-card:not(.booking-card-wrapper > .booking-card):hover {
     border-color: var(--brand-orange, #FF9800);
     box-shadow: 0 0 0 2px var(--brand-orange, #FF9800);
 }
+
 
 .booking-header {
     display: flex;
@@ -162,8 +188,11 @@
 }
 
 /* Review Button Area */
-.action-area {
-    margin-top: 1rem;
+.booking-card-wrapper .action-area {
+    margin-top: 0;
+    padding: 0 1.5rem 1.5rem 1.5rem;
+    border-top: 1px solid #F1F2F4;
+    padding-top: 1rem;
 }
 
 .btn-review {
@@ -176,13 +205,13 @@
     font-weight: 600;
     border-radius: 12px;
     text-decoration: none;
-    transition: all 0.2s;
+    transition: all 0.15s ease;
     border: none;
 }
 
 .btn-review:hover {
     background: #FFB300;
-    transform: translateY(-2px);
+    color: #000;
 }
 
 .reviewed-badge {

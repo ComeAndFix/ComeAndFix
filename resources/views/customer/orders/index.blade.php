@@ -66,20 +66,6 @@
                                 {{ ucwords(str_replace('_', ' ', $order->status)) }}
                             </span>
                         </div>
-                        
-                        @if($order->status === 'completed' && !$order->review)
-                            <div class="action-area">
-                                <button class="btn-review">
-                                    Rate & Review
-                                </button>
-                            </div>
-                        @elseif($order->review)
-                            <div class="action-area">
-                                <div class="reviewed-badge">
-                                    <i class="bi bi-check-circle-fill me-1"></i> Reviewed
-                                </div>
-                            </div>
-                        @endif
                     </a>
                 @endforeach
                 
@@ -91,44 +77,46 @@
             @endif
 
             @forelse($historyOrders as $order)
-                <a href="{{ route('customer.orders.show', $order) }}" class="booking-card">
-                    <div class="booking-header">
-                        <div class="service-info">
-                            <div class="service-icon-box">
-                                <i class="bi bi-tools"></i>
-                            </div>
-                            <div class="service-details">
-                                <h3>{{ $order->service ? $order->service->name : 'Custom Service' }}</h3>
-                                <div class="booking-date">
-                                    <i class="bi bi-calendar3 me-1"></i>
-                                    {{ $order->created_at->format('d M Y • H:i') }}
+                <div class="booking-card-wrapper">
+                    <a href="{{ route('customer.orders.show', $order) }}" class="booking-card">
+                        <div class="booking-header">
+                            <div class="service-info">
+                                <div class="service-icon-box">
+                                    <i class="bi bi-tools"></i>
+                                </div>
+                                <div class="service-details">
+                                    <h3>{{ $order->service ? $order->service->name : 'Custom Service' }}</h3>
+                                    <div class="booking-date">
+                                        <i class="bi bi-calendar3 me-1"></i>
+                                        {{ $order->created_at->format('d M Y • H:i') }}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="text-end">
-                            <div class="booking-price">
-                                Rp {{ number_format($order->total_price, 0, ',', '.') }}
+                            <div class="text-end">
+                                <div class="booking-price">
+                                    Rp {{ number_format($order->total_price, 0, ',', '.') }}
+                                </div>
+                                <span class="status-badge {{ $order->status }} mt-2">
+                                    {{ ucfirst(str_replace('_', ' ', $order->status)) }}
+                                </span>
                             </div>
-                            <span class="status-badge {{ $order->status }} mt-2">
-                                {{ ucfirst(str_replace('_', ' ', $order->status)) }}
-                            </span>
                         </div>
-                    </div>
 
-                    <div class="booking-divider"></div>
+                        <div class="booking-divider"></div>
 
-                    <div class="booking-footer">
-                        <div class="tukang-info">
-                            <img src="{{ $order->tukang->profile_photo_url ?? asset('images/default-avatar.png') }}" 
-                                 alt="{{ $order->tukang->name }}" 
-                                 class="tukang-avatar-small">
-                            <span class="tukang-name">{{ $order->tukang->name }}</span>
+                        <div class="booking-footer">
+                            <div class="tukang-info">
+                                <img src="{{ $order->tukang->profile_photo_url ?? asset('images/default-avatar.png') }}" 
+                                     alt="{{ $order->tukang->name }}" 
+                                     class="tukang-avatar-small">
+                                <span class="tukang-name">{{ $order->tukang->name }}</span>
+                            </div>
+                            
+                            <div class="text-muted small">
+                                Order #{{ $order->order_number }}
+                            </div>
                         </div>
-                        
-                        <div class="text-muted small">
-                            Order #{{ $order->order_number }}
-                        </div>
-                    </div>
+                    </a>
 
                     {{-- Rate & Review Section --}}
                     @if($order->status === 'completed')
@@ -144,7 +132,7 @@
                             @endif
                         </div>
                     @endif
-                </a>
+                </div>
             @empty
                 <div class="text-center py-5">
                     <i class="bi bi-journal-x text-muted" style="font-size: 4rem; opacity: 0.5;"></i>
