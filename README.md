@@ -132,6 +132,4 @@ Built with ❤️ using:
 
 **⚠️ Note**: This is a thesis project for educational purposes.
 
-Made with 🔧 by Benedictus Yoga
-
 </div>
