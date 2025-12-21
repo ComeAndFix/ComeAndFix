@@ -31,15 +31,17 @@
             ]);
 
             $customer = Customer::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'phone' => $request->phone,
-            'password' => Hash::make($request->password),
-        ]);
+                'name' => $request->name,
+                'email' => $request->email,
+                'phone' => $request->phone,
+                'password' => Hash::make($request->password),
+            ]);
 
             $customer->sendEmailVerificationNotification();
 
-            return redirect()->route('customer.login')->with('success', 'Registration successful! Please check your email to verify your account before logging in.');
+            Auth::guard('customer')->login($customer);
+
+            return redirect()->route('customer.verification.notice');
         }
 
         public function login(Request $request)
@@ -51,30 +53,19 @@
 
             $credentials = $request->only('email', 'password');
 
-            $customer = Customer::where('email', $request->email)->first();
-
-            if (!$customer) {
-                return back()->withErrors([
-                    'email' => 'The provided credentials do not match our records.',
-                ])->onlyInput('email');
-            }
-
             if (Auth::guard('customer')->attempt($credentials)) {
+                $request->session()->regenerate();
+                
                 $customer = Auth::guard('customer')->user();
-
                 if (!$customer->hasVerifiedEmail()) {
-                    Auth::guard('customer')->logout();
-                    return back()->withErrors([
-                        'email' => 'Please verify your email address before logging in.',
-                    ])->onlyInput('email');
+                    return redirect()->route('customer.verification.notice');
                 }
 
-                $request->session()->regenerate();
                 return redirect()->route('dashboard');
             }
 
             return back()->withErrors([
-                'password' => 'The password you entered is incorrect.',
+                'email' => 'The provided credentials do not match our records.',
             ])->onlyInput('email');
         }
 

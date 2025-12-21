@@ -33,7 +33,7 @@
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    font-size: 0.875rem;
+    font-size: 1.25rem;
     font-weight: 600;
     color: var(--brand-dark);
     text-decoration: none;

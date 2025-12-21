@@ -7,6 +7,11 @@
 
     <title>{{ config('app.name', 'Come&Fix') }}</title>
 
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="{{ asset('images/favicon.svg') }}">
+    <link rel="shortcut icon" href="{{ asset('images/favicon.ico') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/favicon.svg') }}">
+    
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -45,8 +50,8 @@
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <!-- Brand Logo -->
                     <a href="/" class="brand-logo">
-                        <div class="brand-logo-circle"></div>
-                        <span>COME AND FIX</span>
+                        <img src="{{ asset('images/logo.svg') }}" alt="Come & Fix Logo" style="width: 40px; height: 40px;">
+                        <span>Come&Fix</span>
                     </a>
                     
                     <!-- Tukang/Customer Link -->

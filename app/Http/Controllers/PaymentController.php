@@ -23,12 +23,14 @@ class PaymentController extends Controller
     {
         try {
             $validated = $request->validate([
-                'order_id' => 'required|exists:orders,id',
+                'order_id' => 'required|exists:orders,uuid',
                 'payment_method' => 'required|in:qris,virtual_account',
                 'amount' => 'required|numeric|min:0'
             ]);
 
-            $order = Order::with(['service', 'additionalItems', 'customItems'])->findOrFail($validated['order_id']);
+            $order = Order::where('uuid', $validated['order_id'])
+                ->with(['service', 'additionalItems', 'customItems'])
+                ->firstOrFail();
 
             if ($order->customer_id !== auth()->guard('customer')->id()) {
                 return response()->json([
@@ -156,11 +158,13 @@ class PaymentController extends Controller
 
                 $payment->update(['status' => $status]);
 
-                if ($status === 'completed') {
+                if ($status === 'completed' && $payment->order->payment_status !== Order::PAYMENT_STATUS_PAID) {
                     $payment->order->update([
                         'status' => Order::STATUS_ON_PROGRESS,
                         'payment_status' => Order::PAYMENT_STATUS_PAID
                     ]);
+                    
+                    broadcast(new \App\Events\OrderStatusUpdated($payment->order->load('service')));
                 }
 
                 return response()->json([

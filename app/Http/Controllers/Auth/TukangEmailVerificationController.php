@@ -29,6 +29,6 @@ class TukangEmailVerificationController extends Controller
             event(new Verified($tukang));
         }
 
-        return redirect()->route('tukang.login')->with('success', 'Email verified successfully! You can now log in.');
+        return redirect()->route('tukang.dashboard')->with('success', 'Email verified successfully!');
     }
 }

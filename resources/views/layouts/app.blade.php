@@ -7,6 +7,11 @@
 
     <title>{{ config('app.name', 'Come&Fix') }}</title>
 
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="{{ asset('images/favicon.svg') }}">
+    <link rel="shortcut icon" href="{{ asset('images/favicon.ico') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/favicon.svg') }}">
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,6 +26,8 @@
         'resources/css/app.css',
         'resources/css/components/navigation.css',
         'resources/css/components/location-modal.css',
+        'resources/css/components/order-details.css',
+        'resources/css/components/order-list.css',
         'resources/js/app.js'
     ])
     

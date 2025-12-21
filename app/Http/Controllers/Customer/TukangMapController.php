@@ -12,8 +12,9 @@ class TukangMapController extends Controller
     public function index(Request $request)
     {
         $serviceType = $request->get('service_type');
+        $customer = auth()->guard('customer')->user();
         
-        return view('customer.tukang-map', compact('serviceType'));
+        return view('customer.tukang-map', compact('serviceType', 'customer'));
     }
 
     public function getTukangs(Request $request)
@@ -21,7 +22,7 @@ class TukangMapController extends Controller
         $serviceType = $request->get('service_type');
         $userLat = $request->get('lat');
         $userLng = $request->get('lng');
-        $radius = $request->get('radius', 10); // Default 10km radius
+        $radius = $request->get('radius', 50); // Default 50km radius
 
         $query = Tukang::where('is_available', true)
             ->where('is_active', true)
@@ -42,9 +43,15 @@ class TukangMapController extends Controller
             });
         }
 
-        // Add distance to each tukang
+        // Add distance and average price to each tukang
         $tukangs = $tukangs->map(function ($tukang) use ($userLat, $userLng) {
             $tukang->distance = ($userLat && $userLng) ? $tukang->getDistanceFrom($userLat, $userLng) : null;
+            
+            // Calculate average price from portfolios
+            $tukang->load('portfolios');
+            $portfolioCosts = $tukang->portfolios->pluck('cost')->filter();
+            $tukang->average_price = $portfolioCosts->count() > 0 ? $portfolioCosts->avg() : 0;
+            
             return $tukang;
         });
 

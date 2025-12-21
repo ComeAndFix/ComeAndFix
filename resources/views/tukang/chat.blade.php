@@ -1,130 +1,101 @@
 <x-app-layout>
     @include('components.payment-popup')
-    <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Chat with {{ $receiver->name }}
-            </h2>
-            <a href="{{ route('tukang.chatrooms.index') }}" class="btn btn-secondary">
-                <i class="bi bi-arrow-left"></i> Back to Chats
-            </a>
-        </div>
-    </x-slot>
 
-    <div class="py-6">
-        <div class="max-w-4xl mx-auto">
-            <div class="bg-white shadow-lg rounded-lg overflow-hidden d-flex flex-column" style="height: 80vh;">
-                <!-- Header -->
-                <div class="bg-primary text-white p-4 border-b flex-shrink-0">
-                    <div class="flex items-center">
-                        <div class="rounded-circle me-3 bg-light text-primary d-flex align-items-center justify-content-center"
-                             style="width: 40px; height: 40px; font-weight: bold;">
-                            {{ substr($receiver->name, 0, 1) }}
-                        </div>
-                        <div>
-                            <h5 class="mb-0">{{ $receiver->name }}</h5>
-                            <small class="opacity-75">{{ ucwords($receiverType) }}</small>
-                        </div>
+    @push('styles')
+        @vite(['resources/css/components/chat.css'])
+    @endpush
+
+    <div class="chat-page-wrapper">
+        <div class="chat-container">
+            <!-- Header -->
+            <div class="chat-header">
+                <div class="chat-header-avatar">
+                    {{ substr($receiver->name, 0, 1) }}
+                </div>
+                <div class="chat-header-info">
+                    <h2 class="chat-header-name">{{ $receiver->name }}</h2>
+                    <div class="chat-header-status">
+                         <span class="chat-status-dot"></span>
+                         {{ ucwords($receiverType) }} • Online
                     </div>
                 </div>
+                <a href="{{ route('tukang.chatrooms.index') }}" class="btn btn-outline-secondary btn-sm rounded-pill">
+                    <i class="bi bi-arrow-left"></i> Chats
+                </a>
+            </div>
 
-                <!-- Messages Container - This will take the remaining space -->
-                <div id="messages-container" class="flex-1 p-4 overflow-y-auto">
-                    <div id="messages">
-                        @foreach($messages as $message)
-                            @if($message->message_type === 'order_proposal' && $message->order)
-                                <div class="order-proposal mb-3 text-end" data-order-id="{{ $message->order->id }}">
-                                    <div class="d-inline-block bg-success text-white p-3 rounded border" style="max-width: 75%;">
-                                        <div class="d-flex align-items-center mb-2">
-                                            <i class="bi bi-briefcase me-2"></i>
-                                            <strong>Order Proposal Sent</strong>
-                                        </div>
-                                        <div class="order-details">
-                                            <div><strong>Service:</strong> {{ $message->order->service ? $message->order->service->name : 'Service' }}</div>
-                                            <div><strong>Base Price:</strong> Rp {{ number_format($message->order->price, 0, ',', '.') }}</div>
-                                            @if($message->order->work_datetime)
-                                                <div><strong>Work Date:</strong> {{ $message->order->work_datetime->format('d M Y H:i') }}</div>
-                                            @endif
-                                            @if($message->order->working_address)
-                                                <div><strong>Working Address:</strong> {{ $message->order->working_address }}</div>
-                                            @endif
-                                            @if($message->order->service_description)
-                                                <div><strong>Description:</strong> {{ $message->order->service_description }}</div>
-                                            @endif
-                                            @if($message->order->additionalItems && $message->order->additionalItems->count() > 0)
-                                                <div class="mt-2">
-                                                    <strong>Additional Items:</strong>
-                                                    <ul class="mb-0 mt-1 small">
-                                                        @foreach($message->order->additionalItems as $item)
-                                                            <li>{{ $item->item_name }} ({{ $item->quantity }}x) - Rp {{ number_format($item->item_price * $item->quantity, 0, ',', '.') }}</li>
-                                                        @endforeach
-                                                    </ul>
-                                                </div>
-                                            @endif
-                                            @if($message->order->customItems && $message->order->customItems->count() > 0)
-                                                <div class="mt-2">
-                                                    <strong>Custom Items:</strong>
-                                                    <ul class="mb-0 mt-1 small">
-                                                        @foreach($message->order->customItems as $item)
-                                                            <li>
-                                                                {{ $item->item_name }} ({{ $item->quantity }}x) - Rp {{ number_format($item->item_price * $item->quantity, 0, ',', '.') }}
-                                                                @if($item->description)
-                                                                    <small class="text-white-50 d-block">{{ $item->description }}</small>
-                                                                @endif
-                                                            </li>
-                                                        @endforeach
-                                                    </ul>
-                                                </div>
-                                            @endif
-                                            @if(($message->order->additionalItems && $message->order->additionalItems->count() > 0) || ($message->order->customItems && $message->order->customItems->count() > 0))
-                                                <div class="mt-2"><strong>Total Price:</strong> Rp {{ number_format($message->order->total_price, 0, ',', '.') }}</div>
-                                            @endif
-                                            <div class="mt-2">
-                                                <small>Order #{{ $message->order->order_number }}</small><br>
-                                                <small>Status: <span class="badge bg-{{ $message->order->status === 'accepted' ? 'success' : ($message->order->status === 'rejected' ? 'danger' : 'warning') }}">{{ ucwords(str_replace('_', ' ', $message->order->status)) }}</span></small><br>
-                                                <small>Expires: {{ $message->order->expires_at->format('d M Y H:i') }}</small>
-                                            </div>
-                                        </div>
-                                    </div>
+            <!-- Messages Container -->
+            <div id="messages-container" class="messages-container">
+                <div id="messages">
+                    @foreach($messages as $message)
+                        @if($message->message_type === 'order_proposal' && $message->order)
+                            <div class="order-proposal-card sent" data-order-id="{{ $message->order->id }}">
+                                <div class="proposal-badge">
+                                    <i class="bi bi-briefcase-fill"></i> Order Proposal Sent
                                 </div>
-                            @else
-                                <div class="message mb-3 {{ $message->sender_type === 'App\Models\Tukang' ? 'text-end' : 'text-start' }}">
-                                    <div class="d-inline-block {{ $message->sender_type === 'App\Models\Tukang' ? 'bg-primary text-white' : 'bg-light' }} p-3 rounded" style="max-width: 75%;">
-                                        <div class="message-text">{{ $message->message }}</div>
-                                        <small class="d-block mt-1 {{ $message->sender_type === 'App\Models\Tukang' ? 'text-white-50' : 'text-muted' }}">
-                                            {{ $message->created_at->format('H:i') }}
-                                        </small>
+                                <h3 class="proposal-title">{{ $message->order->service ? $message->order->service->name : 'Service' }}</h3>
+                                
+                                <div class="proposal-details">
+                                    <div class="proposal-detail">
+                                        <span class="detail-label">Order Number</span>
+                                        <span class="detail-value">#{{ $message->order->order_number }}</span>
                                     </div>
+                                    @if($message->order->work_datetime)
+                                    <div class="proposal-detail">
+                                        <span class="detail-label">Expected Date</span>
+                                        <span class="detail-value">{{ $message->order->work_datetime->format('d M Y, H:i') }}</span>
+                                    </div>
+                                    @endif
                                 </div>
-                            @endif
-                        @endforeach
-                    </div>
+
+                                <div class="proposal-price-tag">
+                                    <span class="price-label">Total Price</span>
+                                    <span class="price-amount">Rp {{ number_format($message->order->total_price, 0, ',', '.') }}</span>
+                                </div>
+
+                                <div class="w-100 text-center mt-3">
+                                    <span class="status-badge status-badge-{{ $message->order->status === 'accepted' || $message->order->status === 'completed' ? 'success' : ($message->order->status === 'rejected' ? 'danger' : 'warning') }}">
+                                        {{ ucwords(str_replace('_', ' ', $message->order->status)) }}
+                                    </span>
+                                </div>
+                            </div>
+                        @else
+                            <div class="message-wrapper {{ $message->sender_type === 'App\Models\Tukang' ? 'sent' : 'received' }}">
+                                <div class="message-bubble">
+                                    {{ $message->message }}
+                                </div>
+                                <div class="message-time">
+                                    {{ $message->created_at->format('H:i') }}
+                                </div>
+                            </div>
+                        @endif
+                    @endforeach
                 </div>
+            </div>
 
-                <!-- Input Form - Fixed at bottom -->
-                <div class="border-top p-3 flex-shrink-0">
-                    <!-- Order Proposal Button -->
+            <!-- Input Form -->
+            <div class="chat-input-area">
+                <div class="d-flex flex-column gap-3">
                     @if($receiverType === 'customer')
-                        <div class="d-flex gap-2 mb-2">
-                            <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#orderProposalModal">
-                                <i class="bi bi-briefcase"></i> Send Order Proposal
+                        <button type="button" class="btn btn-outline-brand-orange rounded-pill w-100 fw-bold" data-bs-toggle="modal" data-bs-target="#orderProposalModal">
+                            <i class="bi bi-plus-lg me-2"></i> Create Order Proposal
+                        </button>
+                    @endif
+                    <form id="message-form">
+                        @csrf
+                        <div class="message-form-container">
+                            <input type="hidden" id="receiver-id" value="{{ $receiver->id }}">
+                            <input type="hidden" id="receiver-type" value="{{ $receiverType }}">
+                            <input type="text"
+                                id="message-input"
+                                class="chat-input"
+                                placeholder="Message {{ $receiver->name }}..."
+                                autocomplete="off"
+                                required>
+                            <button type="submit" class="chat-send-btn">
+                                <i class="bi bi-send-fill"></i>
                             </button>
                         </div>
-                    @endif
-
-                    <!-- Message Form -->
-                    <form id="message-form" class="d-flex gap-2">
-                        @csrf
-                        <input type="hidden" id="receiver-id" value="{{ $receiver->id }}">
-                        <input type="hidden" id="receiver-type" value="{{ $receiverType }}">
-                        <input type="text"
-                               id="message-input"
-                               class="form-control"
-                               placeholder="Type your message..."
-                               required>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-send"></i>
-                        </button>
                     </form>
                 </div>
             </div>
@@ -134,10 +105,10 @@
     <!-- Order Proposal Modal -->
     @if($receiverType === 'customer')
         <div class="modal fade" id="orderProposalModal" tabindex="-1">
-            <div class="modal-dialog modal-lg">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable">
                 <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Send Order Proposal to {{ $receiver->name }}</h5>
+                    <div class="modal-header border-0 pb-0">
+                        <h5 class="modal-title font-jost fw-bold fs-4">Create Order Proposal</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
@@ -147,73 +118,76 @@
                             <input type="hidden" name="conversation_id" value="{{ $conversationId }}">
 
                             <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="service-select" class="form-label">Service *</label>
-                                    <!-- This will be shown when service is NOT pre-selected -->
+                                <div class="col-md-6 mb-4">
+                                    <label for="service-select" class="form-label">Service Type *</label>
                                     <select id="service-select" name="service_id" class="form-select" required>
                                         <option value="">Loading services...</option>
                                     </select>
-                                    <!-- This will be shown when service IS pre-selected -->
-                                    <input type="text" id="service-text" class="form-control" readonly style="display: none;">
+                                    <input type="text" id="service-text" class="form-control bg-light text-muted fw-semibold border-dashed" readonly style="display: none; cursor: not-allowed;">
                                     <input type="hidden" id="service-id-hidden" name="service_id_hidden">
                                 </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="service-price" class="form-label">Price (Rp) *</label>
-                                    <input type="number" id="service-price" name="price" class="form-control" min="0" step="1000" required>
+                                <div class="col-md-6 mb-4">
+                                    <label for="service-price" class="form-label">Base Rate (Rp) *</label>
+                                    <input type="text" id="service-price" name="price" class="form-control bg-light text-muted fw-semibold border-dashed" placeholder="0" readonly style="cursor: not-allowed;" required>
                                 </div>
                             </div>
 
-                            <div class="mb-3">
-                                <label for="service-description" class="form-label">Service Description</label>
-                                <textarea id="service-description" name="service_description" class="form-control" rows="3" placeholder="Describe the work to be done in detail..."></textarea>
+                            <div class="mb-4">
+                                <label for="service-description" class="form-label">Detailed Work Description</label>
+                                <textarea id="service-description" name="service_description" class="form-control" rows="3" placeholder="Explain clearly what work will be performed..."></textarea>
                             </div>
 
-                            <div class="mb-3">
-                                <label for="customer-address" class="form-label">Working Address</label>
-                                <textarea id="customer-address" name="working_address" class="form-control" rows="2" placeholder="Enter the address where the work will be performed">{{ $receiver->address ?? '' }}</textarea>
-                                <small class="text-muted">Default is customer's registered address. You can edit this if work will be at a different location.</small>
+                            <div class="mb-4">
+                                <label for="customer-address" class="form-label">Service Location</label>
+                                <textarea id="customer-address" name="working_address" class="form-control" rows="2" placeholder="Where should the service be performed?">{{ $receiver->address ?? '' }}</textarea>
+                                <div class="form-text mt-2"><i class="bi bi-info-circle me-1"></i> Pre-filled with customer's address.</div>
                             </div>
 
                             <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="work-datetime" class="form-label">Work Date & Time</label>
+                                <div class="col-md-6 mb-4">
+                                    <label for="work-datetime" class="form-label">Scheduled Date & Time</label>
                                     <input type="datetime-local" id="work-datetime" name="work_datetime" class="form-control">
                                 </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="expires-hours" class="form-label">Proposal Valid For *</label>
+                                <div class="col-md-6 mb-4">
+                                    <label for="expires-hours" class="form-label">Proposal Expiration *</label>
                                     <select id="expires-hours" name="expires_in_hours" class="form-select" required>
-                                        <option value="24">24 hours</option>
-                                        <option value="48" selected>48 hours (2 days)</option>
-                                        <option value="72">72 hours (3 days)</option>
-                                        <option value="168">1 week</option>
+                                        <option value="24">24 Hours</option>
+                                        <option value="48" selected>48 Hours (2 Days)</option>
+                                        <option value="72">72 Hours (3 Days)</option>
+                                        <option value="168">1 Week</option>
                                     </select>
                                 </div>
                             </div>
 
-                            <!-- Additional Items Section -->
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">Additional Items (Optional)</label>
-                                <div class="border rounded p-3 bg-light">
+                            <!-- Additional Items -->
+                            <div class="mb-4">
+                                <label class="form-label">Predefined Labor/Supply Items</label>
+                                <div class="item-list-container">
                                     <div id="additional-items-list" class="row">
                                         @foreach(config('order_items.predefined_items') as $index => $item)
-                                        <div class="col-md-6 mb-2">
-                                            <div class="form-check">
-                                                <input class="form-check-input additional-item-checkbox" 
-                                                       type="checkbox" 
-                                                       id="item-{{ $index }}"
-                                                       data-item-name="{{ $item['name'] }}"
-                                                       data-item-price="{{ $item['default_price'] }}"
-                                                       data-item-unit="{{ $item['unit'] }}">
-                                                <label class="form-check-label" for="item-{{ $index }}">
-                                                    {{ $item['name'] }} - Rp {{ number_format($item['default_price'], 0, ',', '.') }}
-                                                </label>
-                                                <input type="number" 
-                                                       class="form-control form-control-sm mt-1 item-quantity" 
-                                                       id="quantity-{{ $index }}"
-                                                       min="1" 
-                                                       value="1" 
-                                                       disabled
-                                                       style="width: 80px;">
+                                        <div class="col-md-6 mb-3">
+                                            <div class="form-check d-flex flex-column align-items-start">
+                                                <div class="d-flex align-items-center mb-1">
+                                                    <input class="form-check-input additional-item-checkbox me-2" 
+                                                           type="checkbox" 
+                                                           id="item-{{ $index }}"
+                                                           data-item-name="{{ $item['name'] }}"
+                                                           data-item-price="{{ $item['default_price'] }}"
+                                                           data-item-unit="{{ $item['unit'] }}">
+                                                    <label class="form-check-label small fw-bold" for="item-{{ $index }}">
+                                                        {{ $item['name'] }}
+                                                    </label>
+                                                </div>
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <input type="number" 
+                                                           class="form-control form-control-sm item-quantity" 
+                                                           id="quantity-{{ $index }}"
+                                                           min="1" 
+                                                           value="1" 
+                                                           disabled
+                                                           style="width: 70px;">
+                                                    <span class="text-muted small">@ Rp {{ number_format($item['default_price'], 0, ',', '.') }}</span>
+                                                </div>
                                             </div>
                                         </div>
                                         @endforeach
@@ -221,52 +195,47 @@
                                 </div>
                             </div>
 
-                            <!-- Custom Items Section (Others) -->
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">Custom Items</label>
-                                <div class="border rounded p-3 bg-light">
-                                    <div id="custom-items-container"></div>
-                                    <button type="button" id="add-custom-item-btn" class="btn btn-sm btn-outline-primary">
-                                        <i class="bi bi-plus-circle"></i> Add Custom Item
+                            <!-- Custom Items -->
+                            <div class="mb-4">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <label class="form-label m-0">Custom Line Items</label>
+                                    <button type="button" id="add-custom-item-btn" class="btn btn-sm btn-outline-brand-orange rounded-pill px-3">
+                                        <i class="bi bi-plus-lg me-1"></i> Add Custom
                                     </button>
                                 </div>
+                                <div id="custom-items-container"></div>
                             </div>
 
-                            <!-- Price Summary -->
-                            <div class="mb-3">
-                                <div class="card bg-info bg-opacity-10">
-                                    <div class="card-body">
-                                        <h6 class="card-title mb-2">Price Summary</h6>
-                                        <div class="d-flex justify-content-between">
-                                            <span>Base Service Price:</span>
-                                            <span id="base-price-display">Rp 0</span>
-                                        </div>
-                                        <div class="d-flex justify-content-between">
-                                            <span>Additional Items:</span>
-                                            <span id="additional-items-price">Rp 0</span>
-                                        </div>
-                                        <div class="d-flex justify-content-between">
-                                            <span>Custom Items:</span>
-                                            <span id="custom-items-price">Rp 0</span>
-                                        </div>
-                                        <hr>
-                                        <div class="d-flex justify-content-between fw-bold">
-                                            <span>Total Price:</span>
-                                            <span id="total-price-display">Rp 0</span>
-                                        </div>
+                            <!-- Pricing Breakdown -->
+                            <div class="mb-0">
+                                <div class="proposal-summary-card">
+                                    <div class="summary-title">
+                                        <i class="bi bi-calculator-fill"></i> Estimated Cost Summary
+                                    </div>
+                                    <div class="summary-row">
+                                        <span>Base Service Rate</span>
+                                        <span id="base-price-display">Rp 0</span>
+                                    </div>
+                                    <div class="summary-row">
+                                        <span>Service Items Total</span>
+                                        <span id="additional-items-price">Rp 0</span>
+                                    </div>
+                                    <div class="summary-row">
+                                        <span>Custom Items Total</span>
+                                        <span id="custom-items-price">Rp 0</span>
+                                    </div>
+                                    <div class="summary-total">
+                                        <span>Total Estimate</span>
+                                        <span id="total-price-display">Rp 0</span>
                                     </div>
                                 </div>
                             </div>
-
-                            <div id="service-details" class="mb-3">
-                                <!-- Dynamic service details will be loaded here -->
-                            </div>
                         </form>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" form="order-proposal-form" class="btn btn-success">
-                            <i class="bi bi-send-check"></i> Send Proposal
+                    <div class="modal-footer border-0 pt-0 pb-4 justify-content-center">
+                        <button type="button" class="btn btn-outline-secondary rounded-pill px-4 me-2" data-bs-dismiss="modal">Discard</button>
+                        <button type="submit" form="order-proposal-form" class="btn btn-brand-orange rounded-pill px-5 fw-bold">
+                            Send Proposal
                         </button>
                     </div>
                 </div>
@@ -341,7 +310,8 @@
                         document.getElementById('service-id-hidden').value = preselectedServiceId;
                         
                         // Auto-fill price
-                        document.getElementById('service-price').value = price;
+                        const basePriceInput = document.getElementById('service-price');
+                        basePriceInput.value = formatIDR(price);
                         updatePriceSummary();
                         
                         console.log('Service displayed as text:', serviceName);
@@ -361,12 +331,29 @@
             document.getElementById('service-select').addEventListener('change', function() {
                 const selectedOption = this.options[this.selectedIndex];
                 const price = selectedOption.dataset.price || 0;
-                document.getElementById('service-price').value = price;
+                const basePriceInput = document.getElementById('service-price');
+                basePriceInput.value = formatIDR(price);
                 updatePriceSummary();
             });
 
-            // Update price when base price changes
-            document.getElementById('service-price').addEventListener('input', updatePriceSummary);
+            // Currency formatting helpers
+            function formatIDR(amount) {
+                return new Intl.NumberFormat('id-ID').format(amount);
+            }
+
+            function parseCurrency(value) {
+                return parseFloat(value.replace(/[^0-9]/g, '')) || 0;
+            }
+
+            // Handle currency input formatting
+            document.addEventListener('input', function(e) {
+                if (e.target.classList.contains('currency-input')) {
+                    const value = parseCurrency(e.target.value);
+                    e.target.value = formatIDR(value);
+                    updatePriceSummary();
+                }
+            });
+
 
             // Handle additional items checkboxes
             document.querySelectorAll('.additional-item-checkbox').forEach(checkbox => {
@@ -395,33 +382,32 @@
                 const customItemId = `custom-item-${customItemCounter++}`;
                 
                 const customItemDiv = document.createElement('div');
-                customItemDiv.className = 'custom-item-row mb-3 p-3 border rounded bg-white';
+                customItemDiv.className = 'custom-item-row mb-4 p-4 border-0 bg-white shadow-sm rounded-4';
                 customItemDiv.id = customItemId;
                 customItemDiv.innerHTML = `
-                    <div class="row">
-                        <div class="col-md-4 mb-2">
-                            <label class="form-label">Item Name *</label>
-                            <input type="text" class="form-control custom-item-name" placeholder="e.g., Special Tool" required>
+                    <div class="row align-items-end mb-3">
+                        <div class="col-md-5">
+                            <label class="form-label small">Item Name *</label>
+                            <input type="text" class="form-control custom-item-name" placeholder="Labor, Supply, etc." required>
                         </div>
-                        <div class="col-md-3 mb-2">
-                            <label class="form-label">Price (Rp) *</label>
-                            <input type="number" class="form-control custom-item-price" min="0" step="1000" placeholder="0" required>
+                        <div class="col-md-3">
+                            <label class="form-label small">Price (Rp) *</label>
+                            <input type="text" class="form-control custom-item-price currency-input" placeholder="0" required>
                         </div>
-                        <div class="col-md-2 mb-2">
-                            <label class="form-label">Qty *</label>
+                        <div class="col-md-2">
+                            <label class="form-label small">Qty *</label>
                             <input type="number" class="form-control custom-item-quantity" min="1" value="1" required>
                         </div>
-                        <div class="col-md-3 mb-2">
-                            <label class="form-label">&nbsp;</label>
-                            <button type="button" class="btn btn-danger btn-sm w-100 remove-custom-item" data-item-id="${customItemId}">
-                                <i class="bi bi-trash"></i> Remove
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-outline-danger rounded-pill w-100 remove-custom-item" data-item-id="${customItemId}">
+                                <i class="bi bi-trash"></i>
                             </button>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-12">
-                            <label class="form-label">Description</label>
-                            <textarea class="form-control custom-item-description" rows="2" placeholder="Optional details about this item"></textarea>
+                            <label class="form-label small">Short Description (Optional)</label>
+                            <textarea class="form-control custom-item-description" rows="2" placeholder="Briefly explain what this item is for..."></textarea>
                         </div>
                     </div>
                 `;
@@ -444,7 +430,7 @@
 
             // Function to update price summary
             function updatePriceSummary() {
-                const basePrice = parseFloat(document.getElementById('service-price').value) || 0;
+                const basePrice = parseCurrency(document.getElementById('service-price').value);
                 
                 // Calculate additional items total
                 let additionalItemsTotal = 0;
@@ -458,7 +444,7 @@
                 // Calculate custom items total
                 let customItemsTotal = 0;
                 document.querySelectorAll('.custom-item-row').forEach(row => {
-                    const price = parseFloat(row.querySelector('.custom-item-price').value) || 0;
+                    const price = parseCurrency(row.querySelector('.custom-item-price').value);
                     const quantity = parseInt(row.querySelector('.custom-item-quantity').value) || 1;
                     customItemsTotal += price * quantity;
                 });
@@ -521,7 +507,7 @@
                         if (name && price) {
                             customItems.push({
                                 item_name: name,
-                                item_price: parseFloat(price),
+                                item_price: parseCurrency(price),
                                 quantity: parseInt(quantity),
                                 description: description || null
                             });
@@ -533,7 +519,7 @@
                         conversation_id: document.querySelector('[name="conversation_id"]').value,
                         service_id: document.getElementById('service-id-hidden').value || document.getElementById('service-select').value,
                         service_description: document.getElementById('service-description').value,
-                        price: document.getElementById('service-price').value,
+                        price: parseCurrency(document.getElementById('service-price').value),
                         expires_in_hours: document.getElementById('expires-hours').value,
                         work_datetime: document.getElementById('work-datetime').value || null,
                         working_address: document.getElementById('customer-address').value || null,
@@ -598,23 +584,42 @@
 
             // WebSocket listeners
             if (window.Echo) {
+                console.log('Echo listener started for channel:', `chat.${conversationId}`);
                 window.Echo.channel(`chat.${conversationId}`)
                     .listen('MessageSent', (e) => {
-                        console.log('New message received:', e);
+                        console.log('New message received from WebSocket:', e);
                         const currentUserId = {{ Auth::guard('tukang')->user()->id }};
-                        if (e.message && e.message.sender_id !== currentUserId) {
+                        const currentUserType = 'App\\Models\\Tukang';
+                        
+                        // Only add if it's not from the current user (to avoid duplicates)
+                        if (e.message && (e.message.sender_id !== currentUserId || e.message.sender_type !== currentUserType)) {
+                            console.log('Appending received message to chat');
                             addMessageToChat(e.message, false);
                             scrollToBottom();
+                        } else {
+                            console.log('Message is from current user, skipping WebSocket append');
                         }
                     })
                     .listen('OrderProposalSent', (e) => {
-                        console.log('Order proposal sent:', e);
+                        console.log('Order proposal received from WebSocket:', e);
                         showOrderProposalSent(e.order);
+                        scrollToBottom();
                     })
                     .listen('OrderStatusUpdated', (e) => {
-                        console.log('Order status updated:', e);
+                        console.log('Order status updated event received from WebSocket:', e);
                         showOrderStatusUpdate(e.order);
+                        scrollToBottom();
+
+                        // Redirect to job detail if payment is completed
+                        if (e.order.payment_status === 'paid') {
+                            showSuccessAlert('Payment verified! Redirecting to job details...');
+                            setTimeout(() => {
+                                window.location.href = `/jobs/${e.order.id}`;
+                            }, 2000);
+                        }
                     });
+            } else {
+                console.error('Echo is not available on window object');
             }
 
             // Message form handler
@@ -644,10 +649,12 @@
                     const data = await response.json();
 
                     if (response.ok && data.success) {
+                        console.log('Message sent successfully via AJAX:', data.message);
                         addMessageToChat(data.message, true);
                         messageInput.value = '';
                         scrollToBottom();
                     } else {
+                        console.error('Failed to send message:', data);
                         showErrorAlert('Failed to send message: ' + (data.error || 'Unknown error'));
                     }
                 } catch (error) {
@@ -661,54 +668,38 @@
                     return;
                 }
                 
-                // Build additional items HTML
-                let additionalItemsHtml = '';
-                if (order.additional_items && order.additional_items.length > 0) {
-                    additionalItemsHtml = '<div class="mt-2"><strong>Additional Items:</strong><ul class="mb-0 mt-1 small">';
-                    order.additional_items.forEach(item => {
-                        additionalItemsHtml += `<li>${item.item_name} (${item.quantity}x) - Rp ${(item.item_price * item.quantity).toLocaleString('id-ID')}</li>`;
-                    });
-                    additionalItemsHtml += '</ul></div>';
-                }
-                
-                // Build custom items HTML
-                let customItemsHtml = '';
-                if (order.custom_items && order.custom_items.length > 0) {
-                    customItemsHtml = '<div class="mt-2"><strong>Custom Items:</strong><ul class="mb-0 mt-1 small">';
-                    order.custom_items.forEach(item => {
-                        customItemsHtml += `<li>${item.item_name} (${item.quantity}x) - Rp ${(item.item_price * item.quantity).toLocaleString('id-ID')}</li>`;
-                        if (item.description) {
-                            customItemsHtml += `<small class="text-white-50 d-block">${item.description}</small>`;
-                        }
-                    });
-                    customItemsHtml += '</ul></div>';
-                }
+                const totalPrice = calculateTotalPrice(order);
                 
                 const orderDiv = document.createElement('div');
-                orderDiv.className = 'order-proposal mb-3 text-end';
+                orderDiv.className = 'order-proposal-card sent';
                 orderDiv.setAttribute('data-order-id', order.id);
                 orderDiv.innerHTML = `
-                <div class="d-inline-block bg-success text-white p-3 rounded border" style="max-width: 75%;">
-                    <div class="d-flex align-items-center mb-2">
-                        <i class="bi bi-briefcase me-2"></i>
-                        <strong>Order Proposal Sent</strong>
+                    <div class="proposal-badge">
+                        <i class="bi bi-briefcase-fill"></i> Order Proposal Sent
                     </div>
-                    <div class="order-details">
-                        <div><strong>Service:</strong> ${order.service ? order.service.name : 'Service'}</div>
-                        <div><strong>Base Price:</strong> Rp ${parseInt(order.price).toLocaleString('id-ID')}</div>
-                        ${order.work_datetime ? `<div><strong>Work Date:</strong> ${formatDateTime(order.work_datetime)}</div>` : ''}
-                        ${order.working_address ? `<div><strong>Working Address:</strong> ${order.working_address}</div>` : ''}
-                        ${order.service_description ? `<div><strong>Description:</strong> ${order.service_description}</div>` : ''}
-                        ${additionalItemsHtml}
-                        ${customItemsHtml}
-                        ${(order.additional_items?.length > 0 || order.custom_items?.length > 0) ? `<div class="mt-2"><strong>Total Price:</strong> Rp ${calculateTotalPrice(order).toLocaleString('id-ID')}</div>` : ''}
-                        <div class="mt-2">
-                            <small>Order #${order.order_number}</small><br>
-                            <small>Expires: ${formatDateTime(order.expires_at)}</small>
+                    <h3 class="proposal-title">${order.service ? order.service.name : 'Service'}</h3>
+                    
+                    <div class="proposal-details">
+                        <div class="proposal-detail">
+                            <span class="detail-label">Order Number</span>
+                            <span class="detail-value">#${order.order_number}</span>
                         </div>
+                        ${order.work_datetime ? `
+                        <div class="proposal-detail">
+                            <span class="detail-label">Expected Date</span>
+                            <span class="detail-value">${formatDateTime(order.work_datetime)}</span>
+                        </div>` : ''}
                     </div>
-                </div>
-            `;
+
+                    <div class="proposal-price-tag">
+                        <span class="price-label">Total Price</span>
+                        <span class="price-amount">Rp ${parseInt(totalPrice).toLocaleString('id-ID')}</span>
+                    </div>
+
+                    <div class="w-100 text-center mt-3">
+                        <span class="status-badge status-badge-warning">Pending</span>
+                    </div>
+                `;
                 messagesContainer.appendChild(orderDiv);
                 scrollToBottom();
             }
@@ -736,16 +727,24 @@
                 statusDiv.className = 'order-status mb-3 text-center';
 
                 let statusText = '';
-                let statusClass = '';
+                let statusClass = 'info';
 
                 switch(order.status) {
                     case 'accepted':
-                        statusText = 'Order Accepted! 🎉';
-                        statusClass = 'bg-success text-white';
+                        statusText = 'Order Accepted by Customer! 🎉';
+                        statusClass = 'success';
+                        break;
+                    case 'on_progress':
+                        statusText = 'Order Paid! You can start working now 🛠️';
+                        statusClass = 'success';
                         break;
                     case 'rejected':
-                        statusText = 'Order Rejected';
-                        statusClass = 'bg-danger text-white';
+                        statusText = 'Order Rejected by Customer';
+                        statusClass = 'danger';
+                        break;
+                    case 'completed':
+                        statusText = 'Work marked as completed! ✨';
+                        statusClass = 'success';
                         break;
                     default:
                         // Replace underscore with space and capitalize
@@ -754,30 +753,42 @@
                             .map(word => word.charAt(0).toUpperCase() + word.slice(1))
                             .join(' ');
                         statusText = `Order ${formattedStatus}`;
-                        statusClass = 'bg-info text-white';
+                }
+
+                let actionBtn = '';
+                if (order.status === 'on_progress') {
+                    actionBtn = `
+                        <div class="mt-2">
+                            <a href="/jobs/${order.id}" class="btn btn-brand-orange btn-sm rounded-pill px-3">
+                                <i class="bi bi-eye-fill me-1"></i> View Job Details
+                            </a>
+                        </div>
+                    `;
                 }
 
                 statusDiv.innerHTML = `
-                <div class="d-inline-block ${statusClass} p-2 rounded">
-                    <small>${statusText} - Order #${order.order_number}</small>
-                </div>
-            `;
+                    <span class="status-badge status-badge-${statusClass}">
+                        ${statusText} • #${order.order_number}
+                    </span>
+                    ${actionBtn}
+                `;
                 messagesContainer.appendChild(statusDiv);
                 scrollToBottom();
             }
 
             function addMessageToChat(message, isSender) {
-                const messageDiv = document.createElement('div');
-                messageDiv.className = `message mb-3 ${isSender ? 'text-end' : 'text-start'}`;
-                messageDiv.innerHTML = `
-                <div class="d-inline-block ${isSender ? 'bg-primary text-white' : 'bg-light'} p-3 rounded" style="max-width: 75%;">
-                    <div class="message-text">${escapeHtml(message.message)}</div>
-                    <small class="d-block mt-1 ${isSender ? 'text-white-50' : 'text-muted'}">
+                console.log('Adding message to chat:', message, 'isSender:', isSender);
+                const messageWrapper = document.createElement('div');
+                messageWrapper.className = `message-wrapper ${isSender ? 'sent' : 'received'}`;
+                messageWrapper.innerHTML = `
+                    <div class="message-bubble">
+                        ${escapeHtml(message.message)}
+                    </div>
+                    <div class="message-time">
                         ${formatTime(message.created_at)}
-                    </small>
-                </div>
-            `;
-                messagesContainer.appendChild(messageDiv);
+                    </div>
+                `;
+                messagesContainer.appendChild(messageWrapper);
             }
 
             function escapeHtml(text) {
@@ -865,7 +876,13 @@
 
             function scrollToBottom() {
                 const container = document.getElementById('messages-container');
-                container.scrollTop = container.scrollHeight;
+                if (container) {
+                    // Small delay to allow DOM to update
+                    setTimeout(() => {
+                        container.scrollTop = container.scrollHeight;
+                        console.log('Scrolled to bottom, scrollHeight:', container.scrollHeight);
+                    }, 50);
+                }
             }
 
             scrollToBottom();
@@ -943,5 +960,4 @@
         }
     </style>
 
-    @vite(['resources/js/app.js'])
 </x-app-layout>

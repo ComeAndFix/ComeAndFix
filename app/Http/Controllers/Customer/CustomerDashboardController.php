@@ -14,7 +14,7 @@ class CustomerDashboardController extends Controller
         
         // Get only active orders (non-completed)
         $recentOrders = Order::where('customer_id', $customerId)
-            ->whereIn('status', ['pending', 'accepted', 'on_progress', 'rejected'])
+            ->whereIn('status', ['pending', 'accepted', 'on_progress'])
             ->with(['service', 'tukang', 'additionalItems', 'customItems'])
             ->latest()
             ->take(4)
