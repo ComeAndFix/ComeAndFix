@@ -1,0 +1,199 @@
+/* Order List Page Styles */
+.bookings-page-wrapper {
+    background-color: #F8F9FA;
+    min-height: calc(100vh - 80px);
+    padding: 2rem 0;
+}
+
+.bookings-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.page-title {
+    font-family: 'Jost', sans-serif;
+    font-weight: 700;
+    font-size: 2rem;
+    color: var(--brand-dark, #2C2C2C);
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.booking-card {
+    background: white;
+    border-radius: 20px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid #EAEAEA;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: block;
+    color: inherit;
+    position: relative;
+    overflow: hidden;
+}
+
+.booking-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+    border-color: var(--brand-orange, #FF9800);
+}
+
+.booking-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.service-info {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.service-icon-box {
+    width: 50px;
+    height: 50px;
+    background: #FFF3E0;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--brand-orange, #FF9800);
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.service-details h3 {
+    font-family: 'Jost', sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin: 0;
+    color: var(--brand-dark, #2C2C2C);
+}
+
+.booking-date {
+    font-size: 0.85rem;
+    color: #6C757D;
+    margin-top: 0.25rem;
+}
+
+.booking-price {
+    font-family: 'Jost', sans-serif;
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: var(--brand-orange, #FF9800);
+    text-align: right;
+}
+
+.booking-divider {
+    height: 1px;
+    background: #F1F2F4;
+    margin: 1rem 0;
+}
+
+.booking-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.tukang-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.tukang-avatar-small {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid #E0E0E0;
+}
+
+.tukang-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--brand-dark, #2C2C2C);
+}
+
+/* Status Badges */
+.status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 30px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-block;
+}
+
+.status-badge.pending {
+    background: #FFF3E0;
+    color: #E65100;
+}
+
+.status-badge.accepted {
+    background: #E3F2FD;
+    color: #1565C0;
+}
+
+.status-badge.on_progress {
+    background: #E8F5E9;
+    color: #2E7D32;
+    /* Special pulse for active */
+    box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.1);
+}
+
+.status-badge.completed {
+    background: #F1F1F1;
+    color: #616161;
+}
+
+.status-badge.cancelled,
+.status-badge.rejected {
+    background: #FFEBEE;
+    color: #C62828;
+}
+
+/* Review Button Area */
+.action-area {
+    margin-top: 1rem;
+}
+
+.btn-review {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 0.75rem;
+    background: #FFC107;
+    color: #000;
+    font-weight: 600;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: all 0.2s;
+    border: none;
+}
+
+.btn-review:hover {
+    background: #FFB300;
+    transform: translateY(-2px);
+}
+
+.reviewed-badge {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 0.75rem;
+    background: #E0F7FA;
+    color: #006064;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}

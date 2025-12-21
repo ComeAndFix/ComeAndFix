@@ -27,6 +27,7 @@
         'resources/css/components/navigation.css',
         'resources/css/components/location-modal.css',
         'resources/css/components/order-details.css',
+        'resources/css/components/order-list.css',
         'resources/js/app.js'
     ])
     
