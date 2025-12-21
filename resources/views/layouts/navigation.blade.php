@@ -1,7 +1,7 @@
 <nav class="main-nav">
     <!-- Logo -->
     <a href="@if(Auth::guard('tukang')->check()) {{ route('tukang.dashboard') }} @elseif(Auth::guard('customer')->check()) {{ route('dashboard') }} @else {{ route('dashboard') }} @endif" class="nav-logo">
-        <div class="nav-logo-circle"></div>
+        <img src="{{ asset('images/logo.svg') }}" alt="Come & Fix Logo" style="width: 40px; height: 40px;">
         <span>COME AND FIX</span>
     </a>
 

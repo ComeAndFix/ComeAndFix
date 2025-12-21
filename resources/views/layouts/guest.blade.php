@@ -50,7 +50,7 @@
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <!-- Brand Logo -->
                     <a href="/" class="brand-logo">
-                        <div class="brand-logo-circle"></div>
+                        <img src="{{ asset('images/logo.svg') }}" alt="Come & Fix Logo" style="width: 40px; height: 40px;">
                         <span>COME AND FIX</span>
                     </a>
                     

@@ -204,6 +204,17 @@
     z-index: 1;
 }
 
+/* Special styling for the 4th step with logo */
+.step:last-child .step-number {
+    width: 48px;
+    height: 48px;
+    background: transparent;
+    margin-left: -8px;
+    /* Center align with other steps (48-32)/2 = 8px */
+}
+
+
+
 .step-content h4 {
     font-size: 1rem;
     font-weight: 600;

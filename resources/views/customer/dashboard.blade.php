@@ -156,7 +156,9 @@
                             </div>
                             
                             <div class="step">
-                                <div class="step-number">4</div>
+                                <div class="step-number">
+                                    <img src="{{ asset('images/logo.svg') }}" alt="Come & Fix" style="width: 100%; height: 100%; object-fit: contain;">
+                                </div>
                                 <div class="step-content">
                                     <h4>Step 4 - <strong>Come and Fix!</strong></h4>
                                     <p>Your Tukang will Come and Fix your problems for you!</p>
