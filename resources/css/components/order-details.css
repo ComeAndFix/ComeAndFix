@@ -1,0 +1,198 @@
+/* Order Details Page Styles */
+.order-details-container {
+    max-width: 1000px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+/* Progress Tracker */
+.progress-track {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    margin-bottom: 3rem;
+    padding: 0 2rem;
+}
+
+.progress-track::before {
+    content: '';
+    position: absolute;
+    top: 15px;
+    left: 2rem;
+    right: 2rem;
+    height: 3px;
+    background: #E0E0E0;
+    z-index: 0;
+}
+
+.progress-step {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    width: 120px;
+}
+
+.step-circle {
+    width: 35px;
+    height: 35px;
+    background: white;
+    border: 3px solid #E0E0E0;
+    border-radius: 50%;
+    margin: 0 auto 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: #ADB5BD;
+    transition: all 0.3s ease;
+}
+
+.step-label {
+    font-size: 0.85rem;
+    color: #ADB5BD;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+/* Active State */
+.progress-step.active .step-circle {
+    border-color: var(--brand-orange);
+    background: var(--brand-orange);
+    color: white;
+    box-shadow: 0 0 0 4px rgba(255, 152, 0, 0.2);
+}
+
+.progress-step.active .step-label {
+    color: var(--brand-dark);
+}
+
+/* Completed State (Previous steps) */
+.progress-step.completed .step-circle {
+    border-color: var(--brand-orange);
+    background: var(--brand-orange);
+    color: white;
+}
+
+.progress-step.completed .step-label {
+    color: var(--brand-orange);
+}
+
+/* Dynamic Progress Bar Line */
+.progress-fill {
+    position: absolute;
+    top: 15px;
+    left: 2rem;
+    height: 3px;
+    background: var(--brand-orange);
+    z-index: 0;
+    transition: width 0.5s ease;
+}
+
+/* Order Cards */
+.order-card {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    border: 1px solid #F1F2F4;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+    margin-bottom: 2rem;
+}
+
+.section-header {
+    font-family: 'Jost', sans-serif;
+    font-weight: 700;
+    color: var(--brand-dark);
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+}
+
+.info-label {
+    color: #6C757D;
+}
+
+.info-value {
+    font-weight: 600;
+    color: var(--brand-dark);
+    text-align: right;
+}
+
+.price-total {
+    border-top: 1px dashed #E0E0E0;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--brand-orange);
+}
+
+/* Tukang Mini Profile */
+.tukang-profile {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: #FFF8F1;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+}
+
+.tukang-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* Photos Grid */
+.photo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 0.5rem;
+}
+
+.photo-wrapper {
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: 8px;
+    border: 1px solid #eee;
+}
+
+.photo-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.photo-wrapper:hover img {
+    transform: scale(1.05);
+}
+
+/* Utility Classes */
+.text-brand-orange {
+    color: var(--brand-orange) !important;
+}
+
+.btn-brand-orange {
+    background-color: var(--brand-orange);
+    color: white;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-brand-orange:hover {
+    background-color: var(--brand-orange-hover);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 152, 0, 0.2);
+}
