@@ -2,7 +2,7 @@
     <!-- Logo -->
     <a href="@if(Auth::guard('tukang')->check()) {{ route('tukang.dashboard') }} @elseif(Auth::guard('customer')->check()) {{ route('dashboard') }} @else {{ route('dashboard') }} @endif" class="nav-logo">
         <img src="{{ asset('images/logo.svg') }}" alt="Come & Fix Logo" style="width: 40px; height: 40px;">
-        <span>COME AND FIX</span>
+        <span>Come&Fix</span>
     </a>
 
     <!-- Navigation Menu -->

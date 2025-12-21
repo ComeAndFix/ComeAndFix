@@ -51,7 +51,7 @@
                     <!-- Brand Logo -->
                     <a href="/" class="brand-logo">
                         <img src="{{ asset('images/logo.svg') }}" alt="Come & Fix Logo" style="width: 40px; height: 40px;">
-                        <span>COME AND FIX</span>
+                        <span>Come&Fix</span>
                     </a>
                     
                     <!-- Tukang/Customer Link -->
