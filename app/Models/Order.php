@@ -16,6 +16,7 @@ class Order extends Model
     const STATUS_COMPLETED = 'completed';
 
     protected $fillable = [
+        'uuid',
         'order_number',
         'customer_id',
         'tukang_id',
@@ -40,6 +41,22 @@ class Order extends Model
         'service_details' => 'array',
         'payment_status' => 'string'
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (empty($model->uuid)) {
+                $model->uuid = (string) \Illuminate\Support\Str::uuid();
+            }
+        });
+    }
+
+    public function getRouteKeyName()
+    {
+        return 'uuid';
+    }
 
     const PAYMENT_STATUS_UNPAID = 'unpaid';
     const PAYMENT_STATUS_PAID = 'paid';
