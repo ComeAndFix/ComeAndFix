@@ -29,7 +29,7 @@
     margin-bottom: 1.5rem;
     border: 1px solid #EAEAEA;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
-    transition: all 0.3s ease;
+    transition: all 0.15s ease;
     text-decoration: none;
     display: block;
     color: inherit;
@@ -38,9 +38,8 @@
 }
 
 .booking-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
     border-color: var(--brand-orange, #FF9800);
+    box-shadow: 0 0 0 2px var(--brand-orange, #FF9800);
 }
 
 .booking-header {
@@ -196,4 +195,71 @@
     border-radius: 12px;
     font-size: 0.9rem;
     font-weight: 600;
+}
+
+/* Filter Pills */
+.filter-pills {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.filter-pills::-webkit-scrollbar {
+    display: none;
+}
+
+.filter-pill {
+    padding: 0.6rem 1.2rem;
+    background: white;
+    border: 1px solid #EAEAEA;
+    border-radius: 50px;
+    color: #6C757D;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+}
+
+.filter-pill:hover {
+    background: #F8F9FA;
+    color: var(--brand-dark, #2C2C2C);
+    border-color: var(--brand-orange, #FF9800);
+}
+
+.filter-pill.active {
+    background: var(--brand-orange, #FF9800);
+    color: white;
+    border-color: var(--brand-orange, #FF9800);
+    box-shadow: 0 4px 12px rgba(255, 152, 0, 0.2);
+}
+
+/* Active Order Glow Animation - Pulse Effect */
+@keyframes pulse-orange {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 152, 0, 0.6);
+    }
+
+    70% {
+        box-shadow: 0 0 0 20px rgba(255, 152, 0, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 152, 0, 0);
+    }
+}
+
+.booking-card.active-order-glow {
+    animation: pulse-orange 2s infinite;
+}
+
+.booking-card.active-order-glow:hover {
+    border-color: var(--brand-orange, #FF9800);
+    box-shadow: 0 0 0 2px var(--brand-orange, #FF9800);
+    animation: none;
+    /* Stop pulse animation on hover */
 }

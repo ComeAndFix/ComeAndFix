@@ -6,7 +6,91 @@
                 My Bookings
             </h1>
 
-            @forelse($orders as $order)
+            <div class="filter-pills">
+                <a href="{{ route('customer.orders.index', ['filter' => 'all']) }}" class="filter-pill {{ $filter === 'all' ? 'active' : '' }}">
+                    All Orders
+                </a>
+                <a href="{{ route('customer.orders.index', ['filter' => 'ongoing']) }}" class="filter-pill {{ $filter === 'ongoing' ? 'active' : '' }}">
+                    Ongoing
+                </a>
+                <a href="{{ route('customer.orders.index', ['filter' => 'completed']) }}" class="filter-pill {{ $filter === 'completed' ? 'active' : '' }}">
+                    Completed
+                </a>
+                <a href="{{ route('customer.orders.index', ['filter' => 'cancelled']) }}" class="filter-pill {{ $filter === 'cancelled' ? 'active' : '' }}">
+                    Cancelled
+                </a>
+            </div>
+
+            @php
+                $activeOrders = $orders->filter(function($order) {
+                    return in_array($order->status, ['accepted', 'on_progress']);
+                });
+                
+                $historyOrders = $orders->filter(function($order) {
+                    return !in_array($order->status, ['accepted', 'on_progress']);
+                });
+            @endphp
+
+            @if($activeOrders->count() > 0)
+                <div class="section-title mb-3">
+                    <h5 class="fw-bold text-dark"><i class="bi bi-lightning-charge-fill text-brand-orange me-2"></i>Active Orders</h5>
+                </div>
+                
+                @foreach($activeOrders as $order)
+                    <a href="{{ route('customer.orders.show', $order) }}" class="booking-card active-order-glow mb-4">
+                        <div class="booking-header">
+                            <div class="service-info">
+                                <div class="service-icon-box">
+                                    <i class="{{ $order->service->icon_class ?? 'bi bi-tools' }}"></i>
+                                </div>
+                                <div class="service-details">
+                                    <h3>{{ $order->service->name ?? 'Service' }}</h3>
+                                    <div class="booking-date">
+                                        <i class="bi bi-clock"></i> {{ $order->created_at->format('d M Y, H:i') }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="booking-price">
+                                Rp {{ number_format($order->total_price, 0, ',', '.') }}
+                            </div>
+                        </div>
+
+                        <div class="booking-divider"></div>
+
+                        <div class="booking-footer">
+                            <div class="tukang-info">
+                                <img src="{{ $order->tukang->user->avatar_url ?? 'https://ui-avatars.com/api/?name=Tukang' }}" alt="Tukang" class="tukang-avatar-small">
+                                <span class="tukang-name">{{ $order->tukang->user->name ?? 'Tukang Name' }}</span>
+                            </div>
+                            <span class="status-badge {{ $order->status }}">
+                                {{ ucwords(str_replace('_', ' ', $order->status)) }}
+                            </span>
+                        </div>
+                        
+                        @if($order->status === 'completed' && !$order->review)
+                            <div class="action-area">
+                                <button class="btn-review">
+                                    Rate & Review
+                                </button>
+                            </div>
+                        @elseif($order->review)
+                            <div class="action-area">
+                                <div class="reviewed-badge">
+                                    <i class="bi bi-check-circle-fill me-1"></i> Reviewed
+                                </div>
+                            </div>
+                        @endif
+                    </a>
+                @endforeach
+                
+                @if($historyOrders->count() > 0)
+                    <div class="section-title mb-3 mt-5">
+                        <h5 class="fw-bold text-muted small text-uppercase"><i class="bi bi-clock-history me-2"></i>History</h5>
+                    </div>
+                @endif
+            @endif
+
+            @forelse($historyOrders as $order)
                 <a href="{{ route('customer.orders.show', $order) }}" class="booking-card">
                     <div class="booking-header">
                         <div class="service-info">
