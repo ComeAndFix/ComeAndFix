@@ -46,19 +46,21 @@
                                         </div>
                                     </div>
                                     
-                                    {{-- Rate & Review Button --}}
-                                    @if(!$order->review)
-                                        <div class="mt-2 px-3 pb-2">
-                                            <a href="{{ route('customer.reviews.create', $order) }}" class="btn btn-warning btn-sm w-100">
-                                                <i class="bi bi-star me-1"></i> Rate & Review
-                                            </a>
-                                        </div>
-                                    @else
-                                        <div class="mt-2 px-3 pb-2">
-                                            <div class="alert alert-info mb-0 py-2">
-                                                <i class="bi bi-check-circle-fill me-1"></i> <small>You reviewed this order</small>
+                                    {{-- Rate & Review Button (Only for Completed Orders) --}}
+                                    @if($order->status === 'completed')
+                                        @if(!$order->review)
+                                            <div class="mt-2 px-3 pb-2">
+                                                <a href="{{ route('customer.reviews.create', $order) }}" class="btn btn-warning btn-sm w-100">
+                                                    <i class="bi bi-star me-1"></i> Rate & Review
+                                                </a>
                                             </div>
-                                        </div>
+                                        @else
+                                            <div class="mt-2 px-3 pb-2">
+                                                <div class="alert alert-info mb-0 py-2">
+                                                    <i class="bi bi-check-circle-fill me-1"></i> <small>You reviewed this order</small>
+                                                </div>
+                                            </div>
+                                        @endif
                                     @endif
                                 </div>
                             </a>
