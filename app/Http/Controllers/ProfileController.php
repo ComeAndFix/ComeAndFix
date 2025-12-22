@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\View\View;
 
+use Illuminate\Support\Facades\Storage;
+
 class ProfileController extends Controller
 {
     /**
@@ -47,7 +49,16 @@ class ProfileController extends Controller
             'postal_code' => ['nullable', 'string', 'max:10'],
             'latitude' => ['nullable', 'numeric'],
             'longitude' => ['nullable', 'numeric'],
+            'profile_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:1024'],
         ]);
+
+        if ($request->hasFile('profile_image')) {
+            if ($customer->profile_image) {
+                Storage::disk('public')->delete($customer->profile_image);
+            }
+            $path = $request->file('profile_image')->store('profile-photos', 'public');
+            $validated['profile_image'] = $path;
+        }
 
         $customer->update($validated);
 

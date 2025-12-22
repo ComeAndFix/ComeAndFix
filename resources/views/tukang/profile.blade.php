@@ -5,10 +5,14 @@
             <div class="col-lg-4 mb-4">
                 <div class="card border-0 shadow-sm">
                     <div class="card-body text-center">
-                        <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center mb-3" 
-                             style="width: 100px; height: 100px; font-size: 2.5rem; font-weight: bold;">
-                            {{ substr($tukang->name, 0, 1) }}
-                        </div>
+                        @if($tukang->profile_image)
+                            <img src="{{ Storage::url($tukang->profile_image) }}" class="rounded-circle mb-3 border shadow-sm" style="width: 100px; height: 100px; object-fit: cover;">
+                        @else
+                            <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center mb-3 shadow-sm" 
+                                 style="width: 100px; height: 100px; font-size: 2.5rem; font-weight: bold; border: 3px solid white;">
+                                {{ substr($tukang->name, 0, 1) }}
+                            </div>
+                        @endif
                         <h4 class="fw-bold mb-2">{{ $tukang->name }}</h4>
                         <p class="text-muted mb-2">
                             <i class="bi bi-envelope me-1"></i>{{ $tukang->email }}
@@ -146,9 +150,33 @@
                             <h5 class="mb-0 fw-bold">Edit Profile</h5>
                         </div>
                         <div class="card-body">
-                            <form method="POST" action="{{ route('tukang.profile.update') }}">
+                            <form method="POST" action="{{ route('tukang.profile.update') }}" enctype="multipart/form-data">
                                 @csrf
                                 @method('PUT')
+
+                                <div class="row mb-3">
+                                    <div class="col-12 text-center">
+                                        <div class="d-inline-block position-relative">
+                                            <div class="rounded-circle overflow-hidden bg-secondary text-white d-flex align-items-center justify-content-center" 
+                                                 style="width: 100px; height: 100px; border: 3px solid var(--bs-primary);">
+                                                @if($tukang->profile_image)
+                                                    <img src="{{ Storage::url($tukang->profile_image) }}" id="tukang-preview-img" style="width: 100%; height: 100%; object-fit: cover;">
+                                                @else
+                                                    <div id="tukang-preview-placeholder" style="font-size: 2.5rem; font-weight: bold;">
+                                                        {{ substr($tukang->name, 0, 1) }}
+                                                    </div>
+                                                    <img src="" id="tukang-preview-img" style="width: 100%; height: 100%; object-fit: cover; display: none;">
+                                                @endif
+                                            </div>
+                                            <label for="profile_image" class="position-absolute bottom-0 end-0 bg-primary text-white rounded-circle d-flex align-items-center justify-content-center"
+                                                   style="width: 32px; height: 32px; cursor: pointer; border: 2px solid white;">
+                                                <i class="bi bi-camera"></i>
+                                            </label>
+                                            <input type="file" name="profile_image" id="profile_image" class="d-none" accept="image/png, image/jpeg, image/jpg">
+                                        </div>
+                                        <div class="small text-muted mt-2">Click camera icon to change</div>
+                                    </div>
+                                </div>
 
                                 <div class="row mb-3">
                                     <div class="col-md-6">
@@ -239,6 +267,30 @@
                 btnText.textContent = 'View Profile';
             }
         }
+
+        // Image Preview
+        document.addEventListener('DOMContentLoaded', function() {
+            const profileImageInput = document.getElementById('profile_image');
+            if (profileImageInput) {
+                profileImageInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            const previewImg = document.getElementById('tukang-preview-img');
+                            const placeholder = document.getElementById('tukang-preview-placeholder');
+                            
+                            previewImg.src = e.target.result;
+                            previewImg.style.display = 'block';
+                            if (placeholder) {
+                                placeholder.style.display = 'none';
+                            }
+                        }
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+        });
 
         // Show error/success messages
         @if(session('success'))

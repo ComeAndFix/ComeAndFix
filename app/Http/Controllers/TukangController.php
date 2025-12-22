@@ -177,7 +177,7 @@ class TukangController extends Controller
     {
         $tukang = Auth::guard('tukang')->user();
 
-        $request->validate([
+        $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'phone' => ['required', 'string', 'max:255'],
             'address' => ['nullable', 'string'],
@@ -187,12 +187,23 @@ class TukangController extends Controller
             'years_experience' => ['nullable', 'integer', 'min:0'],
             'hourly_rate' => ['nullable', 'numeric', 'min:0'],
             'description' => ['nullable', 'string'],
+            'profile_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:1024'],
         ]);
 
-        $tukang->update($request->only([
+        $data = $request->only([
             'name', 'phone', 'address', 'city', 'postal_code',
             'specializations', 'years_experience', 'hourly_rate', 'description'
-        ]));
+        ]);
+
+        if ($request->hasFile('profile_image')) {
+            if ($tukang->profile_image) {
+                Storage::disk('public')->delete($tukang->profile_image);
+            }
+            $path = $request->file('profile_image')->store('profile-photos', 'public');
+            $data['profile_image'] = $path;
+        }
+
+        $tukang->update($data);
 
         return redirect()->back()->with('success', 'Profile updated successfully!');
     }

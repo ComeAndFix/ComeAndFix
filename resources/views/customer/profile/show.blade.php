@@ -42,9 +42,33 @@
                 </div>
             </div>
 
-            <form id="personal-info-form" method="POST" action="{{ route('profile.update') }}">
+            <form id="personal-info-form" method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
+
+                <div class="field-group profile-photo-group" style="margin-bottom: 2rem;">
+                    <label class="field-label">Profile Photo</label>
+                    <div style="display: flex; align-items: center; gap: 2rem;">
+                        <div class="profile-photo-preview" style="width: 100px; height: 100px; border-radius: 50%; overflow: hidden; background: #f0f0f0; border: 3px solid var(--brand-orange); flex-shrink: 0;">
+                            @if($customer->profile_image)
+                                <img src="{{ Storage::url($customer->profile_image) }}" alt="Profile Photo" id="photo-preview-img" style="width: 100%; height: 100%; object-fit: cover;">
+                            @else
+                                <div id="photo-placeholder" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #FFF3E0; color: var(--brand-orange); font-size: 2.5rem; font-weight: bold;">
+                                    {{ strtoupper(substr($customer->name, 0, 1)) }}
+                                </div>
+                                <img src="" alt="Profile Photo" id="photo-preview-img" style="width: 100%; height: 100%; object-fit: cover; display: none;">
+                            @endif
+                        </div>
+                        
+                        <div class="photo-upload-controls" style="display: none;">
+                            <input type="file" name="profile_image" id="profile_image" class="field-value" accept="image/png, image/jpeg, image/jpg" style="padding-left: 0;">
+                            <small class="text-muted" style="display: block; margin-top: 0.5rem; color: #6c757d;">Supported formats: JPG, JPEG, PNG. Max size: 1MB.</small>
+                        </div>
+                    </div>
+                    @error('profile_image')
+                        <small class="text-danger">{{ $message }}</small>
+                    @enderror
+                </div>
 
                 <div class="field-group">
                     <label class="field-label">Name</label>
@@ -305,15 +329,43 @@
             document.getElementById('save-personal-btn').addEventListener('click', function() {
                 document.getElementById('personal-info-form').submit();
             });
+
+            // Profile image preview
+            const profileImageInput = document.getElementById('profile_image');
+            if (profileImageInput) {
+                profileImageInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            const previewImg = document.getElementById('photo-preview-img');
+                            const placeholder = document.getElementById('photo-placeholder');
+                            
+                            previewImg.src = e.target.result;
+                            previewImg.style.display = 'block';
+                            if (placeholder) {
+                                placeholder.style.display = 'none';
+                            }
+                        }
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
         });
 
         function togglePersonalEdit(editing) {
             const form = document.getElementById('personal-info-form');
             const inputs = form.querySelectorAll('input[name]:not([type="hidden"])');
+            const photoUploadControls = form.querySelector('.photo-upload-controls');
+            
+            if (photoUploadControls) {
+                photoUploadControls.style.display = editing ? 'block' : 'none';
+            }
             
             inputs.forEach(input => {
                 // Skip email field - it's always readonly
-                if (input.name === 'email') {
+                // Also skip file input here as we handle it via container visibility
+                if (input.name === 'email' || input.type === 'file') {
                     return;
                 }
                 

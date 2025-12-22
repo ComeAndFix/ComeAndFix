@@ -22,6 +22,7 @@ class Customer extends Authenticatable implements MustVerifyEmail
         'latitude',
         'longitude',
         'password',
+        'profile_image',
     ];
 
     protected $hidden = [
