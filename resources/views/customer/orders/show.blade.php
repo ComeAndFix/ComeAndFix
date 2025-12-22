@@ -22,9 +22,9 @@
         <!-- Header -->
         <div class="d-flex align-items-center mb-4">
             @if(request('from_chat'))
-                <a href="{{ route('chat.show', ['receiverType' => 'tukang', 'receiverId' => $order->tukang_id]) }}" class="btn btn-outline-secondary rounded-pill me-3 btn-sm">
+                <button onclick="history.back()" class="btn btn-outline-secondary rounded-pill me-3 btn-sm">
                     <i class="bi bi-arrow-left"></i> Back to Chat
-                </a>
+                </button>
             @else
                 <a href="{{ route('customer.orders.index') }}" class="btn btn-outline-secondary rounded-pill me-3 btn-sm">
                     <i class="bi bi-arrow-left"></i> Back
@@ -245,7 +245,7 @@
                             <i class="bi bi-star-fill"></i>
                             <span class="text-muted ms-1">(4.8)</span>
                         </div>
-                        <a href="{{ route('chat.index') }}" class="btn btn-outline-primary btn-sm rounded-pill w-100">
+                        <a href="{{ route('chat.show', ['receiverType' => 'tukang', 'receiverId' => $order->tukang_id]) }}" class="btn btn-outline-primary btn-sm rounded-pill w-100">
                             <i class="bi bi-chat-dots me-1"></i> Chat Tukang
                         </a>
                     </div>
@@ -294,7 +294,7 @@
 
                      @if($order->payment_status !== 'paid' && $order->status === 'accepted')
                         <div class="mt-3">
-                             <a href="{{ route('chat.index') }}" class="btn btn-brand-orange w-100 rounded-pill fw-bold">
+                             <a href="{{ route('chat.show', ['receiverType' => 'tukang', 'receiverId' => $order->tukang_id]) }}" class="btn btn-brand-orange w-100 rounded-pill fw-bold">
                                 Pay in Chat
                             </a>
                         </div>

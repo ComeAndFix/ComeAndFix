@@ -3,9 +3,9 @@
                 <div class="row mb-3">
                     <div class="col">
                         @if(request('from_chat'))
-                            <a href="{{ route('tukang.chat.show', ['receiverType' => 'customer', 'receiverId' => $order->customer_id]) }}" class="btn btn-outline-secondary">
+                            <button onclick="history.back()" class="btn btn-outline-secondary">
                                 <i class="bi bi-arrow-left"></i> Back to Chat
-                            </a>
+                            </button>
                         @else
                             <a href="{{ route('tukang.jobs.index') }}" class="btn btn-outline-secondary">
                                 <i class="bi bi-arrow-left"></i> Back to Jobs
