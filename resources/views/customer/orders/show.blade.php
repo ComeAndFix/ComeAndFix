@@ -64,6 +64,29 @@
                 </div>
             </div>
         @else
+        @if($order->status === 'completed' && $order->hasReview())
+            <!-- Completion & Review Notice -->
+            <div class="alert alert-success border-0 shadow-sm mb-4" role="alert">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <i class="bi bi-check-circle-fill fs-1 me-3"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h5 class="alert-heading mb-1">
+                            <strong>Service Completed & Reviewed</strong>
+                        </h5>
+                        <p class="mb-0">
+                            Thank you for using Come&Fix! This order is now closed.
+                        </p>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <span class="badge bg-success rounded-pill px-3 py-2">
+                            <i class="bi bi-star-fill me-1"></i> Reviewed
+                        </span>
+                    </div>
+                </div>
+            </div>
+        @else
             <!-- Progress Tracker Logic -->
             @php
                 $steps = [
@@ -110,6 +133,7 @@
                     </div>
                 @endforeach
             </div>
+        @endif
         @endif
 
 
