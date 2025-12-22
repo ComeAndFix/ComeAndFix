@@ -8,6 +8,9 @@
         <div class="chat-container">
             <!-- Header -->
             <div class="chat-header">
+                <button onclick="history.back()" class="btn btn-outline-secondary btn-sm rounded-pill me-2">
+                    <i class="bi bi-arrow-left"></i> Back
+                </button>
                 <div class="chat-header-avatar">
                     {{ substr($receiver->name, 0, 1) }}
                 </div>
@@ -18,9 +21,6 @@
                          {{ ucwords($receiverType) }} • Online
                     </div>
                 </div>
-                <button onclick="history.back()" class="btn btn-outline-secondary btn-sm rounded-pill">
-                    <i class="bi bi-arrow-left"></i> Back
-                </button>
             </div>
 
             <!-- Messages Container -->
