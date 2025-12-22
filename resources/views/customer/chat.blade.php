@@ -28,7 +28,7 @@
                 <div id="messages">
                     @foreach($messages as $message)
                         @if($message->message_type === 'order_proposal' && $message->order)
-                            <div class="order-proposal-card received" data-order-id="{{ $message->order->uuid }}">
+                            <div class="order-proposal-card received" data-order-id="{{ $message->order->uuid }}" style="cursor: pointer;" onclick="window.location.href='{{ route('customer.orders.show', $message->order->uuid) }}'">
                                 <div class="proposal-badge">
                                     <i class="bi bi-briefcase-fill"></i> Order Proposal
                                 </div>
@@ -60,7 +60,7 @@
                                     </div>
                                     
                                     <div class="text-end mt-2">
-                                        <a href="javascript:void(0)" onclick="toggleDetails('{{ $message->order->uuid }}')" id="toggle-btn-{{ $message->order->uuid }}" class="text-muted small text-decoration-none" style="font-size: 0.8rem;">
+                                        <a href="javascript:void(0)" onclick="event.stopPropagation(); toggleDetails('{{ $message->order->uuid }}')" id="toggle-btn-{{ $message->order->uuid }}" class="text-muted small text-decoration-none" style="font-size: 0.8rem;">
                                             Click to see details <i class="bi bi-chevron-down"></i>
                                         </a>
                                     </div>
@@ -96,14 +96,14 @@
 
                                 <div class="proposal-actions">
                                     @if($message->order->status === 'pending' && !$message->order->isExpired())
-                                        <button type="button" class="btn btn-success rounded-pill" onclick="acceptOrder('{{ $message->order->uuid }}')">
+                                        <button type="button" class="btn btn-success rounded-pill" onclick="event.stopPropagation(); acceptOrder('{{ $message->order->uuid }}')">
                                             Accept
                                         </button>
-                                        <button type="button" class="btn btn-outline-danger rounded-pill" onclick="rejectOrder('{{ $message->order->uuid }}')">
+                                        <button type="button" class="btn btn-outline-danger rounded-pill" onclick="event.stopPropagation(); rejectOrder('{{ $message->order->uuid }}')">
                                             Decline
                                         </button>
                                     @elseif($message->order->status === 'accepted' && $message->order->payment_status !== 'paid')
-                                        <button type="button" class="btn btn-brand-orange rounded-pill w-100 px-4 fw-bold" style="grid-column: span 2" onclick="showPaymentForOrder('{{ $message->order->uuid }}', {{ json_encode([
+                                        <button type="button" class="btn btn-brand-orange rounded-pill w-100 px-4 fw-bold" style="grid-column: span 2" onclick="event.stopPropagation(); showPaymentForOrder('{{ $message->order->uuid }}', {{ json_encode([
                                             'id' => $message->order->uuid,
                                             'service_name' => $message->order->service ? $message->order->service->name : 'Service',
                                             'total_amount' => $message->order->total_price,
@@ -358,7 +358,7 @@
                         };
 
                         html = `
-                            <button type="button" class="btn btn-brand-orange rounded-pill w-100 px-4 fw-bold" style="grid-column: span 2" onclick='showPaymentForOrder("${order.uuid}", ${JSON.stringify(orderData).replace(/'/g, "&apos;")})'>
+                            <button type="button" class="btn btn-brand-orange rounded-pill w-100 px-4 fw-bold" style="grid-column: span 2" onclick='event.stopPropagation(); showPaymentForOrder("${order.uuid}", ${JSON.stringify(orderData).replace(/'/g, "&apos;")})'>
                                 <i class="bi bi-credit-card"></i> Pay Now
                             </button>
                         `;
@@ -439,6 +439,8 @@
                 const orderDiv = document.createElement('div');
                 orderDiv.className = 'order-proposal-card received';
                 orderDiv.setAttribute('data-order-id', order.uuid);
+                orderDiv.style.cursor = 'pointer';
+                orderDiv.onclick = function() { window.location.href = '/orders/' + order.uuid; };
 
                 orderDiv.innerHTML = `
                     <div class="proposal-badge">
@@ -470,7 +472,7 @@
                         </div>
                         
                         <div class="text-end mt-2">
-                            <a href="javascript:void(0)" onclick="toggleDetails('${order.uuid}')" id="toggle-btn-${order.uuid}" class="text-muted small text-decoration-none" style="font-size: 0.8rem;">
+                            <a href="javascript:void(0)" onclick="event.stopPropagation(); toggleDetails('${order.uuid}')" id="toggle-btn-${order.uuid}" class="text-muted small text-decoration-none" style="font-size: 0.8rem;">
                                 Click to see details <i class="bi bi-chevron-down"></i>
                             </a>
                         </div>
@@ -481,10 +483,10 @@
                     </div>
 
                     <div class="proposal-actions">
-                        <button type="button" class="btn btn-success rounded-pill" onclick="acceptOrder('${order.uuid}')">
+                        <button type="button" class="btn btn-success rounded-pill" onclick="event.stopPropagation(); acceptOrder('${order.uuid}')">
                             Accept
                         </button>
-                        <button type="button" class="btn btn-outline-danger rounded-pill" onclick="rejectOrder('${order.uuid}')">
+                        <button type="button" class="btn btn-outline-danger rounded-pill" onclick="event.stopPropagation(); rejectOrder('${order.uuid}')">
                             Decline
                         </button>
                     </div>

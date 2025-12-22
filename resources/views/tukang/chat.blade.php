@@ -29,7 +29,7 @@
                 <div id="messages">
                     @foreach($messages as $message)
                         @if($message->message_type === 'order_proposal' && $message->order)
-                            <div class="order-proposal-card sent" data-order-id="{{ $message->order->id }}">
+                            <div class="order-proposal-card sent" data-order-id="{{ $message->order->id }}" style="cursor: pointer;" onclick="window.location.href='{{ route('jobs.show', $message->order->uuid) }}'">
                                 <div class="proposal-badge">
                                     <i class="bi bi-briefcase-fill"></i> Order Proposal Sent
                                 </div>
@@ -55,7 +55,7 @@
                                     </div>
                                     
                                     <div class="text-end mt-2">
-                                        <a href="javascript:void(0)" onclick="toggleDetails('{{ $message->order->uuid }}')" id="toggle-btn-{{ $message->order->uuid }}" class="text-muted small text-decoration-none" style="font-size: 0.8rem;">
+                                        <a href="javascript:void(0)" onclick="event.stopPropagation(); toggleDetails('{{ $message->order->uuid }}')" id="toggle-btn-{{ $message->order->uuid }}" class="text-muted small text-decoration-none" style="font-size: 0.8rem;">
                                             Click to see details <i class="bi bi-chevron-down"></i>
                                         </a>
                                     </div>
@@ -756,6 +756,8 @@
                 const orderDiv = document.createElement('div');
                 orderDiv.className = 'order-proposal-card sent';
                 orderDiv.setAttribute('data-order-id', order.id);
+                orderDiv.style.cursor = 'pointer';
+                orderDiv.onclick = function() { window.location.href = '/jobs/' + (order.uuid || order.id); };
                 orderDiv.innerHTML = `
                     <div class="proposal-badge">
                         <i class="bi bi-briefcase-fill"></i> Order Proposal Sent
@@ -781,7 +783,7 @@
                         </div>
                         
                         <div class="text-end mt-2">
-                            <a href="javascript:void(0)" onclick="toggleDetails('${order.uuid || order.id}')" id="toggle-btn-${order.uuid || order.id}" class="text-muted small text-decoration-none" style="font-size: 0.8rem;">
+                            <a href="javascript:void(0)" onclick="event.stopPropagation(); toggleDetails('${order.uuid || order.id}')" id="toggle-btn-${order.uuid || order.id}" class="text-muted small text-decoration-none" style="font-size: 0.8rem;">
                                 Click to see details <i class="bi bi-chevron-down"></i>
                             </a>
                         </div>

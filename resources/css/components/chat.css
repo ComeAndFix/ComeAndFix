@@ -151,6 +151,14 @@
     margin-bottom: 2rem;
     position: relative;
     overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.order-proposal-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(255, 152, 0, 0.2);
+    border-color: var(--brand-orange);
 }
 
 .order-proposal-card.received::before {
