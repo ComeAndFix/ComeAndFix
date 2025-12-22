@@ -29,7 +29,7 @@
                 <div id="messages">
                     @foreach($messages as $message)
                         @if($message->message_type === 'order_proposal' && $message->order)
-                            <div class="order-proposal-card sent" data-order-id="{{ $message->order->id }}" style="cursor: pointer;" onclick="window.location.href='{{ route('jobs.show', $message->order->uuid) }}'">
+                            <div class="order-proposal-card sent" data-order-id="{{ $message->order->id }}" style="cursor: pointer;" onclick="window.location.href='{{ route('tukang.jobs.show', $message->order->uuid) }}'">
                                 <div class="proposal-badge">
                                     <i class="bi bi-briefcase-fill"></i> Order Proposal Sent
                                 </div>
