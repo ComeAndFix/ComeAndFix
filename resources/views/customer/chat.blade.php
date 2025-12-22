@@ -18,9 +18,9 @@
                          {{ ucwords($receiverType) }} • Online
                     </div>
                 </div>
-                <a href="{{ route('find-tukang') }}" class="btn btn-outline-secondary btn-sm rounded-pill">
-                    <i class="bi bi-arrow-left"></i> Map
-                </a>
+                <button onclick="history.back()" class="btn btn-outline-secondary btn-sm rounded-pill">
+                    <i class="bi bi-arrow-left"></i> Back
+                </button>
             </div>
 
             <!-- Messages Container -->

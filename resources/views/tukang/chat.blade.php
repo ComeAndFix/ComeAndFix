@@ -19,9 +19,9 @@
                          {{ ucwords($receiverType) }} • Online
                     </div>
                 </div>
-                <a href="{{ route('tukang.chatrooms.index') }}" class="btn btn-outline-secondary btn-sm rounded-pill">
-                    <i class="bi bi-arrow-left"></i> Chats
-                </a>
+                <button onclick="history.back()" class="btn btn-outline-secondary btn-sm rounded-pill">
+                    <i class="bi bi-arrow-left"></i> Back
+                </button>
             </div>
 
             <!-- Messages Container -->
