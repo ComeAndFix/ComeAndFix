@@ -455,14 +455,21 @@ class ChatController extends Controller
     public function acceptOrder(Request $request, Order $order)
     {
         if ($order->customer_id !== Auth::guard('customer')->id()) {
-            return response()->json(['success' => false, 'error' => 'Unauthorized'], 403);
+            if ($request->expectsJson()) {
+                return response()->json(['success' => false, 'error' => 'Unauthorized'], 403);
+            }
+            return redirect()->back()->with('error', 'Unauthorized access');
         }
 
         if (!$order->canBeAccepted()) {
-            return response()->json([
-                'success' => false,
-                'error' => 'Order cannot be accepted (expired or already processed)'
-            ], 400);
+            $errorMsg = 'Order cannot be accepted (expired or already processed)';
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'error' => $errorMsg
+                ], 400);
+            }
+            return redirect()->back()->with('error', $errorMsg);
         }
 
         try {
@@ -473,31 +480,51 @@ class ChatController extends Controller
 
             broadcast(new OrderStatusUpdated($order));
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Order accepted successfully',
-                'order' => $order->load(['service', 'tukang'])
-            ]);
+            // Return JSON for AJAX requests
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Order accepted successfully',
+                    'order' => $order->load(['service', 'tukang'])
+                ]);
+            }
+
+            // Redirect for regular form submissions
+            return redirect()->route('customer.orders.show', $order->uuid)
+                ->with('success', 'Order accepted successfully! Please proceed with payment.');
+
         } catch (\Exception $e) {
             Log::error('Error accepting order: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'error' => 'Failed to accept order'
-            ], 500);
+            
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'Failed to accept order'
+                ], 500);
+            }
+            
+            return redirect()->back()->with('error', 'Failed to accept order. Please try again.');
         }
     }
 
     public function rejectOrder(Request $request, Order $order)
     {
         if ($order->customer_id !== Auth::guard('customer')->id()) {
-            return response()->json(['success' => false, 'error' => 'Unauthorized'], 403);
+            if ($request->expectsJson()) {
+                return response()->json(['success' => false, 'error' => 'Unauthorized'], 403);
+            }
+            return redirect()->back()->with('error', 'Unauthorized access');
         }
 
         if ($order->status !== 'pending') {
-            return response()->json([
-                'success' => false,
-                'error' => 'Order cannot be rejected'
-            ], 400);
+            $errorMsg = 'Order cannot be rejected';
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'error' => $errorMsg
+                ], 400);
+            }
+            return redirect()->back()->with('error', $errorMsg);
         }
 
         try {
@@ -505,17 +532,30 @@ class ChatController extends Controller
 
             broadcast(new OrderStatusUpdated($order));
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Order rejected',
-                'order' => $order->load(['service', 'tukang'])
-            ]);
+            // Return JSON for AJAX requests
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Order rejected',
+                    'order' => $order->load(['service', 'tukang'])
+                ]);
+            }
+
+            // Redirect for regular form submissions
+            return redirect()->route('customer.orders.index')
+                ->with('success', 'Order proposal has been declined.');
+
         } catch (\Exception $e) {
             Log::error('Error rejecting order: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'error' => 'Failed to reject order'
-            ], 500);
+            
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'Failed to reject order'
+                ], 500);
+            }
+            
+            return redirect()->back()->with('error', 'Failed to reject order. Please try again.');
         }
     }
 }

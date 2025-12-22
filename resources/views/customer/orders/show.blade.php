@@ -1,7 +1,23 @@
 <x-app-layout>
 
-
     <div class="order-details-container">
+        
+        <!-- Flash Messages -->
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
         
         <!-- Header -->
         <div class="d-flex align-items-center mb-4">
@@ -14,51 +30,82 @@
             </div>
         </div>
 
-        <!-- Progress Tracker Logic -->
-        @php
-            $steps = [
-                ['label' => 'Order Accepted', 'status' => 'accepted'],
-                ['label' => 'Payment', 'status' => 'paid'],
-                ['label' => 'Come&Fix', 'status' => 'on_progress'],
-                ['label' => 'Completed', 'status' => 'completed'],
-            ];
-            
-            // Determine current step index
-            $currentIndex = 0;
-            if ($order->status == 'completed') {
-                $currentIndex = 3;
-            } elseif ($order->status == 'on_progress') {
-                $currentIndex = 2; // Wait for Tukang / Working
-            } elseif ($order->status == 'accepted' && $order->payment_status == 'paid') {
-                 $currentIndex = 2; // Paid, moving to On Progress (conceptually)
-            } elseif ($order->status == 'accepted') {
-                $currentIndex = 1; // Needs payment
-            } elseif ($order->status == 'pending') {
-                $currentIndex = 0;
-            }
-
-            // Calculate progress bar width
-            $progressWidth = ($currentIndex / (count($steps) - 1)) * 100;
-        @endphp
-
-        <div class="progress-track">
-            <div class="progress-fill" style="width: {{ $progressWidth }}%;"></div>
-            
-            @foreach($steps as $index => $step)
-                @php
-                    $isActive = $index == $currentIndex;
-                    $isCompleted = $index < $currentIndex;
-                    $circleContent = $isCompleted ? '<i class="bi bi-check-lg"></i>' : ($index + 1);
-                    $isSpecial = $step['label'] === 'Come&Fix';
-                @endphp
-                <div class="progress-step {{ $isActive ? 'active' : '' }} {{ $isCompleted ? 'completed' : '' }}">
-                    <div class="step-circle">{!! $circleContent !!}</div>
-                    <div class="step-label" style="{{ $isSpecial ? 'color: var(--brand-orange) !important; font-weight: 800; font-size: 1.1rem;' : '' }}">
-                        {{ $step['label'] }}
+        <!-- Progress Tracker or Cancellation Notice -->
+        @if(in_array($order->status, ['rejected', 'cancelled']))
+            <!-- Cancellation Notice -->
+            <div class="alert alert-danger border-0 shadow-sm mb-4" role="alert">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <i class="bi bi-x-circle-fill fs-1 me-3"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h5 class="alert-heading mb-1">
+                            <strong>Order {{ ucfirst($order->status) }}</strong>
+                        </h5>
+                        <p class="mb-0">
+                            @if($order->status === 'rejected')
+                                This order proposal has been declined and is no longer active.
+                            @else
+                                This order has been cancelled and is no longer active.
+                            @endif
+                        </p>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <span class="badge bg-danger rounded-pill px-3 py-2">
+                            <i class="bi bi-slash-circle me-1"></i> {{ ucfirst($order->status) }}
+                        </span>
                     </div>
                 </div>
-            @endforeach
-        </div>
+            </div>
+        @else
+            <!-- Progress Tracker Logic -->
+            @php
+                $steps = [
+                    ['label' => 'Awaiting Approval', 'status' => 'pending'],
+                    ['label' => 'Order Accepted', 'status' => 'accepted'],
+                    ['label' => 'Payment', 'status' => 'paid'],
+                    ['label' => 'Come&Fix', 'status' => 'on_progress'],
+                    ['label' => 'Completed', 'status' => 'completed'],
+                ];
+                
+                // Determine current step index
+                $currentIndex = 0;
+                if ($order->status == 'completed') {
+                    $currentIndex = 4;
+                } elseif ($order->status == 'on_progress') {
+                    $currentIndex = 3; // Working
+                } elseif ($order->status == 'accepted' && $order->payment_status == 'paid') {
+                     $currentIndex = 3; // Paid, moving to On Progress
+                } elseif ($order->status == 'accepted') {
+                    $currentIndex = 2; // Needs payment
+                } elseif ($order->status == 'pending') {
+                    $currentIndex = 0; // Awaiting customer approval
+                }
+
+                // Calculate progress bar width
+                $progressWidth = ($currentIndex / (count($steps) - 1)) * 100;
+            @endphp
+
+            <div class="progress-track">
+                <div class="progress-fill" style="width: {{ $progressWidth }};"></div>
+                
+                @foreach($steps as $index => $step)
+                    @php
+                        $isActive = $index == $currentIndex;
+                        $isCompleted = $index < $currentIndex;
+                        $circleContent = $isCompleted ? '<i class="bi bi-check-lg"></i>' : ($index + 1);
+                        $isSpecial = $step['label'] === 'Come&Fix';
+                    @endphp
+                    <div class="progress-step {{ $isActive ? 'active' : '' }} {{ $isCompleted ? 'completed' : '' }}">
+                        <div class="step-circle">{!! $circleContent !!}</div>
+                        <div class="step-label" style="{{ $isSpecial ? 'color: var(--brand-orange) !important; font-weight: 800; font-size: 1.1rem;' : '' }}">
+                            {{ $step['label'] }}
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @endif
+
 
         <div class="row">
             <!-- LEFT COLUMN: Main Details -->
@@ -88,6 +135,41 @@
                     </div>
                     @endif
                 </div>
+
+                <!-- Pending Proposal Actions (Only if Pending) -->
+                @if($order->status === 'pending')
+                <div class="order-card">
+                    <div class="section-header">
+                        <span>Proposal Status</span>
+                        <span class="badge bg-warning rounded-pill px-3"><i class="bi bi-clock-history me-1"></i> Awaiting Your Response</span>
+                    </div>
+                    
+                    <div class="alert alert-info mb-4" role="alert">
+                        <i class="bi bi-info-circle-fill me-2"></i>
+                        <strong>{{ $order->tukang->name }}</strong> has sent you an order proposal. Please review the details and accept or decline the offer.
+                        @if($order->expires_at)
+                            <br><small class="text-muted mt-1 d-block">This proposal expires on {{ $order->expires_at->format('d M Y, H:i') }}</small>
+                        @endif
+                    </div>
+
+                    <div class="d-flex gap-3 justify-content-center">
+                        <form action="{{ route('order.accept', $order->uuid) }}" method="POST" class="d-inline">
+                            @csrf
+                            <button type="submit" class="btn btn-success rounded-pill px-5 fw-bold">
+                                <i class="bi bi-check-circle me-1"></i> Accept Proposal
+                            </button>
+                        </form>
+                        
+                        <form action="{{ route('order.reject', $order->uuid) }}" method="POST" class="d-inline">
+                            @csrf
+                            <button type="submit" class="btn btn-outline-danger rounded-pill px-5">
+                                <i class="bi bi-x-circle me-1"></i> Decline
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                @endif
+
 
                 <!-- Completion Status (Only if Completed) -->
                 @if($order->completion)

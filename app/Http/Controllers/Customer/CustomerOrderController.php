@@ -17,7 +17,8 @@ class CustomerOrderController extends Controller
 
         switch ($filter) {
             case 'ongoing':
-                $query->whereIn('status', [Order::STATUS_ACCEPTED, Order::STATUS_ON_PROGRESS]);
+                // Include pending orders (proposals awaiting customer action) along with accepted and in-progress orders
+                $query->whereIn('status', [Order::STATUS_PENDING, Order::STATUS_ACCEPTED, Order::STATUS_ON_PROGRESS]);
                 break;
             case 'completed':
                 $query->where('status', Order::STATUS_COMPLETED);
@@ -26,11 +27,9 @@ class CustomerOrderController extends Controller
                 $query->whereIn('status', ['cancelled', 'rejected']);
                 break;
             default:
-                // For 'all', we show everything relevant to the user's history
-                // You might or might not want to show 'pending' here, depending on your flow.
-                // Assuming we show everything except maybe strictly internal states if any.
-                // Or stick to the original list: accepted, on_progress, completed, plus cancelled/rejected
+                // For 'all', show all orders including pending proposals
                 $query->whereIn('status', [
+                    Order::STATUS_PENDING,
                     Order::STATUS_ACCEPTED, 
                     Order::STATUS_ON_PROGRESS, 
                     Order::STATUS_COMPLETED,
