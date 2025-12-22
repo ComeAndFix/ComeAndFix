@@ -245,49 +245,23 @@
     cursor: crosshair;
 }
 
-/* Security Section Styles */
-.security-section {
-    background: linear-gradient(135deg, #FFFFFF 0%, #F8F9FA 100%);
-}
-
-.security-card {
+/* Security Section Styles - Simplified */
+.security-card-simple {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: 1.5rem;
-    padding: 1.5rem;
-    background: white;
-    border-radius: 16px;
-    border: 2px solid #F1F2F4;
-    transition: all 0.3s ease;
+    gap: 2rem;
+    padding: 1.25rem 0;
 }
 
-.security-card:hover {
-    border-color: #E3F2FD;
-    box-shadow: 0 4px 16px rgba(33, 150, 243, 0.1);
-}
-
-.security-icon-box {
-    width: 70px;
-    height: 70px;
-    background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 2rem;
-    flex-shrink: 0;
-    box-shadow: 0 4px 16px rgba(33, 150, 243, 0.3);
-}
-
-.security-content {
+.security-info {
     flex: 1;
 }
 
 .security-title {
     font-family: 'Jost', sans-serif;
-    font-weight: 700;
-    font-size: 1.1rem;
+    font-weight: 600;
+    font-size: 1rem;
     color: var(--brand-dark);
     margin: 0 0 0.5rem 0;
 }
@@ -295,66 +269,42 @@
 .security-description {
     color: #6C757D;
     font-size: 0.875rem;
-    margin: 0 0 0.75rem 0;
-    line-height: 1.5;
+    margin: 0;
+    line-height: 1.6;
 }
 
-.password-display {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.5rem 1rem;
-    background: #F8F9FA;
-    border-radius: 8px;
-    color: #6C757D;
-    font-size: 0.9rem;
-}
-
-.password-dots {
-    letter-spacing: 2px;
-}
-
-.security-action {
-    flex-shrink: 0;
-}
-
-.reset-password-btn-new {
+.reset-password-btn-simple {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.75rem 1.5rem;
-    background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+    padding: 0.65rem 1.25rem;
+    background: var(--brand-orange);
     color: white;
     border-radius: 12px;
-    font-size: 0.9rem;
+    font-size: 0.875rem;
     font-weight: 600;
     text-decoration: none;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(33, 150, 243, 0.2);
+    white-space: nowrap;
 }
 
-.reset-password-btn-new:hover {
+.reset-password-btn-simple:hover {
+    background: var(--brand-orange-hover);
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(33, 150, 243, 0.4);
+    box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
     color: white;
     text-decoration: none;
-}
-
-.reset-password-btn-new i {
-    font-size: 1.1rem;
 }
 
 /* Responsive for security card */
 @media (max-width: 768px) {
-    .security-card {
+    .security-card-simple {
         flex-direction: column;
-        text-align: center;
+        align-items: flex-start;
+        gap: 1rem;
     }
 
-    .security-action {
-        width: 100%;
-    }
-
-    .reset-password-btn-new {
+    .reset-password-btn-simple {
         width: 100%;
         justify-content: center;
     }

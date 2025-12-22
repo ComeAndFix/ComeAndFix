@@ -167,7 +167,7 @@
         </div>
 
         <!-- Security Section -->
-        <div class="profile-section security-section">
+        <div class="profile-section">
             <div class="section-header">
                 <h3 class="section-title">
                     <i class="bi bi-shield-lock-fill text-brand-orange"></i>
@@ -175,24 +175,15 @@
                 </h3>
             </div>
 
-            <div class="security-card">
-                <div class="security-icon-box">
-                    <i class="bi bi-key-fill"></i>
-                </div>
-                <div class="security-content">
+            <div class="security-card-simple">
+                <div class="security-info">
                     <h4 class="security-title">Password</h4>
-                    <p class="security-description">Keep your account secure by using a strong password</p>
-                    <div class="password-display">
-                        <i class="bi bi-lock-fill me-2"></i>
-                        <span class="password-dots">••••••••••••</span>
-                    </div>
+                    <p class="security-description">Keep your account secure with a strong password. Change it regularly to maintain security.</p>
                 </div>
-                <div class="security-action">
-                    <a href="{{ route('profile.reset-password') }}" class="reset-password-btn-new">
-                        <i class="bi bi-arrow-clockwise"></i>
-                        <span>Change Password</span>
-                    </a>
-                </div>
+                <a href="{{ route('profile.reset-password') }}" class="reset-password-btn-simple">
+                    <i class="bi bi-key"></i>
+                    <span>Change Password</span>
+                </a>
             </div>
             </div>
         </div>
