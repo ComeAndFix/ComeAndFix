@@ -26,7 +26,29 @@
             <!-- Messages Container -->
             <div id="messages-container" class="messages-container">
                 <div id="messages">
-                    @foreach($messages as $message)
+                    @php $currentGroupDate = null; @endphp
+                    @foreach($messages as $index => $message)
+                        @php
+                            $msgDate = $message->created_at->format('Y-m-d');
+                            $isToday = $msgDate === now()->format('Y-m-d');
+                            $isYesterday = $msgDate === now()->subDay()->format('Y-m-d');
+                            $displayDate = $isToday ? 'Today' : ($isYesterday ? 'Yesterday' : $message->created_at->format('d M Y'));
+                        @endphp
+
+                        @if($currentGroupDate !== $msgDate)
+                            @if($currentGroupDate !== null)
+                                </div> <!-- Close previous date-messages -->
+                                </div> <!-- Close previous date-section -->
+                            @endif
+
+                            <div class="date-section">
+                                <div class="chat-date-divider">
+                                    <span>{{ $displayDate }}</span>
+                                </div>
+                                <div class="date-messages d-flex flex-column gap-3">
+                            @php $currentGroupDate = $msgDate; @endphp
+                        @endif
+
                         @if($message->message_type === 'order_proposal' && $message->order)
                             <div class="order-proposal-card received" data-order-id="{{ $message->order->uuid }}" style="cursor: pointer;" onclick="window.location.href='{{ route('customer.orders.show', $message->order->uuid) }}?from_chat=true'">
                                 <div class="proposal-badge">
@@ -150,6 +172,11 @@
                             </div>
                         @endif
                     @endforeach
+
+                    @if($currentGroupDate !== null)
+                        </div> <!-- Close last date-messages -->
+                        </div> <!-- Close last date-section -->
+                    @endif
                 </div>
             </div>
 
