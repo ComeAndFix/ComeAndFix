@@ -18,11 +18,7 @@
                     My Bookings
                 </a>
             </li>
-            <li>
-                <a href="#" class="nav-menu-item">
-                    Contact
-                </a>
-            </li>
+
             <li>
                 <a href="{{ route('chat.index') }}" class="nav-menu-item {{ request()->routeIs('chat.*') ? 'active' : '' }}">
                     Messages
