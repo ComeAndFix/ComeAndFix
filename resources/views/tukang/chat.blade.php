@@ -664,7 +664,7 @@
                         if (e.order.payment_status === 'paid') {
                             showSuccessAlert('Payment verified! Redirecting to job details...');
                             setTimeout(() => {
-                                window.location.href = `/jobs/${e.order.id}`;
+                                window.location.href = `/jobs/${e.order.uuid}`;
                             }, 2000);
                         }
                     });
@@ -854,7 +854,7 @@
                 if (order.status === 'on_progress') {
                     actionBtn = `
                         <div class="mt-2">
-                            <a href="/jobs/${order.id}" class="btn btn-brand-orange btn-sm rounded-pill px-3">
+                            <a href="/jobs/${order.uuid}" class="btn btn-brand-orange btn-sm rounded-pill px-3">
                                 <i class="bi bi-eye-fill me-1"></i> View Job Details
                             </a>
                         </div>

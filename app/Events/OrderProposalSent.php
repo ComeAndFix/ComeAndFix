@@ -32,6 +32,7 @@ class OrderProposalSent implements ShouldBroadcastNow
         return [
             'order' => [
                 'id' => $this->order->id,
+                'uuid' => $this->order->uuid,
                 'order_number' => $this->order->order_number,
                 'service' => [
                     'id' => $this->order->service->id,

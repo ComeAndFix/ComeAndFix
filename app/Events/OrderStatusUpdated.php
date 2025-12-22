@@ -32,6 +32,7 @@ class OrderStatusUpdated implements ShouldBroadcastNow
         return [
             'order' => [
                 'id' => $this->order->id,
+                'uuid' => $this->order->uuid,
                 'order_number' => $this->order->order_number,
                 'status' => $this->order->status,
                 'payment_status' => $this->order->payment_status,
