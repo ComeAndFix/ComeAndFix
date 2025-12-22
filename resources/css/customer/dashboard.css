@@ -263,12 +263,18 @@
 
 /* Special styling for the 4th step with logo */
 .step:last-child .step-number {
-    width: 52px;
-    height: 52px;
-    background: white;
-    margin-left: -8px;
-    box-shadow: 0 4px 16px rgba(255, 152, 0, 0.2);
-    border: 2px solid var(--brand-orange);
+    width: 60px;
+    height: 60px;
+    background: transparent;
+    margin-left: -12px;
+    box-shadow: none;
+    border: none;
+    border-radius: 0;
+}
+
+.step:last-child:hover .step-number {
+    box-shadow: none;
+    transform: scale(1.1);
 }
 
 .step-content h4 {
