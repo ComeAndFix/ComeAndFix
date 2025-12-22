@@ -45,11 +45,21 @@ class ProfileController extends Controller
             'address' => ['nullable', 'string', 'max:255'],
             'city' => ['nullable', 'string', 'max:100'],
             'postal_code' => ['nullable', 'string', 'max:10'],
+            'latitude' => ['nullable', 'numeric'],
+            'longitude' => ['nullable', 'numeric'],
         ]);
 
         $customer->update($validated);
 
         return redirect()->route('profile.show')->with('success', 'Profile updated successfully!');
+    }
+
+    /**
+     * Display the password reset form.
+     */
+    public function showResetPassword(): View
+    {
+        return view('customer.profile.reset-password');
     }
 
     /**
@@ -67,7 +77,7 @@ class ProfileController extends Controller
                 'password' => Hash::make($validated['password']),
             ]);
 
-            return back()->with('success', 'Password updated successfully!');
+            return redirect()->route('profile.show')->with('success', 'Password updated successfully!');
         } catch (\Illuminate\Validation\ValidationException $e) {
             return back()->withErrors($e->errors())->withInput();
         } catch (\Exception $e) {
