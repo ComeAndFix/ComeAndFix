@@ -30,6 +30,11 @@ class ChatController extends Controller
                 return redirect()->route('customer.login')->with('error', 'Please log in to access the chat.');
             }
 
+            // SECURITY: Customers can only chat with tukangs, not other customers
+            if ($receiverType !== 'tukang') {
+                abort(403, 'Unauthorized access to this conversation.');
+            }
+
             $conversationId = ChatMessage::generateConversationId(
                 $customer->id,
                 'App\Models\Customer',
@@ -156,6 +161,11 @@ class ChatController extends Controller
 
             if (!$tukang) {
                 return redirect()->route('tukang.login');
+            }
+
+            // SECURITY: Tukangs can only chat with customers, not other tukangs
+            if ($receiverType !== 'customer') {
+                abort(403, 'Unauthorized access to this conversation.');
             }
 
             $conversationId = ChatMessage::generateConversationId(
