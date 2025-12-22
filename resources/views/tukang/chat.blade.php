@@ -48,9 +48,45 @@
                                     @endif
                                 </div>
 
-                                <div class="proposal-price-tag">
-                                    <span class="price-label">Total Price</span>
-                                    <span class="price-amount">Rp {{ number_format($message->order->total_price, 0, ',', '.') }}</span>
+                                <div class="proposal-price-tag" style="display: block;">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="price-label">{{ ($message->order->additionalItems && $message->order->additionalItems->count() > 0) || ($message->order->customItems && $message->order->customItems->count() > 0) ? 'Total Estimate' : 'Base Price' }}</span>
+                                        <span class="price-amount">Rp {{ number_format($message->order->total_price, 0, ',', '.') }}</span>
+                                    </div>
+                                    
+                                    <div class="text-end mt-2">
+                                        <a href="javascript:void(0)" onclick="toggleDetails('{{ $message->order->uuid }}')" id="toggle-btn-{{ $message->order->uuid }}" class="text-muted small text-decoration-none" style="font-size: 0.8rem;">
+                                            Click to see details <i class="bi bi-chevron-down"></i>
+                                        </a>
+                                    </div>
+
+                                    <div id="details-{{ $message->order->uuid }}" class="mt-3 pt-3 border-top" style="display: none; border-color: #eee !important;">
+                                        {{-- Base Price --}}
+                                        <div class="d-flex justify-content-between mb-2 small text-muted">
+                                            <span>{{ $message->order->service ? $message->order->service->name : 'Base Service' }}</span>
+                                            <span>Rp {{ number_format($message->order->price, 0, ',', '.') }}</span>
+                                        </div>
+
+                                        {{-- Additional Items --}}
+                                        @if($message->order->additionalItems)
+                                            @foreach($message->order->additionalItems as $item)
+                                            <div class="d-flex justify-content-between mb-2 small text-muted">
+                                                <span>{{ $item->item_name }} (x{{ $item->quantity }})</span>
+                                                <span>Rp {{ number_format($item->item_price * $item->quantity, 0, ',', '.') }}</span>
+                                            </div>
+                                            @endforeach
+                                        @endif
+
+                                        {{-- Custom Items --}}
+                                        @if($message->order->customItems)
+                                            @foreach($message->order->customItems as $item)
+                                            <div class="d-flex justify-content-between mb-2 small text-muted">
+                                                <span>{{ $item->item_name }} (x{{ $item->quantity }})</span>
+                                                <span>Rp {{ number_format($item->item_price * $item->quantity, 0, ',', '.') }}</span>
+                                            </div>
+                                            @endforeach
+                                        @endif
+                                    </div>
                                 </div>
 
                                 <div class="w-100 text-center mt-3">
@@ -254,6 +290,20 @@
             // Pre-selected service from map/customer request
             const preselectedServiceId = {{ isset($selectedService) && $selectedService ? $selectedService->id : 'null' }};
             console.log('Preselected Service ID:', preselectedServiceId);
+
+            // Toggle Details Function
+            window.toggleDetails = function(orderId) {
+                const detailsDiv = document.getElementById(`details-${orderId}`);
+                const toggleBtn = document.getElementById(`toggle-btn-${orderId}`);
+                
+                if (detailsDiv.style.display === 'none') {
+                    detailsDiv.style.display = 'block';
+                    toggleBtn.innerHTML = 'Hide details <i class="bi bi-chevron-up"></i>';
+                } else {
+                    detailsDiv.style.display = 'none';
+                    toggleBtn.innerHTML = 'Click to see details <i class="bi bi-chevron-down"></i>';
+                }
+            };
 
             // Load tukang services when modal opens
             @if($receiverType === 'customer')
@@ -670,6 +720,39 @@
                 
                 const totalPrice = calculateTotalPrice(order);
                 
+                // Build details HTML
+                let detailsHtml = `
+                    <div class="d-flex justify-content-between mb-2 small text-muted">
+                        <span>${order.service ? order.service.name : 'Base Service'}</span>
+                        <span>Rp ${parseInt(order.price).toLocaleString('id-ID')}</span>
+                    </div>
+                `;
+
+                if (order.additional_items) {
+                    order.additional_items.forEach(item => {
+                        detailsHtml += `
+                            <div class="d-flex justify-content-between mb-2 small text-muted">
+                                <span>${item.item_name} (x${item.quantity})</span>
+                                <span>Rp ${(parseInt(item.item_price) * parseInt(item.quantity)).toLocaleString('id-ID')}</span>
+                            </div>
+                        `;
+                    });
+                }
+
+                if (order.custom_items) {
+                    order.custom_items.forEach(item => {
+                        detailsHtml += `
+                            <div class="d-flex justify-content-between mb-2 small text-muted">
+                                <span>${item.item_name} (x${item.quantity})</span>
+                                <span>Rp ${(parseInt(item.item_price) * parseInt(item.quantity)).toLocaleString('id-ID')}</span>
+                            </div>
+                        `;
+                    });
+                }
+
+                const hasAdditionalOrCustomItems = (order.additional_items && order.additional_items.length > 0) || 
+                                                   (order.custom_items && order.custom_items.length > 0);
+                
                 const orderDiv = document.createElement('div');
                 orderDiv.className = 'order-proposal-card sent';
                 orderDiv.setAttribute('data-order-id', order.id);
@@ -691,9 +774,21 @@
                         </div>` : ''}
                     </div>
 
-                    <div class="proposal-price-tag">
-                        <span class="price-label">Total Price</span>
-                        <span class="price-amount">Rp ${parseInt(totalPrice).toLocaleString('id-ID')}</span>
+                    <div class="proposal-price-tag" style="display: block;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="price-label">${hasAdditionalOrCustomItems ? 'Total Estimate' : 'Base Price'}</span>
+                            <span class="price-amount">Rp ${parseInt(totalPrice).toLocaleString('id-ID')}</span>
+                        </div>
+                        
+                        <div class="text-end mt-2">
+                            <a href="javascript:void(0)" onclick="toggleDetails('${order.uuid || order.id}')" id="toggle-btn-${order.uuid || order.id}" class="text-muted small text-decoration-none" style="font-size: 0.8rem;">
+                                Click to see details <i class="bi bi-chevron-down"></i>
+                            </a>
+                        </div>
+
+                        <div id="details-${order.uuid || order.id}" class="mt-3 pt-3 border-top" style="display: none; border-color: #eee !important;">
+                            ${detailsHtml}
+                        </div>
                     </div>
 
                     <div class="w-100 text-center mt-3">
