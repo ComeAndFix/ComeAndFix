@@ -21,9 +21,15 @@
         
         <!-- Header -->
         <div class="d-flex align-items-center mb-4">
-            <a href="{{ route('customer.orders.index') }}" class="btn btn-outline-secondary rounded-pill me-3 btn-sm">
-                <i class="bi bi-arrow-left"></i> Back
-            </a>
+            @if(request('from_chat'))
+                <a href="{{ route('chat.show', ['receiverType' => 'tukang', 'receiverId' => $order->tukang_id]) }}" class="btn btn-outline-secondary rounded-pill me-3 btn-sm">
+                    <i class="bi bi-arrow-left"></i> Back to Chat
+                </a>
+            @else
+                <a href="{{ route('customer.orders.index') }}" class="btn btn-outline-secondary rounded-pill me-3 btn-sm">
+                    <i class="bi bi-arrow-left"></i> Back
+                </a>
+            @endif
             <div>
                 <h1 class="h3 fw-bold mb-0">Order Details</h1>
                 <p class="text-muted mb-0 small">Order #{{ $order->order_number }}</p>

@@ -2,9 +2,15 @@
             <div class="container py-4">
                 <div class="row mb-3">
                     <div class="col">
-                        <a href="{{ route('tukang.jobs.index') }}" class="btn btn-outline-secondary">
-                            <i class="bi bi-arrow-left"></i> Back to Jobs
-                        </a>
+                        @if(request('from_chat'))
+                            <a href="{{ route('tukang.chat.show', ['receiverType' => 'customer', 'receiverId' => $order->customer_id]) }}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left"></i> Back to Chat
+                            </a>
+                        @else
+                            <a href="{{ route('tukang.jobs.index') }}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left"></i> Back to Jobs
+                            </a>
+                        @endif
                     </div>
                 </div>
 

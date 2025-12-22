@@ -28,7 +28,7 @@
                 <div id="messages">
                     @foreach($messages as $message)
                         @if($message->message_type === 'order_proposal' && $message->order)
-                            <div class="order-proposal-card received" data-order-id="{{ $message->order->uuid }}" style="cursor: pointer;" onclick="window.location.href='{{ route('customer.orders.show', $message->order->uuid) }}'">
+                            <div class="order-proposal-card received" data-order-id="{{ $message->order->uuid }}" style="cursor: pointer;" onclick="window.location.href='{{ route('customer.orders.show', $message->order->uuid) }}?from_chat=true'">
                                 <div class="proposal-badge">
                                     <i class="bi bi-briefcase-fill"></i> Order Proposal
                                 </div>
@@ -440,7 +440,7 @@
                 orderDiv.className = 'order-proposal-card received';
                 orderDiv.setAttribute('data-order-id', order.uuid);
                 orderDiv.style.cursor = 'pointer';
-                orderDiv.onclick = function() { window.location.href = '/orders/' + order.uuid; };
+                orderDiv.onclick = function() { window.location.href = '/orders/' + order.uuid + '?from_chat=true'; };
 
                 orderDiv.innerHTML = `
                     <div class="proposal-badge">
