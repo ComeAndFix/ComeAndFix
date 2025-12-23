@@ -210,11 +210,6 @@
                     </div>
                     
                     <div class="mb-4">
-                        <p class="text-muted small mb-2">Duration</p>
-                        <p class="fw-bold">{{ $order->completion->working_duration }} minutes</p>
-                    </div>
-
-                    <div class="mb-4">
                         <p class="text-muted small mb-2">Completion Note</p>
                         <p>{{ $order->completion->description }}</p>
                     </div>

@@ -12,7 +12,6 @@ class OrderCompletion extends Model
     protected $fillable = [
         'order_id',
         'description',
-        'working_duration',
         'photos',
         'submitted_at',
     ];
@@ -20,7 +19,6 @@ class OrderCompletion extends Model
     protected $casts = [
         'photos' => 'array',
         'submitted_at' => 'datetime',
-        'working_duration' => 'integer'
     ];
 
     public function order()

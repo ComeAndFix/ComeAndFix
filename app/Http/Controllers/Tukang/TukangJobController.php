@@ -92,7 +92,6 @@ class TukangJobController extends Controller
 
         $validated = $request->validate([
             'description' => 'required|string|min:20',
-            'working_duration' => 'required|integer|min:1',
             'photos.*' => 'required|image|mimes:jpeg,jpg,png|max:2048'
         ]);
 
@@ -110,7 +109,6 @@ class TukangJobController extends Controller
             ['order_id' => $order->id],
             [
                 'description' => $validated['description'],
-                'working_duration' => $validated['working_duration'],
                 'photos' => $photoPaths,
                 'submitted_at' => now(),
             ]

@@ -85,11 +85,6 @@
 
                     @if($order->completion)
                         <div class="mb-3">
-                            <small class="text-muted d-block mb-1">Duration</small>
-                            <p class="mb-0 fw-semibold">{{ $order->completion->working_duration }} minutes</p>
-                        </div>
-
-                        <div class="mb-3">
                             <small class="text-muted d-block mb-1">Completed On</small>
                             <p class="mb-0 fw-semibold">{{ $order->completion->submitted_at->format('d M Y, H:i') }}</p>
                         </div>
