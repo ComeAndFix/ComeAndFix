@@ -8,6 +8,8 @@ use App\Models\Tukang;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+
 
 class TukangController extends Controller
 {
@@ -226,6 +228,8 @@ class TukangController extends Controller
             'address' => ['nullable', 'string'],
             'city' => ['nullable', 'string', 'max:255'],
             'postal_code' => ['nullable', 'string', 'max:10'],
+            'latitude' => ['nullable', 'numeric'],
+            'longitude' => ['nullable', 'numeric'],
             'specializations' => ['required', 'array', 'min:1'],
             'years_experience' => ['nullable', 'integer', 'min:0'],
             'hourly_rate' => ['nullable', 'numeric', 'min:0'],
@@ -235,6 +239,7 @@ class TukangController extends Controller
 
         $data = $request->only([
             'name', 'phone', 'address', 'city', 'postal_code',
+            'latitude', 'longitude',
             'specializations', 'years_experience', 'hourly_rate', 'description'
         ]);
 

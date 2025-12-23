@@ -1,287 +1,611 @@
 <x-app-layout>
-    <div class="container py-5">
-        <div class="row">
-            <!-- Left Column - Profile Info -->
-            <div class="col-lg-4 mb-4">
-                <div class="card border-0 shadow-sm">
-                    <div class="card-body text-center">
-                        @if($tukang->profile_image)
-                            <img src="{{ Storage::url($tukang->profile_image) }}" class="rounded-circle mb-3 border shadow-sm" style="width: 100px; height: 100px; object-fit: cover;">
-                        @else
-                            <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center mb-3 shadow-sm" 
-                                 style="width: 100px; height: 100px; font-size: 2.5rem; font-weight: bold; border: 3px solid white;">
-                                {{ substr($tukang->name, 0, 1) }}
-                            </div>
-                        @endif
-                        <h4 class="fw-bold mb-2">{{ $tukang->name }}</h4>
-                        <p class="text-muted mb-2">
-                            <i class="bi bi-envelope me-1"></i>{{ $tukang->email }}
-                        </p>
-                        <p class="text-muted mb-3">
-                            <i class="bi bi-telephone me-1"></i>{{ $tukang->phone ?? 'No phone' }}
-                        </p>
-                        
-                        <!-- Rating Summary -->
-                        <div class="border-top pt-3 mb-3">
-                            <div class="d-flex justify-content-center align-items-center mb-2">
-                                <i class="bi bi-star-fill text-warning me-2" style="font-size: 1.5rem;"></i>
-                                <h3 class="mb-0 fw-bold">{{ number_format($averageRating, 1) }}</h3>
-                            </div>
-                            <p class="text-muted small mb-0">{{ $totalReviews }} {{ $totalReviews == 1 ? 'review' : 'reviews' }}</p>
-                        </div>
+    @vite(['resources/css/tukang/profile.css'])
 
-                        <!-- Quick Actions -->
-                        <div class="d-grid gap-2">
-                            <a href="{{ route('tukang.finance.index') }}" class="btn btn-success">
-                                <i class="bi bi-wallet2 me-2"></i>Financial Manager
-                            </a>
-                            <button type="button" class="btn btn-primary" onclick="toggleEditMode()">
-                                <i class="bi bi-pencil me-2"></i><span id="edit-btn-text">Edit Profile</span>
-                            </button>
-                        </div>
+    <div class="profile-page-wrapper">
+        <div class="profile-container">
+            <h1 class="page-title">
+                <i class="bi bi-person-circle text-brand-orange"></i>
+                My Profile
+            </h1>
+
+            @if(session('success'))
+                <div class="alert alert-success">
+                    <i class="bi bi-check-circle alert-icon"></i>
+                    <span>{{ session('success') }}</span>
+                </div>
+            @endif
+
+            @if($errors->any())
+                <div class="alert alert-danger">
+                    <i class="bi bi-exclamation-circle alert-icon"></i>
+                    <div>
+                        <ul style="margin: 0; padding-left: 1.25rem;">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
                     </div>
                 </div>
+            @endif
 
-                <!-- Availability Status -->
-                <div class="card border-0 shadow-sm mt-3">
-                    <div class="card-body">
-                        <h6 class="fw-bold mb-3">Status</h6>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span>Availability</span>
-                            <span class="badge {{ $tukang->is_available ? 'bg-success' : 'bg-danger' }}">
-                                {{ $tukang->is_available ? 'Available' : 'Unavailable' }}
-                            </span>
+            <!-- View Mode -->
+            <div id="view-mode" class="view-mode-container">
+                <div class="profile-grid">
+                    <!-- Sidebar -->
+                    <div class="profile-sidebar">
+                        <!-- Profile Card -->
+                        <div class="profile-card">
+                            <div class="profile-header">
+                                <div class="profile-photo-wrapper">
+                                    @if($tukang->profile_image)
+                                        <img src="{{ Storage::url($tukang->profile_image) }}" alt="Profile Photo" class="profile-photo">
+                                    @else
+                                        <div class="profile-placeholder">
+                                            {{ strtoupper(substr($tukang->name, 0, 1)) }}
+                                        </div>
+                                    @endif
+                                </div>
+                                
+                                <h2 class="profile-name">{{ $tukang->name }}</h2>
+                                
+                                <div class="profile-contact">
+                                    <i class="bi bi-envelope"></i>
+                                    <span>{{ $tukang->email }}</span>
+                                </div>
+                                
+                                @if($tukang->phone)
+                                    <div class="profile-contact">
+                                        <i class="bi bi-telephone"></i>
+                                        <span>{{ $tukang->phone }}</span>
+                                    </div>
+                                @endif
+
+                                <!-- Rating Summary -->
+                                <div class="rating-summary">
+                                    <div class="rating-display">
+                                        <i class="bi bi-star-fill rating-star"></i>
+                                        <span class="rating-number">{{ number_format($averageRating, 1) }}</span>
+                                    </div>
+                                    <p class="rating-count">{{ $totalReviews }} {{ $totalReviews == 1 ? 'review' : 'reviews' }}</p>
+                                </div>
+
+                                <!-- Quick Actions -->
+                                <div class="quick-actions">
+                                    <button type="button" class="action-btn action-btn-primary" onclick="toggleEditMode()">
+                                        <i class="bi bi-pencil"></i>
+                                        <span>Edit Profile</span>
+                                    </button>
+                                    <a href="{{ route('tukang.finance.index') }}" class="action-btn action-btn-success">
+                                        <i class="bi bi-wallet2"></i>
+                                        <span>Financial Manager</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Status Card -->
+                        <div class="status-card">
+                            <h3 class="status-header">Availability Status</h3>
+                            <div class="status-row">
+                                <span>Current Status</span>
+                                <span class="status-badge {{ $tukang->is_available ? 'status-available' : 'status-unavailable' }}">
+                                    {{ $tukang->is_available ? 'Available' : 'Unavailable' }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main Content -->
+                    <div class="profile-main">
+                        <!-- Personal Information -->
+                        <div class="profile-section">
+                            <div class="section-header">
+                                <h3 class="section-title">
+                                    <i class="bi bi-person-fill text-brand-orange"></i>
+                                    Personal Information
+                                </h3>
+                            </div>
+
+                            <div class="field-grid">
+                                <div class="field-group">
+                                    <label class="field-label">Name</label>
+                                    <input type="text" class="field-value" value="{{ $tukang->name }}" disabled>
+                                </div>
+
+                                <div class="field-group">
+                                    <label class="field-label">Phone</label>
+                                    <input type="text" class="field-value" value="{{ $tukang->phone ?? '-' }}" disabled>
+                                </div>
+
+                                <div class="field-group">
+                                    <label class="field-label">Email</label>
+                                    <input type="text" class="field-value" value="{{ $tukang->email }}" disabled>
+                                </div>
+
+                                <div class="field-group">
+                                    <label class="field-label">Years of Experience</label>
+                                    <input type="text" class="field-value" value="{{ $tukang->years_experience ?? 0 }} years" disabled>
+                                </div>
+
+                                <div class="field-group full-width">
+                                    <label class="field-label">Address</label>
+                                    <input type="text" class="field-value" value="{{ $tukang->address ?? '-' }}" disabled>
+                                </div>
+
+                                <div class="field-group">
+                                    <label class="field-label">City</label>
+                                    <input type="text" class="field-value" value="{{ $tukang->city ?? '-' }}" disabled>
+                                </div>
+
+                                <div class="field-group">
+                                    <label class="field-label">Postal Code</label>
+                                    <input type="text" class="field-value" value="{{ $tukang->postal_code ?? '-' }}" disabled>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Location Information -->
+                        <div class="profile-section">
+                            <div class="section-header">
+                                <h3 class="section-title">
+                                    <i class="bi bi-geo-alt-fill text-brand-orange"></i>
+                                    Location Information
+                                </h3>
+                            </div>
+
+                            <div class="map-container disabled" id="map-container">
+                                <div id="profile-map"></div>
+                            </div>
+                            
+                            @if($tukang->latitude && $tukang->longitude)
+                                <p style="margin-top: 0.75rem; color: #6C757D; font-size: 0.875rem;">
+                                    <i class="bi bi-pin-map"></i>
+                                    <strong>Coordinates:</strong> {{ number_format($tukang->latitude, 6) }}, {{ number_format($tukang->longitude, 6) }}
+                                </p>
+                            @else
+                                <p style="margin-top: 0.75rem; color: #6C757D; font-size: 0.875rem; font-style: italic;">
+                                    <i class="bi bi-exclamation-circle"></i>
+                                    Location not set. Please edit your profile to set your location.
+                                </p>
+                            @endif
+                        </div>
+
+                        <!-- Services Offered -->
+                        <div class="profile-section">
+                            <div class="section-header">
+                                <h3 class="section-title">
+                                    <i class="bi bi-tools text-brand-orange"></i>
+                                    Services Offered
+                                </h3>
+                            </div>
+
+                            @if($tukang->specializations && count($tukang->specializations) > 0)
+                                <div class="services-grid">
+                                    @foreach($tukang->specializations as $specialization)
+                                        <span class="service-badge">
+                                            <i class="bi bi-check-circle"></i>
+                                            {{ $specialization }}
+                                        </span>
+                                    @endforeach
+                                </div>
+                            @else
+                                <p class="no-services">No services specified yet</p>
+                            @endif
+                        </div>
+
+                        <!-- Rating Breakdown -->
+                        <div class="profile-section">
+                            <div class="section-header">
+                                <h3 class="section-title">
+                                    <i class="bi bi-star-fill text-brand-orange"></i>
+                                    Rating Breakdown
+                                </h3>
+                            </div>
+
+                            <div class="rating-breakdown">
+                                @foreach([5, 4, 3, 2, 1] as $stars)
+                                    <div class="rating-bar-row">
+                                        <div class="rating-label">
+                                            {{ $stars }} <i class="bi bi-star-fill" style="color: #FFC107;"></i>
+                                        </div>
+                                        <div class="rating-bar-container">
+                                            <div class="rating-bar-fill" style="width: {{ $totalReviews > 0 ? ($ratingDistribution[$stars] / $totalReviews * 100) : 0 }}%"></div>
+                                        </div>
+                                        <span class="rating-count-label">{{ $ratingDistribution[$stars] }}</span>
+                                    </div>
+                                @endforeach
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Right Column - Details & Edit Form -->
-            <div class="col-lg-8">
-                <!-- View Mode -->
-                <div id="view-mode">
-                    <div class="card border-0 shadow-sm mb-4">
-                        <div class="card-header bg-white border-bottom">
-                            <h5 class="mb-0 fw-bold">Personal Information</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <label class="text-muted small">Name</label>
-                                    <p class="fw-bold">{{ $tukang->name }}</p>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="text-muted small">Phone</label>
-                                    <p class="fw-bold">{{ $tukang->phone ?? '-' }}</p>
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <label class="text-muted small">Email</label>
-                                    <p class="fw-bold">{{ $tukang->email }}</p>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="text-muted small">Years of Experience</label>
-                                    <p class="fw-bold">{{ $tukang->years_experience ?? 0 }} years</p>
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label class="text-muted small">Address</label>
-                                <p class="fw-bold">{{ $tukang->address ?? '-' }}</p>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <label class="text-muted small">City</label>
-                                    <p class="fw-bold">{{ $tukang->city ?? '-' }}</p>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="text-muted small">Postal Code</label>
-                                    <p class="fw-bold">{{ $tukang->postal_code ?? '-' }}</p>
-                                </div>
-                            </div>
-                        </div>
+            <!-- Edit Mode -->
+            <div id="edit-mode" class="edit-mode-container">
+                <div class="profile-section">
+                    <div class="section-header">
+                        <h3 class="section-title">
+                            <i class="bi bi-pencil-square text-brand-orange"></i>
+                            Edit Profile
+                        </h3>
                     </div>
 
-                    <!-- Services/Specializations Card -->
-                    <div class="card border-0 shadow-sm mb-4">
-                        <div class="card-header bg-white border-bottom">
-                            <h5 class="mb-0 fw-bold"><i class="bi bi-tools me-2"></i>Services Offered</h5>
+                    <form method="POST" action="{{ route('tukang.profile.update') }}" enctype="multipart/form-data">
+                        @csrf
+                        @method('PUT')
+
+                        <!-- Profile Photo Upload -->
+                        <div class="photo-upload-section">
+                            <div class="photo-upload-wrapper">
+                                @if($tukang->profile_image)
+                                    <img src="{{ Storage::url($tukang->profile_image) }}" alt="Profile Photo" class="profile-photo" id="edit-profile-photo">
+                                @else
+                                    <div class="profile-placeholder" id="edit-profile-placeholder">
+                                        {{ strtoupper(substr($tukang->name, 0, 1)) }}
+                                    </div>
+                                    <img src="" alt="Profile Photo" class="profile-photo" id="edit-profile-photo" style="display: none;">
+                                @endif
+                                
+                                <label for="profile_image" class="photo-upload-label">
+                                    <i class="bi bi-camera"></i>
+                                </label>
+                                <input type="file" name="profile_image" id="profile_image" class="photo-upload-input" accept="image/png, image/jpeg, image/jpg">
+                            </div>
+                            <p class="photo-upload-hint">Click the camera icon to upload a new photo (JPG, PNG, max 1MB)</p>
                         </div>
-                        <div class="card-body">
-                            @if($tukang->specializations && count($tukang->specializations) > 0)
-                                <div class="d-flex flex-wrap gap-2">
-                                    @foreach($tukang->specializations as $specialization)
-                                        <span class="badge bg-primary fs-6 px-3 py-2">
-                                            <i class="bi bi-check-circle me-1"></i>{{ $specialization }}
-                                        </span>
-                                    @endforeach
-                                </div>
-                            @else
-                                <p class="text-muted mb-0">No services specified</p>
-                            @endif
+
+                        <!-- Personal Information Fields -->
+                        <div class="field-grid">
+                            <div class="field-group">
+                                <label class="field-label">Name <span class="text-danger">*</span></label>
+                                <input type="text" name="name" class="field-value editable" value="{{ old('name', $tukang->name) }}" required>
+                            </div>
+
+                            <div class="field-group">
+                                <label class="field-label">Phone <span class="text-danger">*</span></label>
+                                <input type="text" name="phone" class="field-value editable" value="{{ old('phone', $tukang->phone) }}" required>
+                            </div>
+
+                            <div class="field-group">
+                                <label class="field-label">Email</label>
+                                <input type="email" class="field-value" value="{{ $tukang->email }}" disabled>
+                                <small style="color: #6C757D; font-size: 0.75rem; margin-top: 0.25rem; display: block;">Email cannot be changed</small>
+                            </div>
+
+                            <div class="field-group">
+                                <label class="field-label">Years of Experience</label>
+                                <input type="number" name="years_experience" class="field-value editable" value="{{ old('years_experience', $tukang->years_experience) }}" min="0">
+                            </div>
+
+                            <div class="field-group full-width">
+                                <label class="field-label">Address</label>
+                                <input type="text" name="address" class="field-value editable" value="{{ old('address', $tukang->address) }}">
+                            </div>
+
+                            <div class="field-group">
+                                <label class="field-label">City</label>
+                                <input type="text" name="city" class="field-value editable" value="{{ old('city', $tukang->city) }}">
+                            </div>
+
+                            <div class="field-group">
+                                <label class="field-label">Postal Code</label>
+                                <input type="text" name="postal_code" class="field-value editable" value="{{ old('postal_code', $tukang->postal_code) }}">
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- Rating Distribution -->
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-header bg-white border-bottom">
-                            <h5 class="mb-0 fw-bold">Rating Breakdown</h5>
+                        <!-- Hidden Location Fields -->
+                        <input type="hidden" name="latitude" id="latitude" value="{{ $tukang->latitude }}">
+                        <input type="hidden" name="longitude" id="longitude" value="{{ $tukang->longitude }}">
+
+                        <!-- Location Map Section -->
+                        <div class="field-group full-width" style="margin-top: 1.5rem;">
+                            <label class="field-label">
+                                <i class="bi bi-geo-alt-fill"></i>
+                                Your Location
+                            </label>
+                            
+                            <div class="map-container" id="edit-map-container" style="display: none;">
+                                <div id="edit-profile-map"></div>
+                            </div>
+                            
+                            <div id="edit-map-instruction" style="display: none; margin-top: 0.75rem; padding: 0.75rem; background: #FFF3E0; border-left: 4px solid var(--brand-orange); border-radius: 8px;">
+                                <i class="bi bi-info-circle" style="color: var(--brand-orange); margin-right: 0.5rem;"></i>
+                                <small style="color: var(--brand-dark);">
+                                    <strong>Tip:</strong> Click anywhere on the map or drag the marker to set your new location
+                                </small>
+                            </div>
+                            
+                            <button type="button" id="use-current-location-btn" class="use-current-location-btn" style="display: none;">
+                                <i class="bi bi-crosshair"></i>
+                                <span>Use Current Location</span>
+                            </button>
                         </div>
-                        <div class="card-body">
-                            @foreach([5, 4, 3, 2, 1] as $stars)
-                                <div class="d-flex align-items-center mb-2">
-                                    <span class="me-2" style="width: 60px;">{{ $stars }} <i class="bi bi-star-fill text-warning"></i></span>
-                                    <div class="progress flex-grow-1 me-2" style="height: 20px;">
-                                        <div class="progress-bar bg-warning" role="progressbar" 
-                                             style="width: {{ $totalReviews > 0 ? ($ratingDistribution[$stars] / $totalReviews * 100) : 0 }}%">
-                                        </div>
+
+                        <!-- Services Selection -->
+                        <div class="field-group full-width" style="margin-top: 1.5rem;">
+                            <label class="field-label">Services Offered <span class="text-danger">*</span></label>
+                            <p style="color: #6C757D; font-size: 0.875rem; margin-bottom: 1rem;">Select all services you can provide</p>
+                            
+                            <div class="services-checkbox-grid">
+                                @foreach($availableServices as $service)
+                                    <div class="service-checkbox-item">
+                                        <input type="checkbox" 
+                                               name="specializations[]" 
+                                               value="{{ $service->name }}" 
+                                               id="service{{ $service->id }}"
+                                               class="service-checkbox"
+                                               {{ in_array($service->name, old('specializations', $tukang->specializations ?? [])) ? 'checked' : '' }}>
+                                        <label for="service{{ $service->id }}" class="service-checkbox-label">
+                                            <i class="bi bi-tools"></i>
+                                            {{ $service->name }}
+                                        </label>
                                     </div>
-                                    <span class="text-muted" style="width: 40px;">{{ $ratingDistribution[$stars] }}</span>
-                                </div>
-                            @endforeach
+                                @endforeach
+                            </div>
                         </div>
-                    </div>
-                </div>
 
-                <!-- Edit Mode (Hidden by default) -->
-                <div id="edit-mode" style="display: none;">
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-header bg-white border-bottom">
-                            <h5 class="mb-0 fw-bold">Edit Profile</h5>
+                        <!-- Form Actions -->
+                        <div class="form-actions">
+                            <button type="submit" class="form-btn form-btn-save">
+                                <i class="bi bi-check-circle"></i>
+                                <span>Save Changes</span>
+                            </button>
+                            <button type="button" class="form-btn form-btn-cancel" onclick="toggleEditMode()">
+                                <i class="bi bi-x-circle"></i>
+                                <span>Cancel</span>
+                            </button>
                         </div>
-                        <div class="card-body">
-                            <form method="POST" action="{{ route('tukang.profile.update') }}" enctype="multipart/form-data">
-                                @csrf
-                                @method('PUT')
-
-                                <div class="row mb-3">
-                                    <div class="col-12 text-center">
-                                        <div class="d-inline-block position-relative">
-                                            <div class="rounded-circle overflow-hidden bg-secondary text-white d-flex align-items-center justify-content-center" 
-                                                 style="width: 100px; height: 100px; border: 3px solid var(--bs-primary);">
-                                                @if($tukang->profile_image)
-                                                    <img src="{{ Storage::url($tukang->profile_image) }}" id="tukang-preview-img" style="width: 100%; height: 100%; object-fit: cover;">
-                                                @else
-                                                    <div id="tukang-preview-placeholder" style="font-size: 2.5rem; font-weight: bold;">
-                                                        {{ substr($tukang->name, 0, 1) }}
-                                                    </div>
-                                                    <img src="" id="tukang-preview-img" style="width: 100%; height: 100%; object-fit: cover; display: none;">
-                                                @endif
-                                            </div>
-                                            <label for="profile_image" class="position-absolute bottom-0 end-0 bg-primary text-white rounded-circle d-flex align-items-center justify-content-center"
-                                                   style="width: 32px; height: 32px; cursor: pointer; border: 2px solid white;">
-                                                <i class="bi bi-camera"></i>
-                                            </label>
-                                            <input type="file" name="profile_image" id="profile_image" class="d-none" accept="image/png, image/jpeg, image/jpg">
-                                        </div>
-                                        <div class="small text-muted mt-2">Click camera icon to change</div>
-                                    </div>
-                                </div>
-
-                                <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <label class="form-label">Name <span class="text-danger">*</span></label>
-                                        <input type="text" name="name" class="form-control" value="{{ old('name', $tukang->name) }}" required>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label">Phone <span class="text-danger">*</span></label>
-                                        <input type="text" name="phone" class="form-control" value="{{ old('phone', $tukang->phone) }}" required>
-                                    </div>
-                                </div>
-
-                                <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <label class="form-label">Email <span class="text-danger">*</span></label>
-                                        <input type="email" class="form-control" value="{{ $tukang->email }}" disabled>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label">Years of Experience</label>
-                                        <input type="number" name="years_experience" class="form-control" value="{{ old('years_experience', $tukang->years_experience) }}" min="0">
-                                    </div>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label">Address</label>
-                                    <input type="text" name="address" class="form-control" value="{{ old('address', $tukang->address) }}">
-                                </div>
-
-                                <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <label class="form-label">City</label>
-                                        <input type="text" name="city" class="form-control" value="{{ old('city', $tukang->city) }}">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label">Postal Code</label>
-                                        <input type="text" name="postal_code" class="form-control" value="{{ old('postal_code', $tukang->postal_code) }}">
-                                    </div>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label">Services Offered <span class="text-danger">*</span></label>
-                                    <p class="text-muted small">Select all services you can provide</p>
-                                    <div class="row">
-                                        @foreach($availableServices as $service)
-                                            <div class="col-md-6 mb-2">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="specializations[]" 
-                                                           value="{{ $service->name }}" id="service{{ $service->id }}"
-                                                           {{ in_array($service->name, old('specializations', $tukang->specializations ?? [])) ? 'checked' : '' }}>
-                                                    <label class="form-check-label" for="service{{ $service->id }}">
-                                                        <i class="bi bi-tools me-1"></i>{{ $service->name }}
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                </div>
-
-                                <div class="d-flex gap-2">
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="bi bi-check-circle me-1"></i>Save Changes
-                                    </button>
-                                    <button type="button" class="btn btn-secondary" onclick="toggleEditMode()">
-                                        <i class="bi bi-x-circle me-1"></i>Cancel
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <style>
+        /* Custom marker styles for user location */
+        .user-location-marker {
+            width: 24px;
+            height: 24px;
+            background: var(--brand-orange);
+            border: 3px solid white;
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .user-location-marker::after {
+            content: '';
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: white;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        /* Spinning animation for loading state */
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        .spin {
+            animation: spin 1s linear infinite;
+        }
+    </style>
+    
     <script>
+        let viewMap;
+        let editMap;
+        let viewMarker;
+        let editMarker;
+        let isEditMode = false;
+
+        // Initialize view mode map
+        function initViewMap() {
+            const lat = parseFloat(document.getElementById('latitude').value) || -6.2088;
+            const lng = parseFloat(document.getElementById('longitude').value) || 106.8456;
+            
+            const position = [lat, lng];
+
+            // Initialize Leaflet map for view mode
+            viewMap = L.map('profile-map', {
+                zoomControl: true,
+                dragging: false,
+                touchZoom: false,
+                scrollWheelZoom: false,
+                doubleClickZoom: false,
+                boxZoom: false,
+                keyboard: false
+            }).setView(position, 15);
+
+            // Add tile layer (OpenStreetMap)
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(viewMap);
+
+            // Create custom icon for user location
+            const userIcon = L.divIcon({
+                className: 'user-location-marker',
+                iconSize: [24, 24],
+                iconAnchor: [12, 12]
+            });
+
+            // Add marker for user location
+            viewMarker = L.marker(position, {
+                icon: userIcon,
+                draggable: false
+            }).addTo(viewMap);
+
+            viewMarker.bindPopup('<strong>Your Location</strong>').openPopup();
+        }
+
+        // Initialize edit mode map
+        function initEditMap() {
+            const lat = parseFloat(document.getElementById('latitude').value) || -6.2088;
+            const lng = parseFloat(document.getElementById('longitude').value) || 106.8456;
+            
+            const position = [lat, lng];
+
+            // Initialize Leaflet map for edit mode
+            editMap = L.map('edit-profile-map', {
+                zoomControl: true,
+                dragging: true,
+                touchZoom: true,
+                scrollWheelZoom: true,
+                doubleClickZoom: true,
+                boxZoom: true,
+                keyboard: true
+            }).setView(position, 15);
+
+            // Add tile layer (OpenStreetMap)
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(editMap);
+
+            // Create custom icon for user location
+            const userIcon = L.divIcon({
+                className: 'user-location-marker',
+                iconSize: [24, 24],
+                iconAnchor: [12, 12]
+            });
+
+            // Add marker for user location
+            editMarker = L.marker(position, {
+                icon: userIcon,
+                draggable: true
+            }).addTo(editMap);
+
+            editMarker.bindPopup('<strong>Your Location</strong>').openPopup();
+
+            // Update coordinates when marker is dragged
+            editMarker.on('dragend', function(event) {
+                const position = editMarker.getLatLng();
+                document.getElementById('latitude').value = position.lat;
+                document.getElementById('longitude').value = position.lng;
+            });
+
+            // Allow clicking on map to place new pinpoint
+            editMap.on('click', function(e) {
+                const newPosition = e.latlng;
+                
+                // Move marker to clicked position
+                editMarker.setLatLng(newPosition);
+                
+                // Update coordinates
+                document.getElementById('latitude').value = newPosition.lat;
+                document.getElementById('longitude').value = newPosition.lng;
+                
+                // Pan map to new position
+                editMap.panTo(newPosition);
+                
+                // Show popup
+                editMarker.bindPopup('<strong>New Location</strong>').openPopup();
+            });
+        }
+
         function toggleEditMode() {
             const viewMode = document.getElementById('view-mode');
             const editMode = document.getElementById('edit-mode');
-            const btnText = document.getElementById('edit-btn-text');
+            const editMapContainer = document.getElementById('edit-map-container');
+            const editMapInstruction = document.getElementById('edit-map-instruction');
+            const useLocationBtn = document.getElementById('use-current-location-btn');
             
-            if (viewMode.style.display === 'none') {
-                viewMode.style.display = 'block';
-                editMode.style.display = 'none';
-                btnText.textContent = 'Edit Profile';
+            if (viewMode.classList.contains('hidden')) {
+                // Switch to view mode
+                viewMode.classList.remove('hidden');
+                editMode.classList.remove('active');
+                isEditMode = false;
+                
+                // Hide edit map elements
+                editMapContainer.style.display = 'none';
+                editMapInstruction.style.display = 'none';
+                useLocationBtn.style.display = 'none';
+                
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                
+                // Reinitialize view map after a short delay
+                setTimeout(() => {
+                    if (viewMap) {
+                        viewMap.invalidateSize();
+                    }
+                }, 100);
             } else {
-                viewMode.style.display = 'none';
-                editMode.style.display = 'block';
-                btnText.textContent = 'View Profile';
+                // Switch to edit mode
+                viewMode.classList.add('hidden');
+                editMode.classList.add('active');
+                isEditMode = true;
+                
+                // Show edit map elements
+                editMapContainer.style.display = 'block';
+                editMapInstruction.style.display = 'block';
+                useLocationBtn.style.display = 'block';
+                
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                
+                // Initialize or refresh edit map after a short delay
+                setTimeout(() => {
+                    if (!editMap) {
+                        initEditMap();
+                    } else {
+                        editMap.invalidateSize();
+                        const lat = parseFloat(document.getElementById('latitude').value) || -6.2088;
+                        const lng = parseFloat(document.getElementById('longitude').value) || 106.8456;
+                        editMap.setView([lat, lng], 15);
+                        editMarker.setLatLng([lat, lng]);
+                    }
+                }, 100);
             }
         }
 
-        // Image Preview
+        // Use Current Location button
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialize view map on page load
+            initViewMap();
+            
+            // Profile Image Preview
             const profileImageInput = document.getElementById('profile_image');
+            
             if (profileImageInput) {
                 profileImageInput.addEventListener('change', function(e) {
                     const file = e.target.files[0];
                     if (file) {
+                        // Validate file size (1MB = 1048576 bytes)
+                        if (file.size > 1048576) {
+                            alert('File size must be less than 1MB');
+                            this.value = '';
+                            return;
+                        }
+
+                        // Validate file type
+                        const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+                        if (!validTypes.includes(file.type)) {
+                            alert('Only JPG, JPEG, and PNG files are allowed');
+                            this.value = '';
+                            return;
+                        }
+
                         const reader = new FileReader();
                         reader.onload = function(e) {
-                            const previewImg = document.getElementById('tukang-preview-img');
-                            const placeholder = document.getElementById('tukang-preview-placeholder');
+                            const previewImg = document.getElementById('edit-profile-photo');
+                            const placeholder = document.getElementById('edit-profile-placeholder');
                             
                             previewImg.src = e.target.result;
                             previewImg.style.display = 'block';
+                            
                             if (placeholder) {
                                 placeholder.style.display = 'none';
                             }
@@ -290,25 +614,86 @@
                     }
                 });
             }
+
+            // Use Current Location button handler
+            const useLocationBtn = document.getElementById('use-current-location-btn');
+            if (useLocationBtn) {
+                useLocationBtn.addEventListener('click', function() {
+                    const btn = this;
+                    const originalText = btn.innerHTML;
+                    
+                    // Check if geolocation is supported
+                    if (!navigator.geolocation) {
+                        alert('Geolocation is not supported by your browser');
+                        return;
+                    }
+                    
+                    // Disable button and show loading state
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="bi bi-arrow-clockwise spin"></i><span>Getting location...</span>';
+                    
+                    // Get current position
+                    navigator.geolocation.getCurrentPosition(
+                        function(position) {
+                            const lat = position.coords.latitude;
+                            const lng = position.coords.longitude;
+                            const newPosition = [lat, lng];
+                            
+                            // Update marker position
+                            if (editMarker) {
+                                editMarker.setLatLng(newPosition);
+                            }
+                            
+                            // Update coordinates
+                            document.getElementById('latitude').value = lat;
+                            document.getElementById('longitude').value = lng;
+                            
+                            // Pan map to new position
+                            if (editMap) {
+                                editMap.setView(newPosition, 15);
+                            }
+                            
+                            // Show popup
+                            if (editMarker) {
+                                editMarker.bindPopup('<strong>Current Location</strong>').openPopup();
+                            }
+                            
+                            // Reset button
+                            btn.disabled = false;
+                            btn.innerHTML = originalText;
+                        },
+                        function(error) {
+                            // Handle errors
+                            let errorMessage = 'Unable to get your location. ';
+                            switch(error.code) {
+                                case error.PERMISSION_DENIED:
+                                    errorMessage += 'Please allow location access in your browser settings.';
+                                    break;
+                                case error.POSITION_UNAVAILABLE:
+                                    errorMessage += 'Location information is unavailable.';
+                                    break;
+                                case error.TIMEOUT:
+                                    errorMessage += 'The request timed out.';
+                                    break;
+                                default:
+                                    errorMessage += 'An unknown error occurred.';
+                            }
+                            alert(errorMessage);
+                            
+                            // Reset button
+                            btn.disabled = false;
+                            btn.innerHTML = originalText;
+                        },
+                        {
+                            enableHighAccuracy: true,
+                            timeout: 10000,
+                            maximumAge: 0
+                        }
+                    );
+                });
+            }
         });
-
-        // Show error/success messages
-        @if(session('success'))
-            const toast = document.createElement('div');
-            toast.className = 'alert alert-success position-fixed top-0 end-0 m-3';
-            toast.style.zIndex = '9999';
-            toast.textContent = '{{ session('success') }}';
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
-        @endif
-
-        @if($errors->any())
-            const errorToast = document.createElement('div');
-            errorToast.className = 'alert alert-danger position-fixed top-0 end-0 m-3';
-            errorToast.style.zIndex = '9999';
-            errorToast.innerHTML = '<ul class="mb-0">@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul>';
-            document.body.appendChild(errorToast);
-            setTimeout(() => errorToast.remove(), 5000);
-        @endif
     </script>
 </x-app-layout>
+
+
