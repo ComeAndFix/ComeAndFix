@@ -117,6 +117,7 @@ Route::middleware(['auth:tukang', 'verified'])->name('tukang.')->group(function 
     Route::get('/tukang/chat-rooms', [TukangChatRoomController::class, 'index'])->name('chatrooms.index');
 
     Route::post('/order/send', [ChatController::class, 'sendOrderProposal'])->name('order.send');
+    Route::post('/order/{order}/cancel', [ChatController::class, 'cancelPendingProposal'])->name('order.cancel');
     Route::get('/services', [ChatController::class, 'getTukangServices'])->name('services');
 
     Route::get('/jobs', [\App\Http\Controllers\Tukang\TukangJobController::class, 'index'])->name('jobs.index');

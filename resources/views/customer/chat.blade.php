@@ -541,7 +541,7 @@
                         }
                         break;
                     case 'rejected':
-                        statusText = 'You rejected the order';
+                        statusText = 'Order proposal cancelled';
                         statusClass = 'danger';
                         break;
                     case 'completed':

@@ -219,7 +219,13 @@ class ChatController extends Controller
                 ->whereIn('status', ['accepted', 'on_progress'])
                 ->exists();
 
-            return view('tukang.chat', compact('receiver', 'messages', 'conversationId', 'receiverType', 'selectedService', 'hasActiveOrder'));
+            // check for pending proposal
+            $pendingProposal = Order::where('customer_id', $receiver->id)
+                ->where('tukang_id', $tukang->id)
+                ->where('status', 'pending')
+                ->first();
+
+            return view('tukang.chat', compact('receiver', 'messages', 'conversationId', 'receiverType', 'selectedService', 'hasActiveOrder', 'pendingProposal'));
         } catch (\Exception $e) {
             Log::error('Tukang chat show error: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Unable to load chat');
@@ -347,6 +353,19 @@ class ChatController extends Controller
                 return response()->json([
                     'success' => false,
                     'error' => 'You already have an active order with this customer. Please complete it before creating a new proposal.'
+                ], 400);
+            }
+
+            // Check for existing pending proposal
+            $pendingProposalExists = Order::where('customer_id', $request->customer_id)
+                ->where('tukang_id', $tukangId)
+                ->where('status', 'pending')
+                ->exists();
+
+            if ($pendingProposalExists) {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'You already have a pending proposal with this customer. Please wait for their response or cancel the existing proposal first.'
                 ], 400);
             }
 
@@ -585,6 +604,52 @@ class ChatController extends Controller
             }
             
             return redirect()->back()->with('error', 'Failed to reject order. Please try again.');
+        }
+    }
+
+    public function cancelPendingProposal(Request $request, Order $order)
+    {
+        try {
+            $tukang = Auth::guard('tukang')->user();
+
+            if (!$tukang) {
+                return response()->json(['success' => false, 'error' => 'Unauthorized'], 401);
+            }
+
+            // Verify the order belongs to this tukang
+            if ($order->tukang_id !== $tukang->id) {
+                return response()->json(['success' => false, 'error' => 'Unauthorized'], 403);
+            }
+
+            // Verify the order is still pending
+            if ($order->status !== 'pending') {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'Only pending proposals can be cancelled'
+                ], 400);
+            }
+
+            // Update order status to rejected (cancelled by tukang)
+            $order->update(['status' => 'rejected']);
+
+            // Broadcast the status update
+            try {
+                broadcast(new OrderStatusUpdated($order));
+            } catch (\Exception $e) {
+                Log::warning('Failed to broadcast order cancellation: ' . $e->getMessage());
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Proposal cancelled successfully'
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error cancelling pending proposal: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'error' => 'Failed to cancel proposal'
+            ], 500);
         }
     }
 }

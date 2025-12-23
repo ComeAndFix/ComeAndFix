@@ -145,6 +145,22 @@
                                 <i class="bi bi-info-circle-fill me-2"></i>
                                 You have an active order with this customer.
                             </div>
+                        @elseif($pendingProposal)
+                            <div class="alert alert-info border-0 shadow-sm rounded-4 small mb-0">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <i class="bi bi-clock-fill me-2"></i>
+                                        You have a pending proposal (#{{ $pendingProposal->order_number }}) with this customer.
+                                    </div>
+                                    <button 
+                                        type="button" 
+                                        class="btn btn-sm btn-outline-danger rounded-pill px-3" 
+                                        onclick="cancelPendingProposal('{{ $pendingProposal->uuid }}')"
+                                        id="cancel-proposal-btn">
+                                        <i class="bi bi-x-circle me-1"></i> Cancel Proposal
+                                    </button>
+                                </div>
+                            </div>
                         @else
                             <button type="button" class="btn btn-outline-brand-orange rounded-pill w-100 fw-bold" data-bs-toggle="modal" data-bs-target="#orderProposalModal">
                                 <i class="bi bi-plus-lg me-2"></i> Create Order Proposal
@@ -341,6 +357,48 @@
                 
                 workDatetimeInput.min = `${year}-${month}-${day}T${hours}:${minutes}`;
             }
+
+            // Function to cancel pending proposal
+            window.cancelPendingProposal = async function(orderUuid) {
+                if (!confirm('Are you sure you want to cancel this proposal? This action cannot be undone.')) {
+                    return;
+                }
+
+                const cancelBtn = document.getElementById('cancel-proposal-btn');
+                if (cancelBtn) {
+                    const originalText = cancelBtn.innerHTML;
+                    cancelBtn.disabled = true;
+                    cancelBtn.innerHTML = '<i class="spinner-border spinner-border-sm me-1"></i> Cancelling...';
+
+                    try {
+                        const response = await fetch(`/order/${orderUuid}/cancel`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken,
+                                'Accept': 'application/json'
+                            }
+                        });
+
+                        const data = await response.json();
+
+                        if (data.success) {
+                            showSuccessAlert('Proposal cancelled successfully!');
+                            // Update UI to show create proposal button
+                            updateActionButtonsArea(null);
+                        } else {
+                            showErrorAlert(data.error || 'Failed to cancel proposal');
+                            cancelBtn.disabled = false;
+                            cancelBtn.innerHTML = originalText;
+                        }
+                    } catch (error) {
+                        console.error('Error cancelling proposal:', error);
+                        showErrorAlert('Failed to cancel proposal. Please try again.');
+                        cancelBtn.disabled = false;
+                        cancelBtn.innerHTML = originalText;
+                    }
+                }
+            };
 
             // Toggle Details Function
             window.toggleDetails = function(orderId) {
@@ -667,6 +725,9 @@
                             // Show success message in chat
                             showOrderProposalSent(data.order);
 
+                            // Update the action buttons area to show pending proposal state
+                            updateActionButtonsArea(data.order);
+
                             // Show success toast/alert
                             showSuccessAlert('Order proposal sent successfully!');
                         } else {
@@ -710,6 +771,15 @@
                         console.log('Order status updated event received from WebSocket:', e);
                         showOrderStatusUpdate(e.order);
                         scrollToBottom();
+
+                        // Update action buttons area based on order status
+                        if (e.order.status === 'rejected') {
+                            // If order was rejected/cancelled, show create proposal button
+                            updateActionButtonsArea(null);
+                        } else if (e.order.status === 'accepted' || e.order.status === 'on_progress') {
+                            // If order was accepted or in progress, keep it hidden (active order state)
+                            // The backend already handles this, but we can update UI if needed
+                        }
 
                         // Redirect to job detail if payment is completed
                         if (e.order.payment_status === 'paid') {
@@ -887,7 +957,7 @@
                         statusClass = 'success';
                         break;
                     case 'rejected':
-                        statusText = 'Order Rejected by Customer';
+                        statusText = 'Order proposal cancelled';
                         statusClass = 'danger';
                         break;
                     case 'completed':
@@ -983,6 +1053,51 @@
                     });
                 } catch (error) {
                     return 'Invalid date';
+                }
+            }
+
+            // Function to update action buttons area dynamically
+            function updateActionButtonsArea(order) {
+                const chatInputArea = document.querySelector('.chat-input-area .d-flex.flex-column');
+                if (!chatInputArea) return;
+
+                // Find the first child (which should be the action buttons area)
+                const firstChild = chatInputArea.firstElementChild;
+                
+                if (order && order.status === 'pending') {
+                    // Show pending proposal state with cancel button
+                    const pendingProposalHtml = `
+                        <div class="alert alert-info border-0 shadow-sm rounded-4 small mb-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="bi bi-clock-fill me-2"></i>
+                                    You have a pending proposal (#${order.order_number}) with this customer.
+                                </div>
+                                <button 
+                                    type="button" 
+                                    class="btn btn-sm btn-outline-danger rounded-pill px-3" 
+                                    onclick="cancelPendingProposal('${order.uuid}')"
+                                    id="cancel-proposal-btn">
+                                    <i class="bi bi-x-circle me-1"></i> Cancel Proposal
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    
+                    if (firstChild && (firstChild.classList.contains('alert') || firstChild.tagName === 'BUTTON')) {
+                        firstChild.outerHTML = pendingProposalHtml;
+                    }
+                } else {
+                    // Show create proposal button
+                    const createButtonHtml = `
+                        <button type="button" class="btn btn-outline-brand-orange rounded-pill w-100 fw-bold" data-bs-toggle="modal" data-bs-target="#orderProposalModal">
+                            <i class="bi bi-plus-lg me-2"></i> Create Order Proposal
+                        </button>
+                    `;
+                    
+                    if (firstChild && (firstChild.classList.contains('alert') || firstChild.tagName === 'BUTTON')) {
+                        firstChild.outerHTML = createButtonHtml;
+                    }
                 }
             }
 
