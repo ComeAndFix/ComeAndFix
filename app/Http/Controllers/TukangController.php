@@ -19,8 +19,13 @@ class TukangController extends Controller
             return redirect()->route('tukang.login');
         }
 
-        // Get all available services for filter dropdown
-        $availableServices = \App\Models\Service::where('is_active', true)->orderBy('name')->get();
+        // Get all available services for filter dropdown (only ones this tukang offers)
+        // Matching by name from specializations array since pivot table might not be populated
+        $specializations = $tukang->specializations ?? [];
+        $availableServices = \App\Models\Service::where('is_active', true)
+            ->whereIn('name', $specializations)
+            ->orderBy('name')
+            ->get();
 
         // Get incoming job requests from chat messages grouped by customer and service
         $allMessages = ChatMessage::where('receiver_type', 'App\Models\Tukang')
@@ -145,7 +150,15 @@ class TukangController extends Controller
             return $order->total_price;
         });
 
-        return view('tukang.dashboard', compact('jobRequests', 'newMessagesCount', 'activeJobsCount', 'scheduledJobs', 'walletBalance', 'monthlyIncome', 'availableServices'));
+        // Get active job for display (similar to customer dashboard)
+        $activeJob = \App\Models\Order::where('tukang_id', $tukang->id)
+            ->whereIn('status', ['accepted', 'on_progress'])
+            ->with(['customer', 'service'])
+            ->orderByRaw("FIELD(status, 'on_progress', 'accepted')")
+            ->latest()
+            ->first();
+
+        return view('tukang.dashboard', compact('jobRequests', 'newMessagesCount', 'activeJobsCount', 'scheduledJobs', 'walletBalance', 'monthlyIncome', 'availableServices', 'activeJob'));
     }
 
     public function profile()
