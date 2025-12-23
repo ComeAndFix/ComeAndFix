@@ -1,117 +1,99 @@
 <x-app-layout>
-    <div class="container py-4">
-        <div class="row mb-4 align-items-center">
-            <div class="col">
-                <a href="{{ route('tukang.dashboard') }}" class="btn btn-outline-secondary mb-2">
-                    <i class="bi bi-arrow-left"></i> Back to Dashboard
-                </a>
-                <h2 class="fw-bold mb-0">Active Jobs</h2>
-                <p class="text-muted">Order proposals and ongoing jobs</p>
-            </div>
-            <div class="col-auto">
-                <a href="{{ route('tukang.jobs.history') }}" class="btn btn-outline-primary">
-                    <i class="bi bi-clock-history"></i> View History
-                </a>
-            </div>
-        </div>
+    @push('styles')
+        @vite(['resources/css/components/order-list.css'])
+    @endpush
 
-        @if(session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-        @endif
+    <div class="bookings-page-wrapper">
+        <div class="bookings-container">
+            <h1 class="page-title">
+                <i class="bi bi-briefcase-fill text-brand-orange"></i>
+                Active Jobs
+            </h1>
 
-        <div class="row g-4">
+            <div class="filter-pills">
+                <a href="{{ route('tukang.jobs.index', ['filter' => 'all']) }}" class="filter-pill {{ $filter === 'all' ? 'active' : '' }}">
+                    All Jobs
+                </a>
+                <a href="{{ route('tukang.jobs.index', ['filter' => 'ongoing']) }}" class="filter-pill {{ $filter === 'ongoing' ? 'active' : '' }}">
+                    Ongoing
+                </a>
+                <a href="{{ route('tukang.jobs.index', ['filter' => 'completed']) }}" class="filter-pill {{ $filter === 'completed' ? 'active' : '' }}">
+                    Completed
+                </a>
+                <a href="{{ route('tukang.jobs.index', ['filter' => 'cancelled']) }}" class="filter-pill {{ $filter === 'cancelled' ? 'active' : '' }}">
+                   Cancelled
+                </a>
+            </div>
+
+            @if(session('success'))
+                <div class="alert alert-success alert-dismissible fade show mb-4 rounded-4 border-0 shadow-sm" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i> {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+
             @forelse($jobs as $job)
-                <div class="col-12">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <div class="row align-items-center">
-                                <div class="col-md-8">
-                                    <h5 class="fw-bold">{{ $job->service->name }}</h5>
-                                    <p class="text-muted mb-2">Order #{{ $job->order_number }}</p>
-                                    <p class="mb-2"><strong>Customer:</strong> {{ $job->customer->name }}</p>
-                                    
-                                    <div class="d-flex gap-2 mb-2">
-                                        <span class="badge bg-{{ $job->status_color }}">{{ ucwords(str_replace('_', ' ', $job->status)) }}</span>
-                                        
-                                        @if($job->payment_status)
-                                            <span class="badge bg-{{ $job->payment_status === 'paid' ? 'success' : 'warning' }}">
-                                                {{ ucwords(str_replace('_', ' ', $job->payment_status)) }}
-                                            </span>
-                                        @endif
-                                    </div>
-                                    
-                                    @if($job->service_description)
-                                        <p class="mb-2 small text-muted">
-                                            <i class="bi bi-file-text"></i> {{ Str::limit($job->service_description, 80) }}
-                                        </p>
-                                    @endif
-                                    
-                                    @if($job->work_datetime)
-                                        <p class="mb-2 small">
-                                            <i class="bi bi-calendar"></i> <strong>Schedule:</strong> {{ $job->work_datetime->format('d M Y, H:i') }}
-                                        </p>
-                                    @endif
-                                    
-                                    @if($job->review)
-                                        <div class="mt-3 p-3 bg-light rounded">
-                                            <div class="d-flex align-items-center mb-2">
-                                                <strong class="me-2">Customer Review:</strong>
-                                                <div class="text-warning">
-                                                    @for($i = 1; $i <= 5; $i++)
-                                                        @if($i <= $job->review->rating)
-                                                            <i class="bi bi-star-fill"></i>
-                                                        @else
-                                                            <i class="bi bi-star"></i>
-                                                        @endif
-                                                    @endfor
-                                                    <span class="text-dark ms-1">({{ $job->review->rating }}/5)</span>
-                                                </div>
-                                            </div>
-                                            @if($job->review->review_text)
-                                                <p class="mb-0 small text-muted">"{{ $job->review->review_text }}"</p>
-                                            @endif
-                                        </div>
-                                    @elseif($job->status === 'completed')
-                                        <div class="mt-2">
-                                            <small class="text-muted">
-                                                <i class="bi bi-clock"></i> Waiting for customer review
-                                            </small>
-                                        </div>
-                                    @endif
+                <div class="booking-card-wrapper {{ in_array($job->status, ['accepted', 'on_progress']) ? 'active-order-glow' : '' }}">
+                    <a href="{{ route('tukang.jobs.show', $job) }}" class="booking-card">
+                        <div class="booking-header">
+                            <div class="service-info">
+                                <div class="service-icon-box">
+                                    <i class="bi bi-tools"></i>
                                 </div>
-                                <div class="col-md-4 text-end">
-                                    <p class="fw-bold text-primary mb-2">
-                                        Rp {{ number_format($job->total_price ?? $job->price, 0, ',', '.') }}
-                                    </p>
-                                    @if($job->total_price && $job->total_price != $job->price)
-                                        <p class="small text-muted mb-2">
-                                            Base: Rp {{ number_format($job->price, 0, ',', '.') }}
-                                        </p>
-                                    @endif
-
-                                    @if($job->status === 'on_progress' && !$job->completion)
-                                        <a href="{{ route('tukang.jobs.complete', $job) }}" class="btn btn-primary btn-sm">
-                                            Submit Completion
-                                        </a>
-                                    @endif
-
-                                    <a href="{{ route('tukang.jobs.show', $job) }}" class="btn btn-outline-primary btn-sm">
-                                        View Details
-                                    </a>
+                                <div class="service-details">
+                                    <h3>{{ $job->service->name }}</h3>
+                                    <div class="booking-date">
+                                        <i class="bi bi-clock me-1"></i>
+                                        {{ $job->work_datetime ? $job->work_datetime->format('d M Y, H:i') : 'Date not set' }}
+                                    </div>
                                 </div>
                             </div>
+                            <div class="text-end">
+                                <div class="booking-price">
+                                    Rp {{ number_format($job->total_price ?? $job->price, 0, ',', '.') }}
+                                </div>
+                                @if($job->payment_status === 'paid')
+                                    <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2 border border-success mt-2">Paid</span>
+                                @elseif($job->payment_status === 'unpaid')
+                                    <span class="badge bg-warning bg-opacity-10 text-warning rounded-pill px-2 border border-warning mt-2">Unpaid</span>
+                                @endif
+                            </div>
                         </div>
-                    </div>
+
+                        <div class="booking-divider"></div>
+
+                        <div class="booking-footer">
+                            <div class="tukang-info">
+                                <span class="text-muted me-2 small">Client:</span>
+                                <span class="tukang-name">{{ $job->customer->name }}</span>
+                            </div>
+
+                            <span class="status-badge {{ $job->status }}">
+                                {{ ucwords(str_replace('_', ' ', $job->status)) }}
+                            </span>
+                        </div>
+                    </a>
+
+                    {{-- Action Area for Tukang --}}
+                    @if($job->status === 'on_progress' && !$job->completion)
+                        <div class="action-area">
+                            <a href="{{ route('tukang.jobs.complete', $job) }}" class="btn-review" style="background-color: var(--brand-orange); color: white;">
+                                <i class="bi bi-check-circle-fill me-1"></i> Submit Completion Proof
+                            </a>
+                        </div>
+                    @endif
                 </div>
             @empty
-                <div class="col-12 text-center py-5">
-                    <p class="text-muted">No jobs found</p>
+                <div class="text-center py-5">
+                    <i class="bi bi-clipboard-x text-muted" style="font-size: 4rem; opacity: 0.5;"></i>
+                    <h3 class="mt-3 fw-bold text-muted">No Active Jobs</h3>
+                    <p class="text-muted">You don't have any active jobs or proposals at the moment.</p>
                 </div>
             @endforelse
-        </div>
 
-        <div class="mt-4">
-            {{ $jobs->links() }}
+            <div class="mt-4">
+                {{ $jobs->links() }}
+            </div>
         </div>
     </div>
 </x-app-layout>

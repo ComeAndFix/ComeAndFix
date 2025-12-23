@@ -11,18 +11,36 @@ use Illuminate\Support\Facades\Storage;
 
 class TukangJobController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $tukang = Auth::guard('tukang')->user();
+        $filter = $request->query('filter', 'all');
 
-        // Show ACTIVE order proposals only (not completed)
-        $jobs = Order::where('tukang_id', $tukang->id)
-            ->whereIn('status', [Order::STATUS_PENDING, Order::STATUS_ACCEPTED, Order::STATUS_ON_PROGRESS])
-            ->with(['customer', 'service'])
-            ->latest()
-            ->paginate(15);
+        $query = Order::where('tukang_id', $tukang->id)
+            ->with(['customer', 'service', 'completion', 'review'])
+            ->latest();
 
-        return view('tukang.jobs.index', compact('jobs'));
+        switch ($filter) {
+            case 'ongoing':
+                $query->whereIn('status', [Order::STATUS_ACCEPTED, Order::STATUS_ON_PROGRESS]);
+                break;
+            case 'completed':
+                $query->where('status', Order::STATUS_COMPLETED);
+                break;
+            case 'cancelled':
+                $query->whereIn('status', [Order::STATUS_REJECTED, 'cancelled']); // Using string 'cancelled' if constant isn't defined
+                break;
+            case 'all':
+            default:
+                // For "All", we might want to exclude strictly cancelled/rejected to keep it clean, 
+                // OR show everything. Based on customer view, "All" usually shows everything.
+                // Let's show everything for "All".
+                break;
+        }
+
+        $jobs = $query->paginate(15);
+
+        return view('tukang.jobs.index', compact('jobs', 'filter'));
     }
 
     public function history()

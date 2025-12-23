@@ -282,11 +282,13 @@
     }
 }
 
-.booking-card.active-order-glow {
+.booking-card.active-order-glow,
+.booking-card-wrapper.active-order-glow {
     animation: pulse-orange 2s infinite;
 }
 
-.booking-card.active-order-glow:hover {
+.booking-card.active-order-glow:hover,
+.booking-card-wrapper.active-order-glow:hover {
     border-color: var(--brand-orange, #FF9800);
     box-shadow: 0 0 0 2px var(--brand-orange, #FF9800);
     animation: none;
