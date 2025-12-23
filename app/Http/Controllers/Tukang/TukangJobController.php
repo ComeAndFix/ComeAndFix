@@ -71,15 +71,24 @@ class TukangJobController extends Controller
         $this->authorizeOrder($order);
 
         if ($order->status !== Order::STATUS_ON_PROGRESS) {
-            return redirect()->back()->with('error', 'Only orders in progress can be completed');
+            return redirect()->route('tukang.jobs.show', $order)->with('error', 'Only orders in progress can be completed');
         }
 
-        return view('tukang.jobs.complete', compact('order'));
+        return response()
+            ->view('tukang.jobs.complete', compact('order'))
+            ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', 'Sat, 01 Jan 2000 00:00:00 GMT');
     }
 
     public function submitCompletion(Request $request, Order $order)
     {
         $this->authorizeOrder($order);
+
+        if ($order->status !== Order::STATUS_ON_PROGRESS) {
+            return redirect()->route('tukang.jobs.show', $order)
+                ->with('error', 'This order has already been completed or is not in progress.');
+        }
 
         $validated = $request->validate([
             'description' => 'required|string|min:20',

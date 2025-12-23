@@ -153,7 +153,7 @@
                 </div>
 
                 <!-- Action Section: Completion -->
-                @if(!$order->completion && $order->status === \App\Models\Order::STATUS_ON_PROGRESS)
+                @if(!$order->completion && $order->status === \App\Models\Order::STATUS_ON_PROGRESS && $order->status !== 'completed')
                     <div class="order-card">
                         <div class="section-header">
                             <span>Job Action</span>
