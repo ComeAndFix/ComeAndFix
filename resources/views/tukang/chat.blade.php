@@ -140,9 +140,16 @@
             <div class="chat-input-area">
                 <div class="d-flex flex-column gap-3">
                     @if($receiverType === 'customer')
-                        <button type="button" class="btn btn-outline-brand-orange rounded-pill w-100 fw-bold" data-bs-toggle="modal" data-bs-target="#orderProposalModal">
-                            <i class="bi bi-plus-lg me-2"></i> Create Order Proposal
-                        </button>
+                        @if($hasActiveOrder)
+                            <div class="alert alert-warning border-0 shadow-sm rounded-4 small mb-0">
+                                <i class="bi bi-info-circle-fill me-2"></i>
+                                You have an active order with this customer.
+                            </div>
+                        @else
+                            <button type="button" class="btn btn-outline-brand-orange rounded-pill w-100 fw-bold" data-bs-toggle="modal" data-bs-target="#orderProposalModal">
+                                <i class="bi bi-plus-lg me-2"></i> Create Order Proposal
+                            </button>
+                        @endif
                     @endif
                     <form id="message-form">
                         @csrf
@@ -196,20 +203,20 @@
                             </div>
 
                             <div class="mb-4">
-                                <label for="service-description" class="form-label">Detailed Work Description</label>
-                                <textarea id="service-description" name="service_description" class="form-control" rows="3" placeholder="Explain clearly what work will be performed..."></textarea>
+                                <label for="service-description" class="form-label">Detailed Work Description *</label>
+                                <textarea id="service-description" name="service_description" class="form-control" rows="3" placeholder="Explain clearly what work will be performed..." required></textarea>
                             </div>
 
                             <div class="mb-4">
-                                <label for="customer-address" class="form-label">Service Location</label>
-                                <textarea id="customer-address" name="working_address" class="form-control" rows="2" placeholder="Where should the service be performed?">{{ $receiver->address ?? '' }}</textarea>
+                                <label for="customer-address" class="form-label">Service Location *</label>
+                                <textarea id="customer-address" name="working_address" class="form-control" rows="2" placeholder="Where should the service be performed?" required>{{ $receiver->address ?? '' }}</textarea>
                                 <div class="form-text mt-2"><i class="bi bi-info-circle me-1"></i> Pre-filled with customer's address.</div>
                             </div>
 
                             <div class="row">
                                 <div class="col-md-6 mb-4">
-                                    <label for="work-datetime" class="form-label">Scheduled Date & Time</label>
-                                    <input type="datetime-local" id="work-datetime" name="work_datetime" class="form-control">
+                                    <label for="work-datetime" class="form-label">Scheduled Date & Time *</label>
+                                    <input type="datetime-local" id="work-datetime" name="work_datetime" class="form-control" required>
                                 </div>
                                 <div class="col-md-6 mb-4">
                                     <label for="expires-hours" class="form-label">Proposal Expiration *</label>
@@ -317,6 +324,23 @@
             // Pre-selected service from map/customer request
             const preselectedServiceId = {{ isset($selectedService) && $selectedService ? $selectedService->id : 'null' }};
             console.log('Preselected Service ID:', preselectedServiceId);
+
+            // Set min datetime to tomorrow (block today and past)
+            const workDatetimeInput = document.getElementById('work-datetime');
+            if(workDatetimeInput) {
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                tomorrow.setHours(0, 0, 0, 0); // Start of tomorrow
+                
+                // Format: YYYY-MM-DDTHH:MM
+                const year = tomorrow.getFullYear();
+                const month = String(tomorrow.getMonth() + 1).padStart(2, '0');
+                const day = String(tomorrow.getDate()).padStart(2, '0');
+                const hours = String(tomorrow.getHours()).padStart(2, '0');
+                const minutes = String(tomorrow.getMinutes()).padStart(2, '0');
+                
+                workDatetimeInput.min = `${year}-${month}-${day}T${hours}:${minutes}`;
+            }
 
             // Toggle Details Function
             window.toggleDetails = function(orderId) {

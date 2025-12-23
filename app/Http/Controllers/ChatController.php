@@ -213,7 +213,13 @@ class ChatController extends Controller
                 }
             }
 
-            return view('tukang.chat', compact('receiver', 'messages', 'conversationId', 'receiverType', 'selectedService'));
+            // check for active accepted/on_progress order
+            $hasActiveOrder = Order::where('customer_id', $receiver->id)
+                ->where('tukang_id', $tukang->id)
+                ->whereIn('status', ['accepted', 'on_progress'])
+                ->exists();
+
+            return view('tukang.chat', compact('receiver', 'messages', 'conversationId', 'receiverType', 'selectedService', 'hasActiveOrder'));
         } catch (\Exception $e) {
             Log::error('Tukang chat show error: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Unable to load chat');
@@ -311,11 +317,11 @@ class ChatController extends Controller
             'customer_id' => 'required|exists:customers,id',
             'conversation_id' => 'required|string',
             'service_id' => 'required|exists:services,id',
-            'service_description' => 'nullable|string',
+            'service_description' => 'required|string',
             'price' => 'required|numeric|min:0',
             'expires_in_hours' => 'required|integer|min:1|max:168',
             'service_details' => 'nullable|array',
-            'work_datetime' => 'nullable|date',
+            'work_datetime' => 'required|date|after:today',
             'additional_items' => 'nullable|array',
             'additional_items.*.item_name' => 'required_with:additional_items|string',
             'additional_items.*.item_price' => 'required_with:additional_items|numeric|min:0',
@@ -325,11 +331,24 @@ class ChatController extends Controller
             'custom_items.*.item_price' => 'required_with:custom_items|numeric|min:0',
             'custom_items.*.quantity' => 'required_with:custom_items|integer|min:1',
             'custom_items.*.description' => 'nullable|string',
-            'working_address' => 'nullable|string'
+            'working_address' => 'required|string'
         ]);
 
         try {
             $tukangId = Auth::guard('tukang')->id();
+
+            // Check for existing active order
+            $activeOrderExists = Order::where('customer_id', $request->customer_id)
+                ->where('tukang_id', $tukangId)
+                ->whereIn('status', ['accepted', 'on_progress'])
+                ->exists();
+
+            if ($activeOrderExists) {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'You already have an active order with this customer. Please complete it before creating a new proposal.'
+                ], 400);
+            }
 
             // Use working_address from request, or fallback to customer's address
             $workingAddress = $request->working_address;
