@@ -108,6 +108,7 @@ Route::middleware(['auth:tukang', 'verified'])->name('tukang.')->group(function 
     Route::get('/dashboard/tukang', [TukangController::class, 'dashboard'])->name('dashboard');
     Route::get('/tukang/profile', [TukangController::class, 'profile'])->name('profile');
     Route::put('/tukang/profile', [TukangController::class, 'updateProfile'])->name('profile.update');
+    Route::post('/tukang/profile/complete', [TukangController::class, 'completeProfile'])->name('profile.complete');
     Route::post('/tukang/toggle-availability', [TukangController::class, 'toggleAvailability'])->name('toggle.availability');
 
     Route::get('/tukang/chat/{receiverType}/{receiverId}', [ChatController::class, 'showForTukang'])->name('chat.show');

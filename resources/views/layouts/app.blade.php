@@ -129,6 +129,9 @@
 <!-- Location Setup Modal for Customers -->
 @include('components.location-setup-modal')
 
+<!-- Onboarding Modal for Tukang -->
+@include('components.tukang-onboarding-modal')
+
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 

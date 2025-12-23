@@ -58,48 +58,6 @@
             </div>
         </div>
 
-        <!-- Full Home Address -->
-        <div class="input-wrapper">
-            <input 
-                id="address" 
-                class="custom-input" 
-                type="text" 
-                name="address" 
-                value="{{ old('address') }}" 
-                placeholder="Full home address"
-                required 
-            />
-            <x-input-error :messages="$errors->get('address')" class="mt-2" />
-        </div>
-
-        <!-- City and Postal Code (Two Columns) -->
-        <div class="form-row">
-            <div class="input-wrapper">
-                <input 
-                    id="city" 
-                    class="custom-input" 
-                    type="text" 
-                    name="city" 
-                    value="{{ old('city') }}" 
-                    placeholder="City"
-                    required 
-                />
-                <x-input-error :messages="$errors->get('city')" class="mt-2" />
-            </div>
-
-            <div class="input-wrapper">
-                <input 
-                    id="postal_code" 
-                    class="custom-input" 
-                    type="text" 
-                    name="postal_code" 
-                    value="{{ old('postal_code') }}" 
-                    placeholder="Postal code"
-                />
-                <x-input-error :messages="$errors->get('postal_code')" class="mt-2" />
-            </div>
-        </div>
-
         <!-- Specializations -->
         <div class="input-wrapper">
             <label style="font-size: 0.875rem; color: var(--text-gray); margin-bottom: 0.75rem; display: block; font-family: 'Inter', sans-serif;">Specializations</label>
@@ -138,40 +96,6 @@
                 style="resize: vertical; min-height: 80px;"
             >{{ old('description') }}</textarea>
             <x-input-error :messages="$errors->get('description')" class="mt-2" />
-        </div>
-
-        <!-- Years of Experience and Hourly Rate (Two Columns) -->
-        <div class="form-row">
-            <div class="input-wrapper">
-                <input 
-                    id="years_experience" 
-                    class="custom-input" 
-                    type="number" 
-                    name="years_experience" 
-                    value="{{ old('years_experience') }}" 
-                    placeholder="Years of experience"
-                    min="0"
-                />
-                <x-input-error :messages="$errors->get('years_experience')" class="mt-2" />
-            </div>
-
-            <div class="input-wrapper">
-                <div style="position: relative;">
-                    <span style="position: absolute; left: 1.25rem; top: 50%; transform: translateY(-50%); color: var(--text-gray); font-size: 0.9375rem;">Rp</span>
-                    <input 
-                        id="hourly_rate" 
-                        class="custom-input" 
-                        type="number" 
-                        name="hourly_rate" 
-                        value="{{ old('hourly_rate') }}" 
-                        placeholder="Hourly rate"
-                        min="0"
-                        step="0.01"
-                        style="padding-left: 3rem;"
-                    />
-                </div>
-                <x-input-error :messages="$errors->get('hourly_rate')" class="mt-2" />
-            </div>
         </div>
 
         <!-- Password -->

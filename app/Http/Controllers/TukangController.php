@@ -161,6 +161,36 @@ class TukangController extends Controller
         return view('tukang.dashboard', compact('jobRequests', 'newMessagesCount', 'activeJobsCount', 'scheduledJobs', 'walletBalance', 'monthlyIncome', 'availableServices', 'activeJob'));
     }
 
+    public function completeProfile(Request $request)
+    {
+        $request->validate([
+            'address' => 'required|string',
+            'city' => 'required|string',
+            'postal_code' => 'required|string',
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
+            'years_experience' => 'required|integer|min:0',
+            'description' => 'required|string',
+        ]);
+
+        $tukang = Auth::guard('tukang')->user();
+        
+        $tukang->update([
+            'address' => $request->address,
+            'city' => $request->city,
+            'postal_code' => $request->postal_code,
+            'latitude' => $request->latitude,
+            'longitude' => $request->longitude,
+            'years_experience' => $request->years_experience,
+            'description' => $request->description,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Profile updated successfully'
+        ]);
+    }
+
     public function profile()
     {
         $tukang = Auth::guard('tukang')->user();

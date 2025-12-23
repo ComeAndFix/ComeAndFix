@@ -27,12 +27,8 @@
                 'name' => ['required', 'string', 'max:255'],
                 'email' => ['required', 'string', 'email', 'max:255', 'unique:tukangs'],
                 'phone' => ['required', 'string', 'max:255'],
-                'address' => ['nullable', 'string'],
-                'city' => ['nullable', 'string', 'max:255'],
-                'postal_code' => ['nullable', 'string', 'max:10'],
+                // Removed address, city, postal_code, years_experience, hourly_rate validations
                 'specializations' => ['required', 'array', 'min:1'],
-                'years_experience' => ['nullable', 'integer', 'min:0'],
-                'hourly_rate' => ['nullable', 'numeric', 'min:0'],
                 'description' => ['nullable', 'string'],
                 'password' => ['required', 'confirmed', Rules\Password::defaults()],
             ]);
@@ -41,14 +37,15 @@
                 'name' => $request->name,
                 'email' => $request->email,
                 'phone' => $request->phone,
-                'address' => $request->address,
-                'city' => $request->city,
-                'postal_code' => $request->postal_code,
+                // Location info removed from input, defaulting to null
+                'address' => null,
+                'city' => null,
+                'postal_code' => null,
                 'specializations' => $request->specializations,
-                'years_experience' => $request->years_experience ?? 0,
-                'hourly_rate' => $request->hourly_rate,
+                'years_experience' => 0, // Defaulting to 0/null as removed from input
                 'description' => $request->description,
                 'password' => Hash::make($request->password),
+                // hourly_rate and business_name removed
             ]);
 
             $tukang->sendEmailVerificationNotification();
