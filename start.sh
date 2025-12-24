@@ -21,6 +21,8 @@ echo "⚡ Optimizing application..."
 php artisan optimize
 
 echo "🔧 Configuring nginx for port $PORT..."
+# Create log directory to suppress nginx warnings
+mkdir -p /var/log/nginx 2>/dev/null || true
 # Replace PORT placeholder in nginx config
 sed "s/listen 8080;/listen $PORT;/g" "$APP_DIR/nginx.conf" > /tmp/nginx.conf
 
