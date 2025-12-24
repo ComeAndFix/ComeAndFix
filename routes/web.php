@@ -32,11 +32,7 @@ Route::get('/debug-messages', function() {
 });
 
 
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
+// Profile routes are defined within specific guard middleware groups below
 
 use App\Http\Controllers\Auth\CustomerAuthController;
 use App\Http\Controllers\Auth\TukangAuthController;
@@ -106,7 +102,7 @@ Route::middleware(['auth:tukang', 'verified'])->name('tukang.')->group(function 
     })->name('dashboard');*/
 
     Route::get('/dashboard/tukang', [TukangController::class, 'dashboard'])->name('dashboard');
-    Route::get('/tukang/profile', [TukangController::class, 'profile'])->name('profile');
+    Route::get('/tukang/profile', [TukangController::class, 'profile'])->name('profile.show');
     Route::put('/tukang/profile', [TukangController::class, 'updateProfile'])->name('profile.update');
     Route::post('/tukang/profile/complete', [TukangController::class, 'completeProfile'])->name('profile.complete');
     Route::post('/tukang/toggle-availability', [TukangController::class, 'toggleAvailability'])->name('toggle.availability');
