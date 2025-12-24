@@ -17,6 +17,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
         ]);
         
+        // Trust Railway's proxy
+        $middleware->trustProxies(at: '*');
+        
         // Exclude payment notification webhook from CSRF protection
         $middleware->validateCsrfTokens(except: [
             'payments/notification',
