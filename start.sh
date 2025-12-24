@@ -9,6 +9,11 @@ export PORT=${PORT:-8080}
 # Get the application directory
 APP_DIR=$(pwd)
 
+echo "🔐 Setting storage permissions..."
+# Ensure storage and bootstrap/cache are writable
+chmod -R 775 storage bootstrap/cache
+chown -R nobody:nogroup storage bootstrap/cache 2>/dev/null || true
+
 echo "📝 Running migrations..."
 php artisan migrate --force
 
