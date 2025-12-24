@@ -68,6 +68,17 @@ Route::get('/admin/delete-account', function() {
     ]);
 });
 
+// Temporary debug route - CHECK CONFIG
+Route::get('/admin/debug-config', function() {
+    return response()->json([
+        'app_url' => config('app.url'),
+        'app_env' => config('app.env'),
+        'app_key_set' => !empty(config('app.key')),
+        'app_key_prefix' => substr(config('app.key'), 0, 10) . '...',
+        'config_cached' => app()->configurationIsCached(),
+    ]);
+});
+
 
 // Profile routes are defined within specific guard middleware groups below
 
