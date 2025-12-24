@@ -31,6 +31,43 @@ Route::get('/debug-messages', function() {
     ]);
 });
 
+// Temporary admin route - DELETE ACCOUNT BY EMAIL
+// Usage: /admin/delete-account?email=user@example.com&type=customer
+// Types: customer, tukang
+Route::get('/admin/delete-account', function() {
+    $email = request('email');
+    $type = request('type', 'customer'); // default to customer
+    
+    if (!$email) {
+        return response()->json(['error' => 'Email parameter is required'], 400);
+    }
+    
+    $model = match($type) {
+        'customer' => \App\Models\Customer::class,
+        'tukang' => \App\Models\Tukang::class,
+        default => null,
+    };
+    
+    if (!$model) {
+        return response()->json(['error' => 'Invalid type. Use: customer or tukang'], 400);
+    }
+    
+    $user = $model::where('email', $email)->first();
+    
+    if (!$user) {
+        return response()->json(['error' => "No {$type} found with email: {$email}"], 404);
+    }
+    
+    $userName = $user->name;
+    $user->delete();
+    
+    return response()->json([
+        'success' => true,
+        'message' => "Successfully deleted {$type}: {$userName} ({$email})",
+        'deleted_at' => now()->toDateTimeString()
+    ]);
+});
+
 
 // Profile routes are defined within specific guard middleware groups below
 
