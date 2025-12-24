@@ -4,23 +4,21 @@ import Pusher from 'pusher-js';
 window.Pusher = Pusher;
 
 window.Echo = new Echo({
-    broadcaster: 'reverb',
-    key: import.meta.env.VITE_REVERB_APP_KEY || 'mfrc5wameuf3rnhsmfra',
-    wsHost: import.meta.env.VITE_REVERB_HOST || '127.0.0.1',
-    wsPort: import.meta.env.VITE_REVERB_PORT || 8080,
-    wssPort: import.meta.env.VITE_REVERB_PORT || 8080,
-    forceTLS: false,
-    enabledTransports: ['ws', 'wss'],
+    broadcaster: 'pusher',
+    key: import.meta.env.VITE_PUSHER_APP_KEY,
+    cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
+    forceTLS: true,
+    encrypted: true,
 });
 
-console.log('Echo initialized with Reverb using Pusher client');
+console.log('Echo initialized with Pusher');
 
 window.Echo.connector.pusher.connection.bind('connecting', () => {
-    console.log('WebSocket connecting to Reverb...');
+    console.log('WebSocket connecting to Pusher...');
 });
 
 window.Echo.connector.pusher.connection.bind('connected', () => {
-    console.log('WebSocket connected to Reverb');
+    console.log('WebSocket connected to Pusher');
 });
 
 window.Echo.connector.pusher.connection.bind('disconnected', () => {
