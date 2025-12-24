@@ -13,7 +13,9 @@ echo "📝 Running migrations..."
 php artisan migrate --force
 
 echo "🔗 Creating storage link..."
-php artisan storage:link || true
+# Remove existing link if it exists, then create fresh one
+rm -f public/storage
+php artisan storage:link
 
 echo "⚡ Optimizing application..."
 php artisan optimize
