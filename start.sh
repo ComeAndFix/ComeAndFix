@@ -23,6 +23,7 @@ rm -f public/storage
 php artisan storage:link
 
 echo "⚡ Optimizing application..."
+php artisan optimize:clear
 php artisan optimize
 
 echo "🔧 Configuring nginx for port $PORT..."
