@@ -24,7 +24,9 @@ php artisan storage:link
 
 echo "⚡ Optimizing application..."
 php artisan optimize:clear
-php artisan optimize
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
 
 echo "🔧 Configuring nginx for port $PORT..."
 # Create log directory to suppress nginx warnings
