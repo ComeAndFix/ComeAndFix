@@ -30,7 +30,7 @@
         </div>
 
         <!-- Progress Tracker or Cancellation Notice -->
-        @if(in_array($order->status, ['rejected', 'cancelled']))
+        @if(in_array($order->status, ['rejected', 'cancelled']) || ($order->status === 'pending' && $order->isExpired()))
             <div class="alert alert-danger border-0 shadow-sm mb-4" role="alert">
                 <div class="d-flex align-items-center">
                     <div class="flex-shrink-0">
@@ -38,10 +38,16 @@
                     </div>
                     <div class="flex-grow-1">
                         <h5 class="alert-heading mb-1">
-                            <strong>Order {{ ucfirst($order->status) }}</strong>
+                            <strong>Order {{ $order->status === 'pending' && $order->isExpired() ? 'Expired' : ucfirst($order->status) }}</strong>
                         </h5>
                         <p class="mb-0">
-                            The order has been {{ $order->status }}.
+                            @if($order->status === 'rejected')
+                                The order has been rejected.
+                            @elseif($order->status === 'pending' && $order->isExpired())
+                                The order proposal has expired.
+                            @else
+                                The order has been cancelled.
+                            @endif
                         </p>
                     </div>
                 </div>
@@ -118,7 +124,7 @@
                 <div class="order-card">
                     <div class="section-header">
                         <span>Job Information</span>
-                        <span class="badge bg-{{ $order->status_color }} rounded-pill px-3">{{ ucwords(str_replace('_', ' ', $order->status)) }}</span>
+                        <span class="badge bg-{{ ($order->status === 'pending' && $order->isExpired()) ? 'danger' : $order->status_color }} rounded-pill px-3">{{ ($order->status === 'pending' && $order->isExpired()) ? 'Expired' : ucwords(str_replace('_', ' ', $order->status)) }}</span>
                     </div>
 
                     <div class="row mb-4">

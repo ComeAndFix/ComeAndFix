@@ -62,8 +62,8 @@
                                 <img src="{{ $order->tukang->user->avatar_url ?? 'https://ui-avatars.com/api/?name=Tukang' }}" alt="Tukang" class="tukang-avatar-small">
                                 <span class="tukang-name">{{ $order->tukang->user->name ?? 'Tukang Name' }}</span>
                             </div>
-                            <span class="status-badge {{ $order->status }}">
-                                {{ ucwords(str_replace('_', ' ', $order->status)) }}
+                            <span class="status-badge {{ ($order->status === 'pending' && $order->isExpired()) ? 'rejected' : $order->status }}">
+                                {{ ($order->status === 'pending' && $order->isExpired()) ? 'Expired' : ucwords(str_replace('_', ' ', $order->status)) }}
                             </span>
                         </div>
                     </a>
@@ -96,8 +96,8 @@
                                 <div class="booking-price">
                                     Rp {{ number_format($order->total_price, 0, ',', '.') }}
                                 </div>
-                                <span class="status-badge {{ $order->status }} mt-2">
-                                    {{ ucfirst(str_replace('_', ' ', $order->status)) }}
+                                <span class="status-badge {{ ($order->status === 'pending' && $order->isExpired()) ? 'rejected' : $order->status }} mt-2">
+                                    {{ ($order->status === 'pending' && $order->isExpired()) ? 'Expired' : ucfirst(str_replace('_', ' ', $order->status)) }}
                                 </span>
                             </div>
                         </div>

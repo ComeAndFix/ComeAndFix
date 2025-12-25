@@ -68,8 +68,8 @@
                                 <span class="tukang-name">{{ $job->customer->name }}</span>
                             </div>
 
-                            <span class="status-badge {{ $job->status }}">
-                                {{ ucwords(str_replace('_', ' ', $job->status)) }}
+                            <span class="status-badge {{ ($job->status === 'pending' && $job->isExpired()) ? 'rejected' : $job->status }}">
+                                {{ ($job->status === 'pending' && $job->isExpired()) ? 'Expired' : ucwords(str_replace('_', ' ', $job->status)) }}
                             </span>
                         </div>
                     </a>

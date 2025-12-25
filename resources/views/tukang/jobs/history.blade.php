@@ -26,7 +26,7 @@
                                     <p class="mb-2"><strong>Customer:</strong> {{ $job->customer->name }}</p>
                                     
                                     <div class="d-flex gap-2 mb-2">
-                                        <span class="badge bg-{{ $job->status_color }}">{{ ucwords(str_replace('_', ' ', $job->status)) }}</span>
+                                        <span class="badge bg-{{ ($job->status === 'pending' && $job->isExpired()) ? 'danger' : $job->status_color }}">{{ ($job->status === 'pending' && $job->isExpired()) ? 'Expired' : ucwords(str_replace('_', ' ', $job->status)) }}</span>
                                         
                                         @if($job->payment_status)
                                             <span class="badge bg-{{ $job->payment_status === 'paid' ? 'success' : 'warning' }}">

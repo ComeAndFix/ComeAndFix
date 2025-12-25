@@ -112,8 +112,8 @@
                                 </div>
 
                                 <div class="w-100 text-center mt-3">
-                                    <span class="status-badge status-badge-{{ $message->order->status === 'accepted' || $message->order->status === 'completed' ? 'success' : ($message->order->status === 'rejected' ? 'danger' : 'warning') }}">
-                                        {{ ucwords(str_replace('_', ' ', $message->order->status)) }}
+                                    <span class="status-badge status-badge-{{ $message->order->status === 'accepted' || $message->order->status === 'completed' ? 'success' : (in_array($message->order->status, ['rejected', 'cancelled']) || ($message->order->status === 'pending' && $message->order->isExpired()) ? 'danger' : 'warning') }}">
+                                        {{ $message->order->status === 'pending' && $message->order->isExpired() ? 'Expired' : ucwords(str_replace('_', ' ', $message->order->status)) }}
                                     </span>
                                 </div>
                             </div>
@@ -145,7 +145,7 @@
                                 <i class="bi bi-info-circle-fill me-2"></i>
                                 You have an active order with this customer.
                             </div>
-                        @elseif($pendingProposal)
+                        @elseif($pendingProposal && !$pendingProposal->isExpired())
                             <div class="alert alert-info border-0 shadow-sm rounded-4 small mb-0">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>

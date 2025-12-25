@@ -153,9 +153,9 @@
                                             <i class="bi bi-credit-card"></i> Pay Now
                                         </button>
                                     @else
-                                        <div class="w-100 text-center" style="grid-column: span 2">
-                                            <span class="status-badge status-badge-{{ $message->order->status === 'accepted' || $message->order->status === 'completed' ? 'success' : ($message->order->status === 'rejected' ? 'danger' : 'warning') }}">
-                                                {{ ucwords(str_replace('_', ' ', $message->order->status)) }}
+        <div class="w-100 text-center" style="grid-column: span 2">
+                                            <span class="status-badge status-badge-{{ $message->order->status === 'accepted' || $message->order->status === 'completed' ? 'success' : (in_array($message->order->status, ['rejected', 'cancelled']) || ($message->order->status === 'pending' && $message->order->isExpired()) ? 'danger' : 'warning') }}">
+                                                {{ $message->order->status === 'pending' && $message->order->isExpired() ? 'Expired' : ucwords(str_replace('_', ' ', $message->order->status)) }}
                                             </span>
                                         </div>
                                     @endif

@@ -37,7 +37,7 @@
         </div>
 
         <!-- Progress Tracker or Cancellation Notice -->
-        @if(in_array($order->status, ['rejected', 'cancelled']))
+        @if(in_array($order->status, ['rejected', 'cancelled']) || ($order->status === 'pending' && $order->isExpired()))
             <!-- Cancellation Notice -->
             <div class="alert alert-danger border-0 shadow-sm mb-4" role="alert">
                 <div class="d-flex align-items-center">
@@ -46,11 +46,13 @@
                     </div>
                     <div class="flex-grow-1">
                         <h5 class="alert-heading mb-1">
-                            <strong>Order {{ ucfirst($order->status) }}</strong>
+                            <strong>Order {{ $order->status === 'pending' && $order->isExpired() ? 'Expired' : ucfirst($order->status) }}</strong>
                         </h5>
                         <p class="mb-0">
                             @if($order->status === 'rejected')
                                 This order proposal has been declined and is no longer active.
+                            @elseif($order->status === 'pending' && $order->isExpired())
+                                This order proposal has expired and is no longer valid.
                             @else
                                 This order has been cancelled and is no longer active.
                             @endif
@@ -58,7 +60,7 @@
                     </div>
                     <div class="flex-shrink-0">
                         <span class="badge bg-danger rounded-pill px-3 py-2">
-                            <i class="bi bi-slash-circle me-1"></i> {{ ucfirst($order->status) }}
+                            <i class="bi bi-slash-circle me-1"></i> {{ $order->status === 'pending' && $order->isExpired() ? 'Expired' : ucfirst($order->status) }}
                         </span>
                     </div>
                 </div>
@@ -166,22 +168,30 @@
                     @endif
                 </div>
 
-                <!-- Pending Proposal Actions (Only if Pending) -->
                 @if($order->status === 'pending')
                 <div class="order-card">
                     <div class="section-header">
                         <span>Proposal Status</span>
-                        <span class="badge bg-warning rounded-pill px-3"><i class="bi bi-clock-history me-1"></i> Awaiting Your Response</span>
+                        @if($order->isExpired())
+                             <span class="badge bg-danger rounded-pill px-3"><i class="bi bi-clock-history me-1"></i> Expired</span>
+                        @else
+                             <span class="badge bg-warning rounded-pill px-3"><i class="bi bi-clock-history me-1"></i> Awaiting Your Response</span>
+                        @endif
                     </div>
                     
-                    <div class="alert alert-info mb-4" role="alert">
+                    <div class="alert {{ $order->isExpired() ? 'alert-danger' : 'alert-info' }} mb-4" role="alert">
                         <i class="bi bi-info-circle-fill me-2"></i>
-                        <strong>{{ $order->tukang->name }}</strong> has sent you an order proposal. Please review the details and accept or decline the offer.
-                        @if($order->expires_at)
-                            <br><small class="text-muted mt-1 d-block">This proposal expires on {{ $order->expires_at->format('d M Y, H:i') }}</small>
+                        @if($order->isExpired())
+                             <strong>This proposal expired on {{ $order->expires_at->format('d M Y, H:i') }}.</strong> You can no longer accept this offer.
+                        @else
+                            <strong>{{ $order->tukang->name }}</strong> has sent you an order proposal. Please review the details and accept or decline the offer.
+                            @if($order->expires_at)
+                                <br><small class="text-muted mt-1 d-block">This proposal expires on {{ $order->expires_at->format('d M Y, H:i') }}</small>
+                            @endif
                         @endif
                     </div>
 
+                    @if(!$order->isExpired())
                     <div class="d-flex gap-3 justify-content-center">
                         <form action="{{ route('order.accept', $order->uuid) }}" method="POST" class="d-inline">
                             @csrf
@@ -197,6 +207,13 @@
                             </button>
                         </form>
                     </div>
+                    @else
+                    <div class="text-center">
+                         <a href="{{ route('chat.show', ['receiverType' => 'tukang', 'receiverId' => $order->tukang_id]) }}" class="btn btn-outline-secondary rounded-pill px-4">
+                             <i class="bi bi-chat-dots me-1"></i> Chat Tukang to Request New Proposal
+                         </a>
+                    </div>
+                    @endif
                 </div>
                 @endif
 
