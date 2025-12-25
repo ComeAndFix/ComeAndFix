@@ -191,8 +191,8 @@
                         <div class="photo-grid">
                             @foreach($order->completion->photos as $photo)
                                 <div class="photo-wrapper">
-                                    <a href="{{ Storage::url($photo) }}" target="_blank">
-                                        <img src="{{ Storage::url($photo) }}" alt="Completion Photo">
+                                    <a href="{{ \App\Helpers\StorageHelper::url($photo) }}" target="_blank">
+                                        <img src="{{ \App\Helpers\StorageHelper::url($photo) }}" alt="Completion Photo">
                                     </a>
                                 </div>
                             @endforeach

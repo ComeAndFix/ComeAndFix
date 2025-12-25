@@ -51,7 +51,7 @@
                     <div style="display: flex; align-items: center; gap: 2rem;">
                         <div class="profile-photo-preview" style="width: 100px; height: 100px; border-radius: 50%; overflow: hidden; background: #f0f0f0; border: 3px solid var(--brand-orange); flex-shrink: 0;">
                             @if($customer->profile_image)
-                                <img src="{{ Storage::url($customer->profile_image) }}" alt="Profile Photo" id="photo-preview-img" style="width: 100%; height: 100%; object-fit: cover;">
+                                <img src="{{ \App\Helpers\StorageHelper::url($customer->profile_image) }}" alt="Profile Photo" id="photo-preview-img" style="width: 100%; height: 100%; object-fit: cover;">
                             @else
                                 <div id="photo-placeholder" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #FFF3E0; color: var(--brand-orange); font-size: 2.5rem; font-weight: bold;">
                                     {{ strtoupper(substr($customer->name, 0, 1)) }}

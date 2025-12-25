@@ -220,7 +220,7 @@
                         <div class="photo-grid">
                             @foreach($order->completion->photos as $photo)
                                 <div class="photo-wrapper">
-                                    <img src="{{ Storage::url($photo) }}" alt="Completion Photo">
+                                    <img src="{{ \App\Helpers\StorageHelper::url($photo) }}" alt="Completion Photo">
                                 </div>
                             @endforeach
                         </div>

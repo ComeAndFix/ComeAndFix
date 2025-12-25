@@ -38,7 +38,7 @@
                             <div class="profile-header">
                                 <div class="profile-photo-wrapper">
                                     @if($tukang->profile_image)
-                                        <img src="{{ Storage::url($tukang->profile_image) }}" alt="Profile Photo" class="profile-photo">
+                                        <img src="{{ \App\Helpers\StorageHelper::url($tukang->profile_image) }}" alt="Profile Photo" class="profile-photo">
                                     @else
                                         <div class="profile-placeholder">
                                             {{ strtoupper(substr($tukang->name, 0, 1)) }}
@@ -238,7 +238,7 @@
                         <div class="photo-upload-section">
                             <div class="photo-upload-wrapper">
                                 @if($tukang->profile_image)
-                                    <img src="{{ Storage::url($tukang->profile_image) }}" alt="Profile Photo" class="profile-photo" id="edit-profile-photo">
+                                    <img src="{{ \App\Helpers\StorageHelper::url($tukang->profile_image) }}" alt="Profile Photo" class="profile-photo" id="edit-profile-photo">
                                 @else
                                     <div class="profile-placeholder" id="edit-profile-placeholder">
                                         {{ strtoupper(substr($tukang->name, 0, 1)) }}

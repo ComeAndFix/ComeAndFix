@@ -127,11 +127,11 @@
                         <div class="row g-2">
                             @foreach($order->completion->photos as $photo)
                                 <div class="col-6">
-                                    <img src="{{ Storage::url($photo) }}" 
+                                    <img src="{{ \App\Helpers\StorageHelper::url($photo) }}" 
                                          class="img-fluid rounded" 
                                          style="width: 100%; height: 100px; object-fit: cover; cursor: pointer;"
                                          alt="Completion photo"
-                                         onclick="window.open('{{ Storage::url($photo) }}', '_blank')">
+                                         onclick="window.open('{{ \App\Helpers\StorageHelper::url($photo) }}', '_blank')">
                                 </div>
                             @endforeach
                         </div>
