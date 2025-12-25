@@ -32,22 +32,48 @@
                         <h1 class="hero-name">{{ strtoupper(Auth::guard('tukang')->user()->name) }}</h1>
                     </div>
                     
-                    <!-- Availability Toggle -->
-                    <button id="availability-toggle" class="availability-btn d-flex align-items-center gap-2 px-4 py-2 shadow-sm" 
-                            style="border: 2px solid transparent; transition: all 0.3s; font-size: 1.1rem;"
-                            onclick="toggleAvailability()">
-                        <div id="availability-indicator" 
-                             class="shadow-sm"
-                             style="width: 14px; height: 14px; border-radius: 50%; background-color: {{ Auth::guard('tukang')->user()->is_available ? '#10B981' : '#EF4444' }}; transition: background-color 0.3s;"></div>
-                        <span id="availability-text" class="fw-bold" style="color: var(--brand-dark);">
-                            {{ Auth::guard('tukang')->user()->is_available ? 'Available' : 'Unavailable' }}
-                        </span>
-                    </button>
+                    <!-- Availability Toggle Moved -->
                 </div>
             </div>
         </section>
 
         <div class="container" style="max-width: 1200px;">
+            <!-- Status Control Section (New) -->
+            <section class="mb-5">
+                <div id="status-card" class="d-flex align-items-center justify-content-between p-4 rounded-4 shadow-sm" 
+                     style="background: white; border-left: 8px solid {{ Auth::guard('tukang')->user()->is_available ? '#10B981' : '#EF4444' }}; transition: all 0.3s ease;">
+                    
+                    <div class="d-flex align-items-center gap-3">
+                        <div id="status-icon-wrapper" class="rounded-circle d-flex align-items-center justify-content-center text-white" 
+                             style="width: 60px; height: 60px; background-color: {{ Auth::guard('tukang')->user()->is_available ? '#10B981' : '#EF4444' }}; font-size: 1.75rem; transition: background-color 0.3s;">
+                            <i id="status-icon" class="bi {{ Auth::guard('tukang')->user()->is_available ? 'bi-wifi' : 'bi-wifi-off' }}"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-1" style="color: var(--brand-dark);">Current Status</h5>
+                            <p id="availability-text" class="mb-0 fw-medium {{ Auth::guard('tukang')->user()->is_available ? 'text-success' : 'text-danger' }}" style="font-size: 1.1rem;">
+                                {{ Auth::guard('tukang')->user()->is_available ? 'Available for New Jobs' : 'Currently Unavailable' }}
+                            </p>
+                            <p class="text-muted small mb-0 mt-1">
+                                <i class="bi bi-info-circle me-1"></i>
+                                <span id="availability-info">
+                                    {{ Auth::guard('tukang')->user()->is_available 
+                                        ? 'Customers can find you on the map.' 
+                                        : 'You are hidden from customer searches.' }}
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="form-check form-switch custom-switch">
+                        <input class="form-check-input" type="checkbox" id="availability-toggle" style="width: 3.5rem; height: 1.75rem; cursor: pointer;" 
+                               {{ Auth::guard('tukang')->user()->is_available ? 'checked' : '' }} 
+                               onchange="toggleAvailability(this)">
+                    </div>
+                    <!-- Hidden indicator for JS compatibility -->
+                    <div id="availability-indicator" style="display: none;"></div>
+                </div>
+            </section>
+
             <!-- Active Job Indicator -->
             @if($activeJob)
             <section class="mb-5" aria-label="Active Job">
@@ -206,30 +232,48 @@
         }
 
         // Availability Toggle
-        function toggleAvailability() {
-            const btn = document.getElementById('availability-toggle');
-            const indicator = document.getElementById('availability-indicator');
+        function toggleAvailability(checkbox) {
+            const statusCard = document.getElementById('status-card');
+            const iconWrapper = document.getElementById('status-icon-wrapper');
+            const statusIcon = document.getElementById('status-icon');
             const text = document.getElementById('availability-text');
+            const infoText = document.getElementById('availability-info');
             
-            // Get current state
-            const isCurrentlyAvailable = text.textContent.trim() === 'Available';
+            // The checkbox is already changed when this event fires, so we check its NEW state
+            const isNowAvailable = checkbox.checked;
             
             // Confirm dialog
-            const action = isCurrentlyAvailable ? 'make yourself UNAVAILABLE' : 'make yourself AVAILABLE';
+            const action = isNowAvailable ? 'make yourself AVAILABLE' : 'make yourself UNAVAILABLE';
             if (!confirm(`Are you sure you want to ${action}? This will affect your visibility to customers.`)) {
+                // User cancelled, revert checkbox
+                checkbox.checked = !isNowAvailable;
                 return;
             }
 
-            const newState = !isCurrentlyAvailable;
+            const newState = isNowAvailable;
             
+            // Helper to update UI
+            const updateUI = (available) => {
+                const color = available ? '#10B981' : '#EF4444'; // Green : Red
+                const textClass = available ? 'text-success' : 'text-danger';
+                const iconClass = available ? 'bi-wifi' : 'bi-wifi-off';
+                const statusText = available ? 'Available for New Jobs' : 'Currently Unavailable';
+                const infoMsg = available ? 'Customers can find you on the map.' : 'You are hidden from customer searches.';
+                
+                // Update elements
+                statusCard.style.borderLeftColor = color;
+                iconWrapper.style.backgroundColor = color;
+                
+                statusIcon.className = `bi ${iconClass}`;
+                
+                text.textContent = statusText;
+                text.className = `mb-0 fw-medium ${textClass}`;
+                
+                if(infoText) infoText.textContent = infoMsg;
+            };
+
             // Optimistic update
-            if (newState) {
-                indicator.style.backgroundColor = '#10B981';
-                text.textContent = 'Available';
-            } else {
-                indicator.style.backgroundColor = '#EF4444';
-                text.textContent = 'Unavailable';
-            }
+            updateUI(newState);
             
             fetch('{{ route('tukang.toggle.availability') }}', {
                 method: 'POST',
@@ -245,26 +289,16 @@
                     // Confirmed, do nothing
                 } else {
                     // Revert if failed
-                    if (!newState) {
-                        indicator.style.backgroundColor = '#10B981';
-                        text.textContent = 'Available';
-                    } else {
-                        indicator.style.backgroundColor = '#EF4444';
-                        text.textContent = 'Unavailable';
-                    }
+                    checkbox.checked = !newState;
+                    updateUI(!newState);
                     alert('Failed to update availability. Please try again.');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
                 // Revert on error
-                if (!newState) {
-                        indicator.style.backgroundColor = '#10B981';
-                        text.textContent = 'Available';
-                    } else {
-                        indicator.style.backgroundColor = '#EF4444';
-                        text.textContent = 'Unavailable';
-                    }
+                checkbox.checked = !newState;
+                updateUI(!newState);
                 alert('An error occurred. Please check your connection.');
             });
         }
