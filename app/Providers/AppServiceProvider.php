@@ -34,9 +34,11 @@ class AppServiceProvider extends ServiceProvider
             $containerClient = $client->getContainerClient($config['container']);
             $adapter = new AzureBlobStorageAdapter($containerClient);
             
-            return new Filesystem($adapter, [
+            $driver = new Filesystem($adapter, [
                 'url' => $config['url'] ?? null,
             ]);
+
+            return new \Illuminate\Filesystem\FilesystemAdapter($driver, $adapter, $config);
         });
     }
 }
