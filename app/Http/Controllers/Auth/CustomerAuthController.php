@@ -37,11 +37,17 @@
                 'password' => Hash::make($request->password),
             ]);
 
-            $customer->sendEmailVerificationNotification();
-
-            Auth::guard('customer')->login($customer);
-
-            return redirect()->route('customer.verification.notice');
+            // Check if email verification is enabled
+            if (config('app.email_verification_enabled', true)) {
+                $customer->sendEmailVerificationNotification();
+                Auth::guard('customer')->login($customer);
+                return redirect()->route('customer.verification.notice');
+            } else {
+                // Auto-verify the customer if email verification is disabled
+                $customer->markEmailAsVerified();
+                Auth::guard('customer')->login($customer);
+                return redirect()->route('dashboard');
+            }
         }
 
         public function login(Request $request)
@@ -57,7 +63,9 @@
                 $request->session()->regenerate();
                 
                 $customer = Auth::guard('customer')->user();
-                if (!$customer->hasVerifiedEmail()) {
+                
+                // Only check email verification if it's enabled
+                if (config('app.email_verification_enabled', true) && !$customer->hasVerifiedEmail()) {
                     return redirect()->route('customer.verification.notice');
                 }
 

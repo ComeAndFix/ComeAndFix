@@ -48,11 +48,17 @@
                 // hourly_rate and business_name removed
             ]);
 
-            $tukang->sendEmailVerificationNotification();
-
-            Auth::guard('tukang')->login($tukang);
-
-            return redirect()->route('tukang.verification.notice');
+            // Check if email verification is enabled
+            if (config('app.email_verification_enabled', true)) {
+                $tukang->sendEmailVerificationNotification();
+                Auth::guard('tukang')->login($tukang);
+                return redirect()->route('tukang.verification.notice');
+            } else {
+                // Auto-verify the tukang if email verification is disabled
+                $tukang->markEmailAsVerified();
+                Auth::guard('tukang')->login($tukang);
+                return redirect()->route('tukang.dashboard');
+            }
         }
 
         public function login(Request $request)
@@ -66,7 +72,9 @@
                 $request->session()->regenerate();
 
                 $user = Auth::guard('tukang')->user();
-                if (!$user->hasVerifiedEmail()) {
+                
+                // Only check email verification if it's enabled
+                if (config('app.email_verification_enabled', true) && !$user->hasVerifiedEmail()) {
                     return redirect()->route('tukang.verification.notice');
                 }
 

@@ -44,4 +44,11 @@ class Customer extends Authenticatable implements MustVerifyEmail
     {
         $this->notify(new CustomerVerifyEmail);
     }
+
+    public function markEmailAsVerified()
+    {
+        return $this->forceFill([
+            'email_verified_at' => $this->freshTimestamp(),
+        ])->save();
+    }
 }

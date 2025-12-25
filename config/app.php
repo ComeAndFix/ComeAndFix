@@ -123,4 +123,17 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Email Verification
+    |--------------------------------------------------------------------------
+    |
+    | This option controls whether email verification is enabled for new user
+    | registrations. When set to false, users will be automatically verified
+    | upon registration. This is useful for demo purposes or development.
+    |
+    */
+
+    'email_verification_enabled' => env('EMAIL_VERIFICATION_ENABLED', true),
+
 ];
