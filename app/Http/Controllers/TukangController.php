@@ -245,9 +245,9 @@ class TukangController extends Controller
 
         if ($request->hasFile('profile_image')) {
             if ($tukang->profile_image) {
-                Storage::disk('public')->delete($tukang->profile_image);
+                Storage::delete($tukang->profile_image);
             }
-            $path = $request->file('profile_image')->store('profile-photos', 'public');
+            $path = $request->file('profile_image')->store('profile-photos');
             $data['profile_image'] = $path;
         }
 

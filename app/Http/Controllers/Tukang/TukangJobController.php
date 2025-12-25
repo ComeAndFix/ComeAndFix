@@ -99,7 +99,7 @@ class TukangJobController extends Controller
         $photoPaths = [];
         if ($request->hasFile('photos')) {
             foreach ($request->file('photos') as $photo) {
-                $path = $photo->store('completion-photos', 'public');
+                $path = $photo->store('completion-photos');
                 $photoPaths[] = $path;
             }
         }
