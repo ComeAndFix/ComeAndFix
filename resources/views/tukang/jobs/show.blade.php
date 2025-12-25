@@ -256,6 +256,17 @@
                             
                             <small class="text-muted d-block mb-1">ADDRESS</small>
                             <span class="fw-semibold small">{{ $order->customer->address ?? 'No address provided' }}</span>
+                            
+                            <!-- Customer Location Map -->
+                            @if($order->customer->latitude && $order->customer->longitude)
+                                <div id="customerMap" class="mt-3 border border-secondary border-opacity-25" style="height: 200px; width: 100%; border-radius: 12px; z-index: 0;"></div>
+                                
+                                <div class="d-grid mt-3">
+                                    <a href="https://www.google.com/maps/dir/?api=1&destination={{ $order->customer->latitude }},{{ $order->customer->longitude }}" target="_blank" class="btn btn-map-action btn-sm rounded-pill fw-bold py-2 shadow-sm">
+                                        <i class="bi bi-cursor-fill me-2"></i> Open in Google Maps
+                                    </a>
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -311,4 +322,44 @@
             </div>
         </div>
     </div>
+
+    @push('styles')
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <style>
+        .btn-map-action {
+            border-color: var(--brand-orange);
+            color: var(--brand-orange);
+            background: transparent;
+            transition: all 0.3s ease;
+        }
+        .btn-map-action:hover {
+            background-color: var(--brand-orange);
+            color: white;
+            border-color: var(--brand-orange);
+        }
+    </style>
+    @endpush
+
+    @if($order->customer->latitude && $order->customer->longitude)
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var lat = {{ $order->customer->latitude }};
+            var lng = {{ $order->customer->longitude }};
+            
+            var map = L.map('customerMap').setView([lat, lng], 15);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            L.marker([lat, lng]).addTo(map)
+                .bindPopup("{{ $order->customer->name }}'s Location")
+                .openPopup();
+            
+            // Fix map sizing issues if in tabs/modals
+            setTimeout(function(){ map.invalidateSize(); }, 200);
+        });
+    </script>
+    @endif
 </x-app-layout>
