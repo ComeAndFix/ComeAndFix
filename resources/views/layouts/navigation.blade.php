@@ -57,7 +57,7 @@
         </a>
         <ul class="dropdown-menu dropdown-menu-end">
             <li>
-                <a class="dropdown-item" href="@if(Auth::guard('tukang')->check()) {{ route('tukang.profile') }} @else {{ route('profile.show') }} @endif">
+                <a class="dropdown-item" href="@if(Auth::guard('tukang')->check()) {{ route('tukang.profile.show') }} @else {{ route('profile.show') }} @endif">
                     <i class="bi bi-person me-2"></i>Profile
                 </a>
             </li>
