@@ -17,14 +17,27 @@ class CustomerOrderController extends Controller
 
         switch ($filter) {
             case 'ongoing':
-                // Include pending orders (proposals awaiting customer action) along with accepted and in-progress orders
-                $query->whereIn('status', [Order::STATUS_PENDING, Order::STATUS_ACCEPTED, Order::STATUS_ON_PROGRESS]);
+                // Include pending active (non-expired) orders along with accepted and in-progress orders
+                $query->where(function($q) {
+                    $q->whereIn('status', [Order::STATUS_ACCEPTED, Order::STATUS_ON_PROGRESS])
+                      ->orWhere(function($subQ) {
+                          $subQ->where('status', Order::STATUS_PENDING)
+                               ->where('expires_at', '>', now());
+                      });
+                });
                 break;
             case 'completed':
                 $query->where('status', Order::STATUS_COMPLETED);
                 break;
             case 'cancelled':
-                $query->whereIn('status', ['cancelled', 'rejected']);
+                // Include explicit cancelled/rejected status OR expired pending orders
+                $query->where(function($q) {
+                    $q->whereIn('status', ['cancelled', 'rejected'])
+                      ->orWhere(function($subQ) {
+                          $subQ->where('status', Order::STATUS_PENDING)
+                               ->where('expires_at', '<=', now());
+                      });
+                });
                 break;
             default:
                 // For 'all', show all orders including pending proposals

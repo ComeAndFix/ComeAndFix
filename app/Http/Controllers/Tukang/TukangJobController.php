@@ -28,7 +28,14 @@ class TukangJobController extends Controller
                 $query->where('status', Order::STATUS_COMPLETED);
                 break;
             case 'cancelled':
-                $query->whereIn('status', [Order::STATUS_REJECTED, 'cancelled']); // Using string 'cancelled' if constant isn't defined
+                // Include explicit cancelled/rejected status OR expired pending orders
+                $query->where(function($q) {
+                    $q->whereIn('status', [Order::STATUS_REJECTED, 'cancelled'])
+                      ->orWhere(function($subQ) {
+                          $subQ->where('status', Order::STATUS_PENDING)
+                               ->where('expires_at', '<=', now());
+                      });
+                });
                 break;
             case 'all':
             default:
