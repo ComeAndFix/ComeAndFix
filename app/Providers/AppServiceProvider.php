@@ -3,6 +3,10 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Storage;
+use League\Flysystem\Filesystem;
+use AzureOss\FlysystemAzureBlobStorage\AzureBlobStorageAdapter;
+use AzureOss\Storage\Blob\BlobServiceClient;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,5 +27,15 @@ class AppServiceProvider extends ServiceProvider
         if ($this->app->environment('production')) {
             \URL::forceScheme('https');
         }
+        
+        // Register Azure Blob Storage driver
+        Storage::extend('azure-blob', function ($app, $config) {
+            $client = BlobServiceClient::fromConnectionString($config['connection_string']);
+            $adapter = new AzureBlobStorageAdapter($client, $config['container']);
+            
+            return new Filesystem($adapter, [
+                'url' => $config['url'] ?? null,
+            ]);
+        });
     }
 }
