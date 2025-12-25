@@ -247,9 +247,8 @@ class TukangController extends Controller
             if ($tukang->profile_image) {
                 Storage::delete($tukang->profile_image);
             }
-            $filename = 'profile-photos/' . uniqid() . '_' . time() . '.' . $request->file('profile_image')->getClientOriginalExtension();
-            Storage::put($filename, file_get_contents($request->file('profile_image')->getRealPath()));
-            $data['profile_image'] = $filename;
+            $path = $request->file('profile_image')->store('profile-photos');
+            $data['profile_image'] = $path;
         }
 
         $tukang->update($data);

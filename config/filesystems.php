@@ -61,9 +61,8 @@ return [
         ],
 
         'azure' => [
-            'driver' => 'azure',
-            'account-name' => env('AZURE_STORAGE_NAME'),
-            'account-key' => env('AZURE_STORAGE_KEY'),
+            'driver' => 'azure-blob',
+            'connection_string' => env('AZURE_STORAGE_CONNECTION_STRING'),
             'container' => env('AZURE_STORAGE_CONTAINER', 'storage'),
             'url' => env('AZURE_STORAGE_URL'),
             'throw' => false,

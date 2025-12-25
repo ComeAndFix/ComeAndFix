@@ -56,9 +56,8 @@ class ProfileController extends Controller
             if ($customer->profile_image) {
                 Storage::delete($customer->profile_image);
             }
-            $filename = 'profile-photos/' . uniqid() . '_' . time() . '.' . $request->file('profile_image')->getClientOriginalExtension();
-            Storage::put($filename, file_get_contents($request->file('profile_image')->getRealPath()));
-            $validated['profile_image'] = $filename;
+            $path = $request->file('profile_image')->store('profile-photos');
+            $validated['profile_image'] = $path;
         }
 
         $customer->update($validated);

@@ -99,9 +99,8 @@ class TukangJobController extends Controller
         $photoPaths = [];
         if ($request->hasFile('photos')) {
             foreach ($request->file('photos') as $photo) {
-                $filename = 'completion-photos/' . uniqid() . '_' . time() . '.' . $photo->getClientOriginalExtension();
-                Storage::put($filename, file_get_contents($photo->getRealPath()));
-                $photoPaths[] = $filename;
+                $path = $photo->store('completion-photos');
+                $photoPaths[] = $path;
             }
         }
 
