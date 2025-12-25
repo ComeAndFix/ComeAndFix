@@ -31,7 +31,8 @@ class AppServiceProvider extends ServiceProvider
         // Register Azure Blob Storage driver
         Storage::extend('azure-blob', function ($app, $config) {
             $client = BlobServiceClient::fromConnectionString($config['connection_string']);
-            $adapter = new AzureBlobStorageAdapter($client, $config['container']);
+            $containerClient = $client->getContainerClient($config['container']);
+            $adapter = new AzureBlobStorageAdapter($containerClient);
             
             return new Filesystem($adapter, [
                 'url' => $config['url'] ?? null,
