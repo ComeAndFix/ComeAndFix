@@ -94,30 +94,36 @@
                 </div>
                 
                 <div class="popup-body" id="popupBody" style="display: none;">
-                    <!-- Profile Header -->
-                    <div class="popup-header">
-                        <div class="popup-avatar" id="popupAvatar"></div>
-                        <div class="popup-header-info">
-                            <h3 class="popup-name" id="popupName"></h3>
-                            <div class="popup-rating" id="popupRating"></div>
+                    
+                    <!-- Scrollable Content -->
+                    <div class="popup-scrollable-area">
+                        <!-- Profile Header -->
+                        <div class="popup-header">
+                            <div class="popup-avatar" id="popupAvatar"></div>
+                            <div class="popup-header-info">
+                                <h3 class="popup-name" id="popupName"></h3>
+                                <div class="popup-rating" id="popupRating"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Specializations -->
+                        <div class="popup-section">
+                            <div class="popup-specializations" id="popupSpecializations"></div>
+                        </div>
+                        
+                        <!-- Previous Works -->
+                        <div class="popup-section">
+                            <h4 class="popup-section-title">Previous Works</h4>
+                            <div class="popup-portfolio" id="popupPortfolio"></div>
                         </div>
                     </div>
-                    
-                    <!-- Specializations -->
-                    <div class="popup-section">
-                        <div class="popup-specializations" id="popupSpecializations"></div>
+
+                    <!-- Fixed Footer -->
+                    <div class="popup-footer">
+                        <button class="popup-chat-btn" id="popupChatBtn">
+                            <i class="bi bi-chat-dots"></i> Chat and Order
+                        </button>
                     </div>
-                    
-                    <!-- Previous Works -->
-                    <div class="popup-section">
-                        <h4 class="popup-section-title">Previous Works</h4>
-                        <div class="popup-portfolio" id="popupPortfolio"></div>
-                    </div>
-                    
-                    <!-- Chat Button -->
-                    <button class="popup-chat-btn" id="popupChatBtn">
-                        <i class="bi bi-chat-dots"></i> Chat and Order
-                    </button>
                 </div>
             </div>
         </div>
@@ -530,7 +536,7 @@
                 
                 // Reset styles and show content
                 popupLoading.style.display = 'none';
-                popupBody.style.display = 'block';
+                popupBody.style.display = 'flex';
                 popupBody.style.opacity = '1';
                 popupBody.style.transform = 'scale(1)';
             })
@@ -591,16 +597,54 @@
             const portfolioContainer = document.getElementById('popupPortfolio');
             if (tukang.portfolios && tukang.portfolios.length > 0) {
                 const portfolioHtml = tukang.portfolios.slice(0, 3).map(portfolio => {
+                    console.log('Portfolio item:', portfolio);
                     const imageUrl = portfolio.images && portfolio.images.length > 0 
                         ? `/storage/${portfolio.images[0].image_path}`
                         : 'https://via.placeholder.com/200x150/E0E0E0/757575?text=No+Image';
                     
                     return `
-                        <div class="portfolio-item">
-                            <img src="${imageUrl}" alt="${portfolio.title}">
-                            <div class="portfolio-info">
-                                <h5>${portfolio.title}</h5>
-                                <p>${portfolio.description ? portfolio.description.substring(0, 60) + '...' : ''}</p>
+                        <div class="card mb-3 border-0 shadow-sm" style="overflow: hidden;">
+                            <!-- Section 1: Details -->
+                            <div class="card-body p-3 bg-white border-bottom">
+                                <div class="d-flex gap-3">
+                                    <div class="flex-shrink-0">
+                                        <img src="${imageUrl}" class="rounded" style="width: 65px; height: 65px; object-fit: cover;" alt="${portfolio.title}">
+                                    </div>
+                                    <div class="flex-grow-1" style="min-width: 0;">
+                                        <div class="small text-uppercase fw-bold text-primary mb-1" style="font-size: 0.7rem; letter-spacing: 0.5px;">Job Details</div>
+                                        <h6 class="fw-bold text-dark mb-1 text-truncate">${portfolio.title}</h6>
+                                        <p class="mb-0 text-muted small" style="font-size: 0.85rem; line-height: 1.3;">
+                                            <i class="bi bi-chat-left-text me-1"></i> "${portfolio.description ? portfolio.description.substring(0, 80) + (portfolio.description.length > 80 ? '...' : '') : ''}"
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Section 2: Rating & Review -->
+                            <div class="card-footer p-3 bg-light border-0">
+                                <div class="d-flex flex-column">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="small text-uppercase fw-bold text-secondary" style="font-size: 0.7rem; letter-spacing: 0.5px;">Customer Feedback</span>
+                                        ${portfolio.rating ? `
+                                            <div class="d-flex align-items-center text-warning small">
+                                                ${[...Array(5)].map((_, i) => {
+                                                    const rating = parseFloat(portfolio.rating);
+                                                    if (i < Math.floor(rating)) return '<i class="bi bi-star-fill"></i>';
+                                                    if (i === Math.floor(rating) && rating % 1 >= 0.5) return '<i class="bi bi-star-half"></i>';
+                                                    return '<i class="bi bi-star"></i>';
+                                                }).join('')}
+                                                <span class="text-muted ms-2 fw-semibold" style="font-size: 0.8rem;">(${parseFloat(portfolio.rating).toFixed(1)})</span>
+                                            </div>
+                                        ` : '<span class="text-muted small fst-italic">No Rating</span>'}
+                                    </div>
+                                    <div class="review-text">
+                                        ${portfolio.review_comment ? `
+                                            <p class="mb-0 small text-dark fst-italic">
+                                                "${portfolio.review_comment}"
+                                            </p>
+                                        ` : '<p class="mb-0 small text-muted fst-italic">No written review provided.</p>'}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     `;

@@ -431,12 +431,25 @@
 }
 
 .popup-content {
-    width: 340px;
+    width: 420px;
+    max-height: 600px;
     background: white;
     border-radius: 20px;
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-    overflow: hidden;
+    display: flex;
+    flex-direction: column;
     position: relative;
+    overflow: hidden;
+    /* Enforce boundary for children */
+}
+
+/* Re-added popup-body to handle flex growth properly */
+.popup-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    /* CRITICAL: Allows scrolling within flex item */
 }
 
 .popup-loading {
@@ -444,11 +457,8 @@
     align-items: center;
     justify-content: center;
     padding: 3rem 2rem;
-}
-
-.popup-body {
-    padding: 1.5rem;
-    animation: popupFadeIn 0.3s ease-out;
+    flex: 1;
+    /* Center vertically in available space */
 }
 
 @keyframes popupFadeIn {
@@ -615,6 +625,32 @@
 }
 
 /* Chat Button */
+/* Scrollable Content Area */
+.popup-scrollable-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem;
+    padding-bottom: 0.5rem;
+    scrollbar-width: thin;
+}
+
+.popup-scrollable-area::-webkit-scrollbar {
+    width: 6px;
+}
+
+.popup-scrollable-area::-webkit-scrollbar-thumb {
+    background-color: #e0e0e0;
+    border-radius: 3px;
+}
+
+/* Fixed Footer with Chat Button */
+.popup-footer {
+    padding: 1rem 1.5rem;
+    background: white;
+    border-top: 1px solid #f0f0f0;
+    flex-shrink: 0;
+}
+
 .popup-chat-btn {
     width: 100%;
     padding: 0.875rem 1.5rem;
@@ -631,7 +667,8 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    margin-top: 1.5rem;
+    margin: 0;
+    /* Removed margin-top since padding is handled by footer */
 }
 
 .popup-chat-btn:hover {

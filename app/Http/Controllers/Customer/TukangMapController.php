@@ -60,7 +60,41 @@ class TukangMapController extends Controller
 
     public function show(Tukang $tukang)
     {
-        $tukang->load(['portfolios.images']);
+        // Get latest 3 completed orders with their completion details, service, and review
+        $completedOrders = $tukang->orders()
+            ->where('status', \App\Models\Order::STATUS_COMPLETED)
+            ->with(['completion', 'service', 'review'])
+            ->latest()
+            ->take(3)
+            ->get();
+
+        // Transform orders into portfolio-like structure
+        $virtualPortfolios = $completedOrders->map(function ($order) {
+            $images = [];
+            if ($order->completion && !empty($order->completion->photos)) {
+                // If photos stores absolute paths or relative to storage, adjust here. 
+                // Assuming stored as relative paths in array.
+                foreach ($order->completion->photos as $photo) {
+                    $images[] = ['image_path' => $photo];
+                }
+            }
+
+            return [
+                'id' => 'job-' . $order->id, // Virtual ID
+                'title' => $order->service->name ?? 'Completed Service',
+                'description' => $order->service_description,
+                'images' => $images,
+                'cost' => $order->price,
+                // Add review data if available
+                'rating' => $order->review ? $order->review->rating : null,
+                'review_comment' => $order->review ? $order->review->review_text : null
+            ];
+        });
+
+        // Set the portfolios attribute to our virtual portfolios
+        // This overrides the relationship for the JSON serialization
+        $tukang->setRelation('portfolios', $virtualPortfolios);
+
         return response()->json($tukang);
     }
 

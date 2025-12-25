@@ -102,6 +102,11 @@ class Tukang extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Portfolio::class);
     }
 
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+
     // Relationship with services through tukang_services table
     public function services()
     {
