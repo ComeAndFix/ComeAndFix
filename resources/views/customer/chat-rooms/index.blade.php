@@ -21,8 +21,12 @@
                         <div class="d-flex align-items-start">
                             <!-- Avatar -->
                             <div class="position-relative me-3">
-                                <div class="chat-avatar">
-                                    {{ substr($room->tukang->name, 0, 1) }}
+                                <div class="chat-avatar" style="overflow: hidden; padding: 0;">
+                                    @if($room->tukang->profile_image_url)
+                                        <img src="{{ $room->tukang->profile_image_url }}" alt="{{ $room->tukang->name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                    @else
+                                        {{ substr($room->tukang->name, 0, 1) }}
+                                    @endif
                                 </div>
                                 @if($room->unread_count > 0)
                                     <span class="unread-badge">{{ $room->unread_count }}</span>

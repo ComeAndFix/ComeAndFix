@@ -267,7 +267,13 @@
                         <span class="small text-muted fw-bold">HANDLED BY</span>
                     </div>
                     <div class="p-4 text-center">
-                        <img src="{{ $order->tukang->profile_photo_url ?? asset('images/default-avatar.png') }}" class="tukang-avatar mb-3" style="width: 80px; height: 80px;" alt="{{ $order->tukang->name }}">
+                        @if($order->tukang->profile_image_url)
+                            <img src="{{ $order->tukang->profile_image_url }}" class="tukang-avatar mb-3 rounded-circle d-block mx-auto" style="width: 80px; height: 80px; object-fit: cover;" alt="{{ $order->tukang->name }}">
+                        @else
+                            <div class="mb-3 mx-auto rounded-circle d-flex align-items-center justify-content-center text-white fw-bold" style="width: 80px; height: 80px; background-color: var(--brand-orange); font-size: 2rem;">
+                                {{ $order->tukang->initials }}
+                            </div>
+                        @endif
                         <h5 class="fw-bold mb-1">{{ $order->tukang->name }}</h5>
                         <div class="text-warning small mb-3">
                             <i class="bi bi-star-fill"></i>

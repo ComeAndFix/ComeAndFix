@@ -52,6 +52,8 @@ class TukangMapController extends Controller
             $portfolioCosts = $tukang->portfolios->pluck('cost')->filter();
             $tukang->average_price = $portfolioCosts->count() > 0 ? $portfolioCosts->avg() : 0;
             
+            $tukang->append(['profile_image_url', 'initials']);
+
             return $tukang;
         });
 
@@ -94,6 +96,8 @@ class TukangMapController extends Controller
         // Set the portfolios attribute to our virtual portfolios
         // This overrides the relationship for the JSON serialization
         $tukang->setRelation('portfolios', $virtualPortfolios);
+
+        $tukang->append(['profile_image_url', 'initials']);
 
         return response()->json($tukang);
     }

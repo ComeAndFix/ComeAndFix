@@ -12,7 +12,11 @@
                     <i class="bi bi-arrow-left"></i> Back
                 </button>
                 <div class="chat-header-avatar">
-                    {{ substr($receiver->name, 0, 1) }}
+                    @if($receiver->profile_image_url)
+                        <img src="{{ $receiver->profile_image_url }}" alt="{{ $receiver->name }}">
+                    @else
+                        {{ $receiver->initials ?? substr($receiver->name, 0, 1) }}
+                    @endif
                 </div>
                 <div class="chat-header-info">
                     <h2 class="chat-header-name">{{ $receiver->name }}</h2>

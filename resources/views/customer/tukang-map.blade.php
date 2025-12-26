@@ -322,8 +322,10 @@
                          data-tukang-id="${tukang.id}"
                          onclick="selectTukang(${tukang.id})">
                         <div class="tukang-avatar">
-                            <img src="https://via.placeholder.com/48x48/${tukang.id % 2 === 0 ? 'FF9800' : '2196F3'}/ffffff?text=${initial}" 
-                                 alt="${tukang.name}">
+                            ${tukang.profile_image_url ? 
+                                `<img src="${tukang.profile_image_url}" alt="${tukang.name}">` : 
+                                `<div class="nav-user-avatar-placeholder" style="display: flex; align-items: center; justify-content: center; background-color: var(--brand-orange); color: white; border-radius: 50%; width: 48px; height: 48px; font-weight: 600; font-size: 1.2rem;">${tukang.initials || initial}</div>`
+                            }
                         </div>
                         <div class="tukang-info">
                             <div class="tukang-name">${tukang.name}</div>
@@ -564,9 +566,14 @@
             
             // Avatar
             const initial = tukang.name.charAt(0).toUpperCase();
-            document.getElementById('popupAvatar').innerHTML = 
-                `<img src="https://via.placeholder.com/80x80/${tukang.id % 2 === 0 ? 'FF9800' : '2196F3'}/ffffff?text=${initial}" 
-                     alt="${tukang.name}">`;
+            if (tukang.profile_image_url) {
+                document.getElementById('popupAvatar').innerHTML = `<img src="${tukang.profile_image_url}" alt="${tukang.name}">`;
+            } else {
+                document.getElementById('popupAvatar').innerHTML = `
+                    <div style="display: flex; align-items: center; justify-content: center; background-color: var(--brand-orange); color: white; border-radius: 50%; width: 100%; height: 100%; font-weight: 600; font-size: 2rem;">
+                        ${tukang.initials || initial}
+                    </div>`;
+            }
             
             // Name
             document.getElementById('popupName').textContent = tukang.name;
