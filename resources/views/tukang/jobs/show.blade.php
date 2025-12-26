@@ -241,8 +241,12 @@
                     </div>
                     <div class="p-4 text-center">
                         <div class="d-flex justify-content-center mb-3">
-                            <div class="rounded-circle bg-light d-flex align-items-center justify-content-center text-primary fw-bold" style="width: 60px; height: 60px; font-size: 1.5rem;">
-                                {{ substr($order->customer->name, 0, 1) }}
+                            <div class="rounded-circle bg-light d-flex align-items-center justify-content-center text-primary fw-bold" style="width: 60px; height: 60px; font-size: 1.5rem; overflow: hidden; padding: 0;">
+                                @if($order->customer->profile_image_url)
+                                    <img src="{{ $order->customer->profile_image_url }}" alt="{{ $order->customer->name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                @else
+                                    {{ substr($order->customer->name, 0, 1) }}
+                                @endif
                             </div>
                         </div>
                         <h5 class="fw-bold mb-1">{{ $order->customer->name }}</h5>

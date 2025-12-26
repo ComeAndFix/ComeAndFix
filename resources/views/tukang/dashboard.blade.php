@@ -160,8 +160,12 @@
                                      onclick="this.remove(); openChatWithService('customer', {{ $request->sender_id }}, {{ $request->conversation_service_id ?? 'null' }})">
                                     
                                     <!-- Left: Avatar -->
-                                    <div class="request-avatar me-3">
-                                        {{ substr($request->sender->name, 0, 1) }}
+                                    <div class="request-avatar me-3" style="overflow: hidden; padding: 0;">
+                                        @if($request->sender->profile_image_url)
+                                            <img src="{{ $request->sender->profile_image_url }}" alt="{{ $request->sender->name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                        @else
+                                            {{ substr($request->sender->name, 0, 1) }}
+                                        @endif
                                     </div>
 
                                     <!-- Middle: Content -->
