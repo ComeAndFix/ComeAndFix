@@ -28,6 +28,7 @@
         'resources/css/components/location-modal.css',
         'resources/css/components/order-details.css',
         'resources/css/components/order-list.css',
+        'resources/css/components/image-viewer.css',
         'resources/js/app.js'
     ])
     
@@ -131,6 +132,9 @@
 
 <!-- Onboarding Modal for Tukang -->
 @include('components.tukang-onboarding-modal')
+
+<!-- Shared Image Viewer -->
+<x-image-viewer />
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

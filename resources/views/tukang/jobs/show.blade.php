@@ -197,9 +197,10 @@
                         <div class="photo-grid">
                             @foreach($order->completion->photos as $photo)
                                 <div class="photo-wrapper">
-                                    <a href="{{ \App\Helpers\StorageHelper::url($photo) }}" target="_blank">
-                                        <img src="{{ \App\Helpers\StorageHelper::url($photo) }}" alt="Completion Photo">
-                                    </a>
+                                    <img src="{{ \App\Helpers\StorageHelper::url($photo) }}" 
+                                         alt="Completion Photo" 
+                                         onclick="openImageViewer(this.src)" 
+                                         style="cursor: pointer;">
                                 </div>
                             @endforeach
                         </div>

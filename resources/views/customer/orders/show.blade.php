@@ -233,7 +233,10 @@
                         <div class="photo-grid">
                             @foreach($order->completion->photos as $photo)
                                 <div class="photo-wrapper">
-                                    <img src="{{ \App\Helpers\StorageHelper::url($photo) }}" alt="Completion Photo">
+                                    <img src="{{ \App\Helpers\StorageHelper::url($photo) }}" 
+                                         alt="Completion Photo" 
+                                         onclick="openImageViewer(this.src)" 
+                                         style="cursor: pointer;">
                                 </div>
                             @endforeach
                         </div>

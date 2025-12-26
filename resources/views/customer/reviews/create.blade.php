@@ -131,7 +131,7 @@
                                          class="img-fluid rounded" 
                                          style="width: 100%; height: 100px; object-fit: cover; cursor: pointer;"
                                          alt="Completion photo"
-                                         onclick="window.open('{{ \App\Helpers\StorageHelper::url($photo) }}', '_blank')">
+                                         onclick="openImageViewer(this.src)">
                                 </div>
                             @endforeach
                         </div>

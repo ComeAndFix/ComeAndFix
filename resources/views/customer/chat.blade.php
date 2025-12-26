@@ -248,12 +248,6 @@
                 </form>
             </div>
         </div>
-
-        <!-- Image Viewer Modal -->
-        <div id="imageViewer" class="image-viewer-modal">
-            <span class="image-viewer-close">&times;</span>
-            <img class="image-viewer-content" id="viewerImage">
-        </div>
     </div>
 
     <script>
@@ -922,42 +916,7 @@
                 }, 5000);
             }
 
-            // Image Viewer Logic
-            const imageViewer = document.getElementById('imageViewer');
-            const viewerImage = document.getElementById('viewerImage');
-            const viewerClose = document.querySelector('.image-viewer-close');
 
-            window.openImageViewer = function(src) {
-                viewerImage.src = src;
-                imageViewer.classList.add('show');
-                document.body.style.overflow = 'hidden'; // Prevent scrolling
-            };
-
-            function closeImageViewer() {
-                imageViewer.classList.remove('show');
-                document.body.style.overflow = '';
-                setTimeout(() => {
-                    viewerImage.src = '';
-                }, 300);
-            }
-
-            if (viewerClose) {
-                viewerClose.onclick = closeImageViewer;
-            }
-            
-            if (imageViewer) {
-                imageViewer.onclick = function(e) {
-                    if (e.target !== viewerImage) {
-                        closeImageViewer();
-                    }
-                };
-            }
-
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape' && imageViewer && imageViewer.classList.contains('show')) {
-                    closeImageViewer();
-                }
-            });
 
             function scrollToBottom() {
                 const container = document.getElementById('messages-container');
