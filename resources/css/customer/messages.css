@@ -1,0 +1,154 @@
+/* ========================================
+   MESSAGES PAGE - DESIGN SYSTEM
+   ======================================== */
+
+.chat-rooms-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.chat-room-item {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.chat-room-card {
+    background: white;
+    border-radius: 20px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    transition: all 0.15s ease;
+    border: 1px solid #EAEAEA;
+}
+
+.chat-room-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    border-color: var(--brand-orange);
+}
+
+.chat-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--brand-orange) 0%, #ff8c42 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.unread-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: #dc3545;
+    color: white;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border: 2px solid white;
+}
+
+.chat-name {
+    font-weight: 700;
+    color: var(--brand-dark, #1a1a1a);
+    font-size: 1rem;
+    font-family: 'Jost', sans-serif;
+}
+
+.chat-time {
+    color: #999;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    font-family: 'Inter', sans-serif;
+}
+
+.chat-service {
+    color: var(--brand-orange);
+    font-size: 0.85rem;
+    font-weight: 500;
+    font-family: 'Inter', sans-serif;
+}
+
+.chat-preview {
+    color: #666;
+    font-size: 0.9rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: 'Inter', sans-serif;
+}
+
+.chat-arrow {
+    color: #ccc;
+    font-size: 1.2rem;
+    transition: all 0.2s ease;
+}
+
+.chat-room-card:hover .chat-arrow {
+    color: var(--brand-orange);
+    transform: translateX(4px);
+}
+
+.min-width-0 {
+    min-width: 0;
+}
+
+/* Empty State */
+.empty-state {
+    background: white;
+    border-radius: 24px;
+    padding: 4rem 2rem;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.empty-state-icon {
+    font-size: 5rem;
+    color: #e0e0e0;
+    margin-bottom: 1.5rem;
+}
+
+.empty-state-title {
+    color: var(--brand-dark, #666);
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    font-family: 'Jost', sans-serif;
+}
+
+.empty-state-text {
+    color: var(--text-gray, #999);
+    margin-bottom: 0;
+    font-family: 'Inter', sans-serif;
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+
+@media (max-width: 768px) {
+    .chat-room-card {
+        padding: 1rem;
+    }
+
+    .chat-avatar {
+        width: 48px;
+        height: 48px;
+        font-size: 1.25rem;
+    }
+
+    .empty-state {
+        padding: 3rem 1.5rem;
+    }
+}
