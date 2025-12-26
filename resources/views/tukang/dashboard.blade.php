@@ -118,7 +118,7 @@
                                 </h5>
                             </div>
                             
-                            <div id="selected-date-jobs" class="d-flex flex-column gap-3 requests-scroll" style="max-height: 400px; overflow-y: auto;">
+                            <div id="selected-date-jobs" class="d-flex flex-column gap-2 requests-scroll p-2" style="max-height: 400px; overflow-y: auto;">
                                 <!-- Job cards will be injected here by JS -->
                                 <div class="text-center py-5 text-muted">
                                     <i class="bi bi-calendar-event display-6 mb-3 d-block opacity-50"></i>
@@ -455,6 +455,11 @@
                 const jobs = scheduledJobs[dateStr];
                 
                 if (jobs && jobs.length > 0) {
+                    // Sort jobs by time (ascending)
+                    jobs.sort((a, b) => {
+                        return new Date(a.work_datetime) - new Date(b.work_datetime);
+                    });
+
                     jobs.forEach(job => {
                         const uuid = job.uuid || job.id;
                         const link = jobRouteBase.replace('PLACEHOLDER', uuid);
@@ -472,29 +477,29 @@
                         const statusBadge = statusColors[job.status] || 'bg-secondary';
                         
                         const card = `
-                            <a href="${link}" class="text-decoration-none text-dark scale-hover">
-                                <div class="card border-0 shadow-sm rounded-4" style="background: white;">
+                            <a href="${link}" class="text-decoration-none text-dark scale-hover d-block w-100">
+                                <div class="card border-0 shadow-sm rounded-4 w-100" style="background: white;">
                                     <div class="card-body p-3">
-                                        <div class="d-flex align-items-center gap-3">
-                                            <div class="rounded-3 d-flex align-items-center justify-content-center text-white" 
-                                                style="width: 48px; height: 48px; background: linear-gradient(135deg, #f59e0b, #d97706); flex-shrink: 0;">
+                                        <div class="d-flex align-items-center gap-3 w-100">
+                                            <div class="rounded-3 d-flex align-items-center justify-content-center text-white flex-shrink-0" 
+                                                style="width: 48px; height: 48px; background: linear-gradient(135deg, #f59e0b, #d97706);">
                                                 <i class="bi bi-briefcase fs-5"></i>
                                             </div>
-                                            <div class="flex-grow-1" style="min-width: 0;">
-                                                <div class="d-flex justify-content-between align-items-start mb-1">
-                                                    <h6 class="fw-bold mb-0 text-truncate">${job.service.name}</h6>
-                                                    <span class="badge ${statusBadge} bg-opacity-75 rounded-pill" style="font-size: 0.7rem;">${job.status.replace('_', ' ')}</span>
+                                            <div class="flex-grow-1" style="min-width: 0; overflow: hidden;">
+                                                <div class="d-flex justify-content-between align-items-start mb-1 w-100">
+                                                    <h6 class="fw-bold mb-0 text-truncate me-2" style="max-width: 150px;">${job.service.name}</h6>
+                                                    <span class="badge ${statusBadge} bg-opacity-75 rounded-pill flex-shrink-0" style="font-size: 0.7rem; white-space: nowrap;">${job.status.replace('_', ' ')}</span>
                                                 </div>
-                                                <div class="d-flex justify-content-between align-items-center">
-                                                    <p class="mb-0 text-muted small text-truncate">
+                                                <div class="d-flex justify-content-between align-items-center w-100">
+                                                    <p class="mb-0 text-muted small text-truncate me-2" style="max-width: 140px;">
                                                         <i class="bi bi-person me-1"></i> ${job.customer.name}
                                                     </p>
-                                                    <small class="fw-bold text-dark flex-shrink-0">
+                                                    <small class="fw-bold text-dark flex-shrink-0 text-nowrap">
                                                         <i class="bi bi-clock me-1"></i>${timeStr}
                                                     </small>
                                                 </div>
                                             </div>
-                                            <i class="bi bi-chevron-right text-muted"></i>
+                                            <i class="bi bi-chevron-right text-muted flex-shrink-0 ms-1"></i>
                                         </div>
                                     </div>
                                 </div>
