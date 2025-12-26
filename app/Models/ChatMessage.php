@@ -41,6 +41,11 @@ class ChatMessage extends Model
         return $this->belongsTo(Order::class);
     }
 
+    public function conversationService()
+    {
+        return $this->belongsTo(Service::class, 'conversation_service_id');
+    }
+
     public static function generateConversationId($senderId, $senderType, $receiverId, $receiverType)
     {
         $participants = collect([

@@ -14,6 +14,10 @@ Route::get('/', function () {
     return redirect()->route('customer.login');
 });
 
+// Enable broadcasting for both customers and tukangs
+Broadcast::routes(['middleware' => ['web', 'auth:customer,tukang']]);
+require base_path('routes/channels.php');
+
 // Temporary debug route
 Route::get('/debug-messages', function() {
     $messages = \App\Models\ChatMessage::latest()->take(5)->get();

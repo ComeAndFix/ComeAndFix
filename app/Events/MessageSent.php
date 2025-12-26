@@ -19,14 +19,20 @@ class MessageSent implements ShouldBroadcastNow
 
     public function __construct(ChatMessage $message)
     {
-        $this->message = $message->load(['sender', 'receiver']);
+        $this->message = $message->load(['sender', 'receiver', 'conversationService']);
     }
 
     public function broadcastOn(): array
     {
-        return [
+        $channels = [
             new Channel('chat.' . $this->message->conversation_id),
         ];
+
+        if (str_contains($this->message->receiver_type, 'Tukang')) {
+            $channels[] = new PrivateChannel('tukang.' . $this->message->receiver_id);
+        }
+
+        return $channels;
     }
 
     public function broadcastWith(): array
@@ -45,12 +51,17 @@ class MessageSent implements ShouldBroadcastNow
                     'id' => $this->message->sender->id,
                     'name' => $this->message->sender->name,
                     'type' => $this->message->sender_type,
+                    'city' => $this->message->sender->city ?? null,
                 ],
                 'receiver' => [
                     'id' => $this->message->receiver->id,
                     'name' => $this->message->receiver->name,
                     'type' => $this->message->receiver_type,
-                ]
+                ],
+                'service' => $this->message->conversationService ? [
+                    'id' => $this->message->conversationService->id,
+                    'name' => $this->message->conversationService->name,
+                ] : null,
             ]
         ];
     }

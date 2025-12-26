@@ -156,7 +156,8 @@
                         <div class="requests-list requests-scroll" id="job-requests-list">
                             @forelse($jobRequests as $request)
                                 <div class="request-card" 
-                                     onclick="openChatWithService('customer', {{ $request->sender_id }}, {{ $request->conversation_service_id ?? 'null' }})">
+                                     data-sender-id="{{ $request->sender_id }}"
+                                     onclick="this.remove(); openChatWithService('customer', {{ $request->sender_id }}, {{ $request->conversation_service_id ?? 'null' }})">
                                     
                                     <!-- Left: Avatar -->
                                     <div class="request-avatar me-3">
@@ -520,5 +521,149 @@
                 }
             }
         }
+        // Message Listener
+        document.addEventListener('DOMContentLoaded', () => {
+            const tukangId = {{ Auth::guard('tukang')->id() }};
+            
+            if (window.Echo) {
+                window.Echo.private(`tukang.${tukangId}`)
+                    .listen('MessageSent', (e) => {
+                        console.log('New message received:', e.message);
+                        
+                        // Only add if it's from a customer
+                        if (e.message.sender.type.includes('Customer')) {
+                            const requestsList = document.getElementById('job-requests-list');
+                            const senderId = e.message.sender.id;
+                            
+                            // Check for existing card
+                            const existingCard = requestsList.querySelector(`.request-card[data-sender-id="${senderId}"]`);
+                            
+                            if (existingCard) {
+                                // Update existing card
+                                existingCard.querySelector('.request-message').textContent = e.message.message;
+                                existingCard.querySelector('.request-message').classList.add('fw-bold', 'text-dark');
+                                existingCard.querySelector('.request-time').textContent = 'Just now';
+                                existingCard.querySelector('.request-time').classList.add('text-primary', 'fw-bold');
+                                
+                                // Add glow effect
+                                existingCard.classList.add('new-message-glow');
+                                
+                                // Move to top
+                                requestsList.prepend(existingCard);
+                            } else {
+                                // Remove empty state if present
+                                const emptyState = requestsList.querySelector('.text-center');
+                                if (emptyState) {
+                                    emptyState.remove();
+                                }
+                                
+                                // Prepare service badge HTML
+                                let serviceHtml = '';
+                                if (e.message.service) {
+                                    serviceHtml = `
+                                        <div class="service-badge">
+                                            <i class="bi bi-wrench"></i>
+                                            ${e.message.service.name}
+                                        </div>
+                                    `;
+                                } else {
+                                    serviceHtml = `
+                                        <div class="service-badge" style="background: rgba(107, 114, 128, 0.1); color: #4b5563;">
+                                            <i class="bi bi-chat-dots"></i>
+                                            General Inquiry
+                                        </div>
+                                    `;
+                                }
+                                
+                                // City badge
+                                let cityHtml = '';
+                                if (e.message.sender.city) {
+                                    cityHtml = `
+                                        <div class="city-badge">
+                                            <i class="bi bi-geo-alt"></i> ${e.message.sender.city}
+                                        </div>
+                                    `;
+                                }
+                                
+                                // Create URL
+                                let openChatUrl = `/tukang/chat/customer/${e.message.sender.id}`;
+                                if (e.message.service && e.message.service.id) {
+                                    openChatUrl += `?service_id=${e.message.service.id}`;
+                                }
+                                
+                                const cardHtml = `
+                                    <div class="request-card new-message-glow" 
+                                         data-sender-id="${senderId}"
+                                         onclick="this.remove(); window.location.href='${openChatUrl}'">
+                                        
+                                        <div class="request-avatar me-3">
+                                            ${e.message.sender.name.charAt(0)}
+                                        </div>
+
+                                        <div class="flex-grow-1">
+                                            <div class="request-header">
+                                                <h6 class="request-name mb-0">${e.message.sender.name}</h6>
+                                                <small class="request-time text-primary fw-bold">Just now</small>
+                                            </div>
+
+                                            ${serviceHtml}
+                                            
+                                            <p class="request-message mb-1 fw-bold text-dark">
+                                                ${e.message.message}
+                                            </p>
+
+                                            ${cityHtml}
+                                        </div>
+
+                                        <div class="ms-3 align-self-center">
+                                            <i class="bi bi-chevron-right request-arrow"></i>
+                                        </div>
+                                    </div>
+                                `;
+                                
+                                // Prepend new card
+                                requestsList.insertAdjacentHTML('afterbegin', cardHtml);
+                                
+                                // Highlight animation
+                                const newCard = requestsList.firstElementChild;
+                                newCard.style.animation = 'slideDown 0.5s ease-out';
+                            }
+                        }
+                    });
+            }
+        });
+        
+        // Add CSS for animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideDown {
+                from { opacity: 0; transform: translateY(-20px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            .new-message-glow {
+                border-left: 4px solid var(--brand-orange) !important;
+                background-color: #fffaf0;
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+    <script>
+        // Handle Back/Forward Cache (bfcache) restoration
+        window.addEventListener('pageshow', function(event) {
+            // Check if the list is empty (e.g. if user clicked item, navigated away, then came back)
+            const requestsList = document.getElementById('job-requests-list');
+            if (requestsList && requestsList.children.length === 0) {
+                 const emptyStateHtml = `
+                    <div class="text-center py-5">
+                        <div style="width: 80px; height: 80px; background: #f3f4f6; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
+                            <i class="bi bi-inbox text-muted" style="font-size: 2.5rem; opacity: 0.7;"></i>
+                        </div>
+                        <h6 class="fw-bold text-dark">No New Requests</h6>
+                        <p class="text-muted small">You're all caught up! Check back later.</p>
+                    </div>
+                `;
+                requestsList.innerHTML = emptyStateHtml;
+            }
+        });
     </script>
 </x-app-layout>

@@ -81,9 +81,17 @@ class TukangController extends Controller
                 
                 return $latestMessage;
             })
-            ->filter(function($message) {
-                // Only show messages without active orders or messages after completion
-                return !$message->should_hide;
+            ->filter(function($message) use ($tukang) {
+                // Primary Filter: Only show conversations with UNREAD messages
+                // This satisfies the requirement to "remove if read" and "show if new"
+                // It also fixes the issue where messages about active orders were being hidden even if unread
+                $hasUnread = \App\Models\ChatMessage::where('conversation_id', $message->conversation_id)
+                    ->where('receiver_type', 'App\Models\Tukang')
+                    ->where('receiver_id', $tukang->id)
+                    ->whereNull('read_at')
+                    ->exists();
+                
+                return $hasUnread;
             })
             ->values();
 
