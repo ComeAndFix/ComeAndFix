@@ -126,10 +126,12 @@
                         $isCompleted = $index < $currentIndex;
                         $circleContent = $isCompleted ? '<i class="bi bi-check-lg"></i>' : ($index + 1);
                         $isSpecial = $step['label'] === 'Come&Fix';
+                        // Only apply special styling if the step is active or completed
+                        $shouldHighlight = $isSpecial && ($isActive || $isCompleted);
                     @endphp
                     <div class="progress-step {{ $isActive ? 'active' : '' }} {{ $isCompleted ? 'completed' : '' }}">
                         <div class="step-circle">{!! $circleContent !!}</div>
-                        <div class="step-label" style="{{ $isSpecial ? 'color: var(--brand-orange) !important; font-weight: 800; font-size: 1.1rem;' : '' }}">
+                        <div class="step-label" style="{{ $shouldHighlight ? 'color: var(--brand-orange) !important; font-weight: 800; font-size: 1.1rem;' : '' }}">
                             {{ $step['label'] }}
                         </div>
                     </div>
