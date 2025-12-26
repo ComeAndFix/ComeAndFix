@@ -21,6 +21,7 @@ export default defineConfig({
                 'resources/css/components/order-list.css',
                 // Customer CSS
                 'resources/css/customer/dashboard.css',
+                'resources/css/customer/messages.css',
                 'resources/css/customer/profile.css',
                 'resources/css/customer/tukang-map.css',
                 // Tukang CSS
