@@ -41,9 +41,6 @@
                 <p class="sidebar-subtitle">
                     @if($serviceType)
                         Showing specialization for: <span class="specialization">{{ $serviceType }}</span>
-                        <a href="{{ route('find-tukang') }}" class="show-all-btn">
-                            Show All Tukang
-                        </a>
                     @else
                         Showing all available tukangs near you
                     @endif
@@ -481,7 +478,6 @@
                     <i class="bi bi-exclamation-circle"></i>
                     <h5>No ${serviceType ? serviceType + ' Specialists' : 'Tukangs'} Found</h5>
                     <p>Try expanding your search or browse all services</p>
-                    ${serviceType ? `<a href="{{ route('find-tukang') }}" class="btn btn-primary">Show All Tukangs</a>` : ''}
                 </div>
             `;
         }
