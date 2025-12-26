@@ -370,6 +370,30 @@ class ChatController extends Controller
                 ], 400);
             }
 
+            // Check for scheduling conflicts with ANY customer at the same time
+            // We check for orders that are accepted, on_progress, OR pending (and not expired)
+            // matching the exact start time.
+            $conflictingOrder = Order::where('tukang_id', $tukangId)
+                ->where('work_datetime', $request->work_datetime)
+                ->where(function($q) {
+                    $q->whereIn('status', ['accepted', 'on_progress'])
+                      ->orWhere(function($subQ) {
+                          $subQ->where('status', 'pending')
+                               ->where('expires_at', '>', now());
+                      });
+                })
+                ->first();
+
+            if ($conflictingOrder) {
+                // Verify if it's the exact same time (Carbon instance comparison handled by DB query usually, 
+                // but let's be descriptive in the error)
+                $timeFormatted = \Carbon\Carbon::parse($request->work_datetime)->format('d M Y, H:i');
+                return response()->json([
+                    'success' => false,
+                    'error' => "You already have a scheduled job or pending proposal at {$timeFormatted}. Please choose a different time."
+                ], 400);
+            }
+
             // Use working_address from request, or fallback to customer's address
             $workingAddress = $request->working_address;
             if (empty($workingAddress)) {
@@ -448,6 +472,37 @@ class ChatController extends Controller
         }
     }
 
+    public function checkAvailability(Request $request)
+    {
+        $request->validate([
+            'datetime' => 'required|date'
+        ]);
+
+        $tukangId = Auth::guard('tukang')->id();
+        
+        $conflictingOrder = Order::where('tukang_id', $tukangId)
+            ->where('work_datetime', $request->datetime)
+            ->where(function($q) {
+                $q->whereIn('status', ['accepted', 'on_progress'])
+                  ->orWhere(function($subQ) {
+                      $subQ->where('status', 'pending')
+                           ->where('expires_at', '>', now());
+                  });
+            })
+            ->first();
+
+        if ($conflictingOrder) {
+            return response()->json([
+                'available' => false,
+                'message' => 'You already have a job scheduled for this time.'
+            ]);
+        }
+
+        return response()->json([
+            'available' => true
+        ]);
+    }
+    
     public function getTukangServices()
     {
         try {

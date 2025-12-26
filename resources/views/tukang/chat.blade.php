@@ -253,6 +253,7 @@
                                 <div class="col-md-6 mb-4">
                                     <label for="work-datetime" class="form-label">Scheduled Date & Time *</label>
                                     <input type="datetime-local" id="work-datetime" name="work_datetime" class="form-control" required>
+                                    <div id="datetime-feedback" class="invalid-feedback"></div>
                                 </div>
                                 <div class="col-md-6 mb-4">
                                     <label for="expires-hours" class="form-label">Proposal Expiration *</label>
@@ -376,6 +377,39 @@
                 const minutes = String(tomorrow.getMinutes()).padStart(2, '0');
                 
                 workDatetimeInput.min = `${year}-${month}-${day}T${hours}:${minutes}`;
+                
+                // Add listener for availability check
+                workDatetimeInput.addEventListener('change', async function() {
+                    const selectedTime = this.value;
+                    if (!selectedTime) return;
+
+                    // Reset state
+                    this.classList.remove('is-invalid', 'is-valid');
+                    
+                    try {
+                        const response = await fetch('{{ route("tukang.order.check-availability") }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken,
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify({ datetime: selectedTime })
+                        });
+                        
+                        const data = await response.json();
+                        
+                        if (!data.available) {
+                            this.classList.add('is-invalid');
+                            const feedback = document.getElementById('datetime-feedback');
+                            if(feedback) feedback.textContent = data.message;
+                        } else {
+                            this.classList.add('is-valid');
+                        }
+                    } catch (error) {
+                        console.error('Error checking availability:', error);
+                    }
+                });
             }
 
             // Function to cancel pending proposal
