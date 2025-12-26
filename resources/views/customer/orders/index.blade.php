@@ -66,7 +66,13 @@
 
                         <div class="booking-footer">
                             <div class="tukang-info">
-                                <img src="{{ $order->tukang->profile_image ? \App\Helpers\StorageHelper::url($order->tukang->profile_image) : 'https://ui-avatars.com/api/?name='.urlencode($order->tukang->name) }}" alt="{{ $order->tukang->name }}" class="tukang-avatar-small">
+                                @if($order->tukang->profile_image_url)
+                                    <img src="{{ $order->tukang->profile_image_url }}" alt="{{ $order->tukang->name }}" class="tukang-avatar-small">
+                                @else
+                                    <div class="tukang-avatar-small d-flex align-items-center justify-content-center text-white fw-bold" style="background-color: var(--brand-orange); font-size: 0.8rem;">
+                                        {{ $order->tukang->initials }}
+                                    </div>
+                                @endif
                                 <div class="d-flex flex-column">
                                     <span class="tukang-name">{{ $order->tukang->name }}</span>
                                     <div class="text-warning" style="font-size: 0.75rem;">
@@ -115,9 +121,15 @@
 
                         <div class="booking-footer">
                             <div class="tukang-info">
-                                <img src="{{ $order->tukang->profile_image ? \App\Helpers\StorageHelper::url($order->tukang->profile_image) : 'https://ui-avatars.com/api/?name='.urlencode($order->tukang->name) }}" 
-                                     alt="{{ $order->tukang->name }}" 
-                                     class="tukang-avatar-small">
+                                @if($order->tukang->profile_image_url)
+                                    <img src="{{ $order->tukang->profile_image_url }}" 
+                                         alt="{{ $order->tukang->name }}" 
+                                         class="tukang-avatar-small">
+                                @else
+                                    <div class="tukang-avatar-small d-flex align-items-center justify-content-center text-white fw-bold" style="background-color: var(--brand-orange); font-size: 0.8rem;">
+                                        {{ $order->tukang->initials }}
+                                    </div>
+                                @endif
                                 <div class="d-flex flex-column">
                                     <span class="tukang-name">{{ $order->tukang->name }}</span>
                                     <div class="text-warning" style="font-size: 0.7rem;">

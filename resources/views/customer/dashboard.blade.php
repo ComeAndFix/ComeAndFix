@@ -46,7 +46,13 @@
                             @endif
                             
                             <div class="order-tukang">
-                                <img src="{{ $order->tukang->profile_photo_url ?? asset('images/default-avatar.png') }}" alt="Profile photo of {{ $order->tukang->name }}" class="tukang-avatar">
+                                @if($order->tukang->profile_image_url)
+                                    <img src="{{ $order->tukang->profile_image_url }}" alt="Profile photo of {{ $order->tukang->name }}" class="tukang-avatar">
+                                @else
+                                    <div class="tukang-avatar d-flex align-items-center justify-content-center text-white fw-bold" style="background-color: var(--brand-orange); font-size: 1.2rem;">
+                                        {{ $order->tukang->initials }}
+                                    </div>
+                                @endif
                                 <div>
                                     <p class="tukang-label">Tukang</p>
                                     <p class="tukang-name">{{ $order->tukang->name }}</p>
