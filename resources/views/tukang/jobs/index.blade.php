@@ -1,16 +1,20 @@
 <x-app-layout>
     @push('styles')
-        @vite(['resources/css/components/order-list.css'])
+        @vite(['resources/css/components/order-list.css', 'resources/css/tukang/finance.css'])
     @endpush
 
-    <div class="bookings-page-wrapper">
-        <div class="bookings-container">
-            <h1 class="page-title">
-                <i class="bi bi-briefcase-fill text-brand-orange"></i>
-                Active Jobs
-            </h1>
+    <div class="finance-container">
+        <!-- Header -->
+        <div class="finance-header">
 
-            <div class="filter-pills">
+            <h1 class="page-title">
+                <i class="bi bi-briefcase-fill text-brand-orange me-3"></i>Active Jobs
+            </h1>
+            <p class="page-subtitle">Manage your ongoing and completed orders</p>
+        </div>
+
+        <div class="bookings-container p-0 m-0 w-100" style="max-width: none;">
+            <div class="filter-pills mb-4">
                 <a href="{{ route('tukang.jobs.index', ['filter' => 'all']) }}" class="filter-pill {{ $filter === 'all' ? 'active' : '' }}">
                     All Jobs
                 </a>
@@ -94,6 +98,7 @@
             <div class="mt-4">
                 {{ $jobs->links() }}
             </div>
+        </div>
         </div>
     </div>
 </x-app-layout>

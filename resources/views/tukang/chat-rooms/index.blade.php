@@ -1,14 +1,16 @@
 <x-app-layout>
-    <div class="messages-page-container">
+    @push('styles')
+        @vite(['resources/css/tukang/finance.css'])
+    @endpush
+
+    <div class="finance-container">
         <!-- Header -->
-        <div class="d-flex align-items-center justify-content-between mb-4">
-            <div>
-                <h1 class="h3 fw-bold mb-0">Messages</h1>
-                <p class="text-muted mb-0 small">Your conversations with customers</p>
-            </div>
-            <a href="{{ route('tukang.dashboard') }}" class="btn btn-outline-secondary rounded-pill btn-sm">
-                <i class="bi bi-arrow-left me-1"></i> Dashboard
-            </a>
+        <div class="finance-header">
+
+            <h1 class="page-title">
+                <i class="bi bi-chat-dots-fill text-brand-orange me-3"></i>Messages
+            </h1>
+            <p class="page-subtitle">Your conversations with customers</p>
         </div>
 
         <!-- Chat Rooms List -->
@@ -80,6 +82,7 @@
                 </div>
             @endforelse
         </div>
+    </div>
     </div>
 
     <style>

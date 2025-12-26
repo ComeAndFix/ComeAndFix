@@ -4,10 +4,10 @@
     <div class="finance-container">
         <!-- Header -->
         <div class="finance-header">
-            <a href="{{ route('tukang.dashboard') }}" class="back-button">
-                <i class="bi bi-arrow-left"></i> Back to Dashboard
-            </a>
-            <h1 class="page-title">Financial Manager</h1>
+
+            <h1 class="page-title">
+                <i class="bi bi-wallet2 text-brand-orange me-3"></i>Financial Manager
+            </h1>
             <p class="page-subtitle">Manage your wallet and track your income</p>
         </div>
 
