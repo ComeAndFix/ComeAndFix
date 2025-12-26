@@ -55,7 +55,7 @@
         @if(Auth::guard('customer')->check())
             <div class="nav-user-details">
                 <a href="{{ route('profile.show') }}" class="nav-user-name">
-                    {{ Auth::guard('customer')->user()->name }}
+                    {{ \Illuminate\Support\Str::words(Auth::guard('customer')->user()->name, 2, '...') }}
                 </a>
                 <form method="POST" action="{{ route('customer.logout') }}" class="nav-logout-form">
                     @csrf
@@ -76,7 +76,7 @@
         @elseif(Auth::guard('tukang')->check())
             <div class="nav-user-details">
                 <a href="{{ route('tukang.profile.show') }}" class="nav-user-name">
-                    {{ Auth::guard('tukang')->user()->name }}
+                    {{ \Illuminate\Support\Str::words(Auth::guard('tukang')->user()->name, 2, '...') }}
                 </a>
                 <form method="POST" action="{{ route('tukang.logout') }}" class="nav-logout-form">
                     @csrf
