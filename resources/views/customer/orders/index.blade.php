@@ -58,7 +58,7 @@
                                 </div>
                             </div>
                             <div class="booking-price">
-                                Rp {{ number_format($order->total_price, 0, ',', '.') }}
+                                Rp {{ number_format($order->customer_total, 0, ',', '.') }}
                             </div>
                         </div>
 
@@ -99,7 +99,7 @@
                             </div>
                             <div class="text-end">
                                 <div class="booking-price">
-                                    Rp {{ number_format($order->total_price, 0, ',', '.') }}
+                                    Rp {{ number_format($order->customer_total, 0, ',', '.') }}
                                 </div>
                                 <x-status-badge :status="$order->status === 'pending' && $order->isExpired() ? 'expired' : $order->status" class="mt-2" />
                             </div>
