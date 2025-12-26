@@ -95,12 +95,12 @@
                             <p class="service-description">Wiring, outlets, lighting fixes</p>
                         </a>
                         
-                        <!-- AC Unit -->
-                        <a href="{{ route('find-tukang', ['service_type' => 'HVAC']) }}" class="service-card" aria-label="Find AC and HVAC services">
+                        <!-- HVAC/AC -->
+                        <a href="{{ route('find-tukang', ['service_type' => 'HVAC/AC']) }}" class="service-card" aria-label="Find HVAC and AC services">
                             <div class="service-icon-wrapper" aria-hidden="true">
                                 <i class="bi bi-snow service-icon"></i>
                             </div>
-                            <h3 class="service-name">AC UNIT</h3>
+                            <h3 class="service-name">HVAC/AC</h3>
                             <p class="service-description">Installation, repairs, maintenance</p>
                         </a>
                         

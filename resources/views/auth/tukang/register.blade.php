@@ -63,24 +63,24 @@
             <label style="font-size: 0.875rem; color: var(--text-gray); margin-bottom: 0.75rem; display: block; font-family: 'Inter', sans-serif;">Specializations</label>
             <div class="specialization-pills">
                 <div class="specialization-pill">
-                    <input type="checkbox" name="specializations[]" value="HVAC" id="spec_hvac">
-                    <label for="spec_hvac">HVAC</label>
+                    <input type="checkbox" name="specializations[]" value="Plumbing" id="spec_plumbing">
+                    <label for="spec_plumbing">Plumbing</label>
                 </div>
                 <div class="specialization-pill">
                     <input type="checkbox" name="specializations[]" value="Electricity" id="spec_electricity">
                     <label for="spec_electricity">Electricity</label>
                 </div>
                 <div class="specialization-pill">
-                    <input type="checkbox" name="specializations[]" value="Plumbing" id="spec_plumbing">
-                    <label for="spec_plumbing">Plumbing</label>
-                </div>
-                <div class="specialization-pill">
-                    <input type="checkbox" name="specializations[]" value="Carpentry" id="spec_carpentry">
-                    <label for="spec_carpentry">Carpentry</label>
+                    <input type="checkbox" name="specializations[]" value="HVAC/AC" id="spec_hvac">
+                    <label for="spec_hvac">HVAC/AC</label>
                 </div>
                 <div class="specialization-pill">
                     <input type="checkbox" name="specializations[]" value="Painting" id="spec_painting">
                     <label for="spec_painting">Painting</label>
+                </div>
+                <div class="specialization-pill">
+                    <input type="checkbox" name="specializations[]" value="Appliance Repair" id="spec_appliance_repair">
+                    <label for="spec_appliance_repair">Appliance Repair</label>
                 </div>
             </div>
         </div>

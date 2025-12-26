@@ -27,7 +27,7 @@ class ServiceSeeder extends Seeder
                 'base_price' => 200000,
             ],
             [
-                'name' => 'HVAC',
+                'name' => 'HVAC/AC',
                 'description' => 'AC and HVAC installation, repair, maintenance, cleaning, and refrigerant refilling services.',
                 'icon' => 'bi-thermometer-snow',
                 'color' => '#17a2b8',
