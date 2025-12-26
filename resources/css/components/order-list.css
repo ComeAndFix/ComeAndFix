@@ -157,6 +157,8 @@
     text-transform: uppercase;
     letter-spacing: 0.5px;
     display: inline-block;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.2s ease;
 }
 
 .status-badge.pending {
@@ -170,10 +172,10 @@
 }
 
 .status-badge.on_progress {
-    background: #E8F5E9;
-    color: #2E7D32;
+    background: #FFF9E6;
+    color: #F59E0B;
     /* Special pulse for active */
-    box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.1);
+    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.1);
 }
 
 .status-badge.completed {
@@ -185,6 +187,73 @@
 .status-badge.rejected {
     background: #FFEBEE;
     color: #C62828;
+}
+
+/* Size Variants */
+.status-badge-sm {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.6875rem;
+    letter-spacing: 0.4px;
+}
+
+.status-badge-lg {
+    padding: 0.625rem 1.25rem;
+    font-size: 0.875rem;
+    letter-spacing: 0.6px;
+}
+
+/* ========================================
+   PAYMENT STATUS BADGES
+   ======================================== */
+
+.payment-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 30px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-block;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.2s ease;
+}
+
+.payment-badge.paid {
+    background: #E8F5E9;
+    color: #2E7D32;
+}
+
+.payment-badge.unpaid {
+    background: #FFF3E0;
+    color: #E65100;
+}
+
+.payment-badge.pending {
+    background: #FFF9E6;
+    color: #F59E0B;
+}
+
+.payment-badge.failed {
+    background: #FFEBEE;
+    color: #C62828;
+}
+
+.payment-badge.refunded {
+    background: #E3F2FD;
+    color: #1565C0;
+}
+
+/* Payment Badge Size Variants */
+.payment-badge-sm {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.6875rem;
+    letter-spacing: 0.4px;
+}
+
+.payment-badge-lg {
+    padding: 0.625rem 1.25rem;
+    font-size: 0.875rem;
+    letter-spacing: 0.6px;
 }
 
 /* Review Button Area */

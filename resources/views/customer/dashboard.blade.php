@@ -32,9 +32,9 @@
                             <h3 class="order-type">{{ $order->service->name }}</h3>
                             
                             <div class="order-badges">
-                                <span class="order-badge status" role="status">{{ ucwords(str_replace('_', ' ', $order->status)) }}</span>
+                                <x-status-badge :status="$order->status === 'pending' && $order->isExpired() ? 'expired' : $order->status" />
                                 @if($order->payment_status)
-                                <span class="order-badge payment" role="status">{{ ucwords($order->payment_status) }}</span>
+                                <x-payment-badge :status="$order->payment_status" />
                                 @endif
                             </div>
                             

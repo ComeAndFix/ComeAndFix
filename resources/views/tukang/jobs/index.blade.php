@@ -56,10 +56,8 @@
                                 <div class="booking-price">
                                     Rp {{ number_format($job->total_price ?? $job->price, 0, ',', '.') }}
                                 </div>
-                                @if($job->payment_status === 'paid')
-                                    <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2 border border-success mt-2">Paid</span>
-                                @elseif($job->payment_status === 'unpaid')
-                                    <span class="badge bg-warning bg-opacity-10 text-warning rounded-pill px-2 border border-warning mt-2">Unpaid</span>
+                                @if($job->payment_status)
+                                    <x-payment-badge :status="$job->payment_status" size="sm" class="mt-2" />
                                 @endif
                             </div>
                         </div>
@@ -72,9 +70,7 @@
                                 <span class="tukang-name">{{ $job->customer->name }}</span>
                             </div>
 
-                            <span class="status-badge {{ ($job->status === 'pending' && $job->isExpired()) ? 'rejected' : $job->status }}">
-                                {{ ($job->status === 'pending' && $job->isExpired()) ? 'Expired' : ucwords(str_replace('_', ' ', $job->status)) }}
-                            </span>
+                            <x-status-badge :status="$job->status === 'pending' && $job->isExpired() ? 'expired' : $job->status" />
                         </div>
                     </a>
 

@@ -124,7 +124,7 @@
                 <div class="order-card">
                     <div class="section-header">
                         <span>Job Information</span>
-                        <span class="badge bg-{{ ($order->status === 'pending' && $order->isExpired()) ? 'danger' : $order->status_color }} rounded-pill px-3">{{ ($order->status === 'pending' && $order->isExpired()) ? 'Expired' : ucwords(str_replace('_', ' ', $order->status)) }}</span>
+                        <x-status-badge :status="$order->status === 'pending' && $order->isExpired() ? 'expired' : $order->status" size="lg" />
                     </div>
 
                     <div class="row mb-4">
@@ -163,7 +163,6 @@
                     <div class="order-card">
                         <div class="section-header">
                             <span>Job Action</span>
-                            <span class="badge bg-primary rounded-pill px-3"><i class="bi bi-tools me-1"></i> In Progress</span>
                         </div>
                         
                         <div class="text-center py-4">
@@ -183,7 +182,6 @@
                 <div class="order-card">
                     <div class="section-header">
                         <span>Work Result</span>
-                        <span class="badge bg-success rounded-pill"><i class="bi bi-check-circle-fill me-1"></i> Finished</span>
                     </div>
                     
                     <div class="mb-4">

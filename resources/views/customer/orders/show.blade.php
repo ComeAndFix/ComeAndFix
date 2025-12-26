@@ -146,7 +146,7 @@
                 <div class="order-card">
                     <div class="section-header">
                         <span>Service Information</span>
-                        <span class="badge bg-{{ $order->status_color }} rounded-pill px-3">{{ ucwords(str_replace('_', ' ', $order->status)) }}</span>
+                        <x-status-badge :status="$order->status === 'pending' && $order->isExpired() ? 'expired' : $order->status" size="lg" />
                     </div>
 
                     <div class="row mb-4">
@@ -172,11 +172,6 @@
                 <div class="order-card">
                     <div class="section-header">
                         <span>Proposal Status</span>
-                        @if($order->isExpired())
-                             <span class="badge bg-danger rounded-pill px-3"><i class="bi bi-clock-history me-1"></i> Expired</span>
-                        @else
-                             <span class="badge bg-warning rounded-pill px-3"><i class="bi bi-clock-history me-1"></i> Awaiting Your Response</span>
-                        @endif
                     </div>
                     
                     <div class="alert {{ $order->isExpired() ? 'alert-danger' : 'alert-info' }} mb-4" role="alert">
@@ -223,7 +218,6 @@
                 <div class="order-card">
                     <div class="section-header">
                         <span>Work Result</span>
-                        <span class="badge bg-success rounded-pill"><i class="bi bi-check-circle-fill me-1"></i> Finished</span>
                     </div>
                     
                     <div class="mb-4">

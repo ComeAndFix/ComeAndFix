@@ -467,15 +467,11 @@
                         const dateTime = new Date(job.work_datetime);
                         const timeStr = dateTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
                         
-                        // Status badge logic
-                        const statusColors = {
-                            'pending': 'bg-warning',
-                            'accepted': 'bg-info',
-                            'on_progress': 'bg-primary',
-                            'completed': 'bg-success',
-                            'cancelled': 'bg-danger'
-                        };
-                        const statusBadge = statusColors[job.status] || 'bg-secondary';
+                        // Status badge logic - using our status-badge classes
+                        const statusClass = job.status.toLowerCase().replace(' ', '_');
+                        const statusLabel = job.status.replace('_', ' ').split(' ').map(word => 
+                            word.charAt(0).toUpperCase() + word.slice(1)
+                        ).join(' ');
                         
                         const card = `
                             <a href="${link}" class="text-decoration-none text-dark scale-hover d-block w-100">
@@ -489,7 +485,7 @@
                                             <div class="flex-grow-1" style="min-width: 0; overflow: hidden;">
                                                 <div class="d-flex justify-content-between align-items-start mb-1 w-100">
                                                     <h6 class="fw-bold mb-0 text-truncate me-2" style="max-width: 150px;">${job.service.name}</h6>
-                                                    <span class="badge ${statusBadge} bg-opacity-75 rounded-pill flex-shrink-0" style="font-size: 0.7rem; white-space: nowrap;">${job.status.replace('_', ' ')}</span>
+                                                    <span class="status-badge ${statusClass} flex-shrink-0" style="font-size: 0.65rem; white-space: nowrap; padding: 0.35rem 0.7rem;">${statusLabel}</span>
                                                 </div>
                                                 <div class="d-flex justify-content-between align-items-center w-100">
                                                     <p class="mb-0 text-muted small text-truncate me-2" style="max-width: 140px;">

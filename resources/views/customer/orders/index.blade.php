@@ -69,9 +69,7 @@
                                 <img src="{{ $order->tukang->profile_image ? \App\Helpers\StorageHelper::url($order->tukang->profile_image) : 'https://ui-avatars.com/api/?name='.urlencode($order->tukang->name) }}" alt="{{ $order->tukang->name }}" class="tukang-avatar-small">
                                 <span class="tukang-name">{{ $order->tukang->name }}</span>
                             </div>
-                            <span class="status-badge {{ ($order->status === 'pending' && $order->isExpired()) ? 'rejected' : $order->status }}">
-                                {{ ($order->status === 'pending' && $order->isExpired()) ? 'Expired' : ucwords(str_replace('_', ' ', $order->status)) }}
-                            </span>
+                            <x-status-badge :status="$order->status === 'pending' && $order->isExpired() ? 'expired' : $order->status" />
                         </div>
                     </a>
                 @endforeach
@@ -103,9 +101,7 @@
                                 <div class="booking-price">
                                     Rp {{ number_format($order->total_price, 0, ',', '.') }}
                                 </div>
-                                <span class="status-badge {{ ($order->status === 'pending' && $order->isExpired()) ? 'rejected' : $order->status }} mt-2">
-                                    {{ ($order->status === 'pending' && $order->isExpired()) ? 'Expired' : ucfirst(str_replace('_', ' ', $order->status)) }}
-                                </span>
+                                <x-status-badge :status="$order->status === 'pending' && $order->isExpired() ? 'expired' : $order->status" class="mt-2" />
                             </div>
                         </div>
 
