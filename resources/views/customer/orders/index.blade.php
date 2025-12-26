@@ -67,7 +67,13 @@
                         <div class="booking-footer">
                             <div class="tukang-info">
                                 <img src="{{ $order->tukang->profile_image ? \App\Helpers\StorageHelper::url($order->tukang->profile_image) : 'https://ui-avatars.com/api/?name='.urlencode($order->tukang->name) }}" alt="{{ $order->tukang->name }}" class="tukang-avatar-small">
-                                <span class="tukang-name">{{ $order->tukang->name }}</span>
+                                <div class="d-flex flex-column">
+                                    <span class="tukang-name">{{ $order->tukang->name }}</span>
+                                    <div class="text-warning" style="font-size: 0.75rem;">
+                                        <i class="bi bi-star-fill"></i>
+                                        <span class="text-muted fw-bold">{{ number_format($order->tukang->rating ?? 0, 1) }}</span>
+                                    </div>
+                                </div>
                             </div>
                             <x-status-badge :status="$order->status === 'pending' && $order->isExpired() ? 'expired' : $order->status" />
                         </div>
@@ -112,7 +118,13 @@
                                 <img src="{{ $order->tukang->profile_image ? \App\Helpers\StorageHelper::url($order->tukang->profile_image) : 'https://ui-avatars.com/api/?name='.urlencode($order->tukang->name) }}" 
                                      alt="{{ $order->tukang->name }}" 
                                      class="tukang-avatar-small">
-                                <span class="tukang-name">{{ $order->tukang->name }}</span>
+                                <div class="d-flex flex-column">
+                                    <span class="tukang-name">{{ $order->tukang->name }}</span>
+                                    <div class="text-warning" style="font-size: 0.7rem;">
+                                        <i class="bi bi-star-fill"></i>
+                                        <span class="text-muted fw-bold">{{ number_format($order->tukang->rating ?? 0, 1) }}</span>
+                                    </div>
+                                </div>
                             </div>
                             
                             <div class="text-muted small">

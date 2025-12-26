@@ -276,12 +276,35 @@
                         @endif
                         <h5 class="fw-bold mb-1">{{ $order->tukang->name }}</h5>
                         <div class="text-warning small mb-3">
-                            <i class="bi bi-star-fill"></i>
-                            <i class="bi bi-star-fill"></i>
-                            <i class="bi bi-star-fill"></i>
-                            <i class="bi bi-star-fill"></i>
-                            <i class="bi bi-star-fill"></i>
-                            <span class="text-muted ms-1">(4.8)</span>
+                            @php
+                                $rating = $order->tukang->rating ?? 0;
+                                $totalReviews = $order->tukang->total_reviews ?? 0;
+                                $fullStars = floor($rating);
+                                $halfStar = ($rating - $fullStars) >= 0.5 ? 1 : 0;
+                                $emptyStars = 5 - $fullStars - $halfStar;
+                            @endphp
+
+                            @if($totalReviews > 0)
+                                @for($i = 0; $i < $fullStars; $i++)
+                                    <i class="bi bi-star-fill"></i>
+                                @endfor
+
+                                @if($halfStar)
+                                    <i class="bi bi-star-half"></i>
+                                @endif
+
+                                @for($i = 0; $i < $emptyStars; $i++)
+                                    <i class="bi bi-star"></i>
+                                @endfor
+                                <span class="text-muted ms-1">({{ number_format($rating, 1) }})</span>
+                            @else
+                                <i class="bi bi-star text-muted"></i>
+                                <i class="bi bi-star text-muted"></i>
+                                <i class="bi bi-star text-muted"></i>
+                                <i class="bi bi-star text-muted"></i>
+                                <i class="bi bi-star text-muted"></i>
+                                <span class="text-muted ms-1">(No reviews)</span>
+                            @endif
                         </div>
                         <a href="{{ route('chat.show', ['receiverType' => 'tukang', 'receiverId' => $order->tukang_id]) }}" class="btn btn-outline-primary btn-sm rounded-pill w-100">
                             <i class="bi bi-chat-dots me-1"></i> Chat Tukang
