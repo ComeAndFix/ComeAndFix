@@ -29,7 +29,8 @@ class MidtransService
         try {
             $orderId = $order->order_number . '-' . time();
 
-            $amount = (int) $order->total_price;
+            // Use customer_total which includes the platform fee
+            $amount = (int) $order->customer_total;
 
             $enabledPayments = ['gopay', 'shopeepay', 'other_qris'];
             
@@ -72,6 +73,14 @@ class MidtransService
                 }
             }
 
+            // Add platform fee as a separate line item
+            $itemDetails[] = [
+                'id' => 'platform-fee',
+                'price' => (int) $order->platform_fee,
+                'quantity' => 1,
+                'name' => 'Platform Fee (10%)',
+            ];
+
             $params = [
                 'transaction_details' => [
                     'order_id' => $orderId,
@@ -93,6 +102,9 @@ class MidtransService
             Log::info('Creating Midtrans transaction', [
                 'order_id' => $orderId,
                 'amount' => $amount,
+                'subtotal' => $order->subtotal,
+                'platform_fee' => $order->platform_fee,
+                'customer_total' => $order->customer_total,
                 'params' => $params
             ]);
 

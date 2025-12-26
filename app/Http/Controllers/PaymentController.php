@@ -39,13 +39,15 @@ class PaymentController extends Controller
                 ], 403);
             }
 
-            if (abs((float)$request->amount - (float)$order->total_price) > 1) { // Allow small float difference
+            if (abs((float)$request->amount - (float)$order->customer_total) > 1) { // Allow small float difference
                 return response()->json([
                     'success' => false,
                     'error' => 'Payment amount does not match order price',
                     'debug' => [
                         'request_amount' => $request->amount,
-                        'order_total' => $order->total_price
+                        'order_customer_total' => $order->customer_total,
+                        'order_subtotal' => $order->subtotal,
+                        'platform_fee' => $order->platform_fee
                     ]
                 ], 422);
             }

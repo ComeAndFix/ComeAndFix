@@ -77,8 +77,8 @@
 
                                 <div class="proposal-price-tag" style="display: block;">
                                     <div class="d-flex justify-content-between align-items-center">
-                                        <span class="price-label">{{ ($message->order->additionalItems && $message->order->additionalItems->count() > 0) || ($message->order->customItems && $message->order->customItems->count() > 0) ? 'Total Estimate' : 'Base Price' }}</span>
-                                        <span class="price-amount">Rp {{ number_format($message->order->total_price, 0, ',', '.') }}</span>
+                                        <span class="price-label">Total to Pay</span>
+                                        <span class="price-amount">Rp {{ number_format($message->order->customer_total, 0, ',', '.') }}</span>
                                     </div>
                                     
                                     <div class="text-end mt-2">
@@ -113,6 +113,24 @@
                                             </div>
                                             @endforeach
                                         @endif
+
+                                        {{-- Subtotal --}}
+                                        <div class="d-flex justify-content-between mb-2 pt-2 mt-2 border-top small">
+                                            <span class="fw-semibold">Subtotal</span>
+                                            <span class="fw-semibold">Rp {{ number_format($message->order->subtotal, 0, ',', '.') }}</span>
+                                        </div>
+
+                                        {{-- Platform Fee --}}
+                                        <div class="d-flex justify-content-between mb-2 small text-muted">
+                                            <span>Platform Fee (10%)</span>
+                                            <span>Rp {{ number_format($message->order->platform_fee, 0, ',', '.') }}</span>
+                                        </div>
+
+                                        {{-- Total to Pay --}}
+                                        <div class="d-flex justify-content-between mb-0 small fw-bold">
+                                            <span>Total to Pay</span>
+                                            <span>Rp {{ number_format($message->order->customer_total, 0, ',', '.') }}</span>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -128,7 +146,9 @@
                                         <button type="button" class="btn btn-brand-orange rounded-pill w-100 px-4 fw-bold" style="grid-column: span 2" onclick="event.stopPropagation(); showPaymentForOrder('{{ $message->order->uuid }}', {{ json_encode([
                                             'id' => $message->order->uuid,
                                             'service_name' => $message->order->service ? $message->order->service->name : 'Service',
-                                            'total_amount' => $message->order->total_price,
+                                            'total_amount' => $message->order->customer_total,
+                                            'subtotal' => $message->order->subtotal,
+                                            'platform_fee' => $message->order->platform_fee,
                                             'description' => $message->order->service_description ?? '',
                                             'order_number' => $message->order->order_number,
                                             'items' => array_merge(
@@ -375,10 +395,16 @@
                             });
                         }
 
+                        const subtotal = totalPrice;
+                        const platformFee = subtotal * 0.10;
+                        const customerTotal = subtotal + platformFee;
+
                         const orderData = {
                             id: order.uuid,
                             service_name: order.service ? order.service.name : 'Service',
-                            total_amount: totalPrice,
+                            total_amount: customerTotal,
+                            subtotal: subtotal,
+                            platform_fee: platformFee,
                             description: order.service_description || '',
                             order_number: order.order_number,
                             items: lineItems
@@ -623,10 +649,16 @@
                             });
                         }
 
+                        const subtotal = totalPrice;
+                        const platformFee = subtotal * 0.10;
+                        const customerTotal = subtotal + platformFee;
+
                         const orderData = {
                             id: orderId,
                             service_name: data.order.service ? data.order.service.name : 'Service',
-                            total_amount: totalPrice,
+                            total_amount: customerTotal,
+                            subtotal: subtotal,
+                            platform_fee: platformFee,
                             description: data.order.service_description || '',
                             order_number: data.order.order_number,
                             items: lineItems

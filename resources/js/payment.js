@@ -169,6 +169,22 @@ class PaymentHandler {
             html += `<div class="mt-2 pt-2 border-top border-dashed"><small class="text-muted italic">"${orderData.description}"</small></div>`;
         }
 
+        // Add platform fee breakdown if available
+        if (orderData.subtotal && orderData.platform_fee) {
+            html += `
+                <div class="mt-3 pt-3 border-top">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="fw-semibold">Subtotal</span>
+                        <span class="fw-semibold">Rp ${parseFloat(orderData.subtotal).toLocaleString('id-ID')}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2 text-muted small">
+                        <span>Platform Fee (10%)</span>
+                        <span>Rp ${parseFloat(orderData.platform_fee).toLocaleString('id-ID')}</span>
+                    </div>
+                </div>
+            `;
+        }
+
         html += '</div>';
         return html;
     }

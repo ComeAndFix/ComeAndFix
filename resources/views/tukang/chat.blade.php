@@ -77,8 +77,8 @@
 
                                 <div class="proposal-price-tag" style="display: block;">
                                     <div class="d-flex justify-content-between align-items-center">
-                                        <span class="price-label">{{ ($message->order->additionalItems && $message->order->additionalItems->count() > 0) || ($message->order->customItems && $message->order->customItems->count() > 0) ? 'Total Estimate' : 'Base Price' }}</span>
-                                        <span class="price-amount">Rp {{ number_format($message->order->total_price, 0, ',', '.') }}</span>
+                                        <span class="price-label">Customer Pays</span>
+                                        <span class="price-amount">Rp {{ number_format($message->order->customer_total, 0, ',', '.') }}</span>
                                     </div>
                                     
                                     <div class="text-end mt-2">
@@ -113,6 +113,32 @@
                                             </div>
                                             @endforeach
                                         @endif
+
+                                        {{-- Subtotal --}}
+                                        <div class="d-flex justify-content-between mb-2 pt-2 mt-2 border-top small">
+                                            <span class="fw-semibold">Subtotal</span>
+                                            <span class="fw-semibold">Rp {{ number_format($message->order->subtotal, 0, ',', '.') }}</span>
+                                        </div>
+
+                                        {{-- Platform Fee --}}
+                                        <div class="d-flex justify-content-between mb-2 small text-muted">
+                                            <span>Platform Fee (10%)</span>
+                                            <span>Rp {{ number_format($message->order->platform_fee, 0, ',', '.') }}</span>
+                                        </div>
+
+                                        {{-- Customer Total --}}
+                                        <div class="d-flex justify-content-between mb-2 small fw-bold">
+                                            <span>Customer Pays</span>
+                                            <span>Rp {{ number_format($message->order->customer_total, 0, ',', '.') }}</span>
+                                        </div>
+
+                                        {{-- Tukang Earnings --}}
+                                        <div class="d-flex justify-content-between mb-0 small p-2 rounded" style="background: #E8F5E9;">
+                                            <span class="text-success fw-semibold">
+                                                <i class="bi bi-wallet2 me-1"></i> Your Earnings
+                                            </span>
+                                            <span class="text-success fw-bold">Rp {{ number_format($message->order->tukang_earnings, 0, ',', '.') }}</span>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -331,9 +357,23 @@
                                         <span>Custom Items Total</span>
                                         <span id="custom-items-price">Rp 0</span>
                                     </div>
+                                    <div class="summary-row border-top pt-2 mt-2">
+                                        <span class="fw-semibold">Subtotal</span>
+                                        <span id="subtotal-display" class="fw-semibold">Rp 0</span>
+                                    </div>
+                                    <div class="summary-row small text-muted">
+                                        <span>Platform Fee (10%)</span>
+                                        <span id="platform-fee-display">Rp 0</span>
+                                    </div>
                                     <div class="summary-total">
-                                        <span>Total Estimate</span>
-                                        <span id="total-price-display">Rp 0</span>
+                                        <span>Customer Pays</span>
+                                        <span id="customer-total-display">Rp 0</span>
+                                    </div>
+                                    <div class="summary-row small" style="background: #E8F5E9; padding: 0.75rem; margin: 0.5rem -1rem -1rem -1rem; border-radius: 0 0 12px 12px;">
+                                        <span class="text-success fw-semibold">
+                                            <i class="bi bi-wallet2 me-1"></i> Your Earnings
+                                        </span>
+                                        <span id="tukang-earnings-display" class="text-success fw-bold">Rp 0</span>
                                     </div>
                                 </div>
                             </div>
@@ -689,13 +729,19 @@
                     customItemsTotal += price * quantity;
                 });
 
-                const totalPrice = basePrice + additionalItemsTotal + customItemsTotal;
+                const subtotal = basePrice + additionalItemsTotal + customItemsTotal;
+                const platformFee = subtotal * 0.10; // 10% platform fee
+                const customerTotal = subtotal + platformFee;
+                const tukangEarnings = subtotal; // Tukang receives the subtotal
 
                 // Update display
                 document.getElementById('base-price-display').textContent = `Rp ${basePrice.toLocaleString('id-ID')}`;
                 document.getElementById('additional-items-price').textContent = `Rp ${additionalItemsTotal.toLocaleString('id-ID')}`;
                 document.getElementById('custom-items-price').textContent = `Rp ${customItemsTotal.toLocaleString('id-ID')}`;
-                document.getElementById('total-price-display').textContent = `Rp ${totalPrice.toLocaleString('id-ID')}`;
+                document.getElementById('subtotal-display').textContent = `Rp ${subtotal.toLocaleString('id-ID')}`;
+                document.getElementById('platform-fee-display').textContent = `Rp ${platformFee.toLocaleString('id-ID')}`;
+                document.getElementById('customer-total-display').textContent = `Rp ${customerTotal.toLocaleString('id-ID')}`;
+                document.getElementById('tukang-earnings-display').textContent = `Rp ${tukangEarnings.toLocaleString('id-ID')}`;
             }
 
             // Order proposal form handler

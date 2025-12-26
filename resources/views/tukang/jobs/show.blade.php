@@ -281,10 +281,8 @@
                 <div class="order-card p-4">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h5 class="fw-bold mb-0">Payment Summary</h5>
-                        @if($order->payment_status === 'paid')
-                            <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2 border border-success">Paid</span>
-                        @else
-                            <span class="badge bg-warning bg-opacity-10 text-warning rounded-pill px-2 border border-warning">Unpaid</span>
+                        @if($order->payment_status)
+                            <x-payment-badge :status="$order->payment_status" size="sm" />
                         @endif
                     </div>
                     
@@ -320,9 +318,29 @@
                         @endforeach
                     @endif
                     
+                    <!-- Service Total -->
+                    <div class="info-row mt-3 pt-3 border-top">
+                        <span class="info-label">Service Total</span>
+                        <span class="info-value">Rp {{ number_format($order->subtotal, 0, ',', '.') }}</span>
+                    </div>
+
+                    <!-- Platform Fee Deduction -->
+                    <div class="info-row">
+                        <span class="info-label small text-muted">
+                            Platform Fee ({{ \App\Models\Order::PLATFORM_FEE_PERCENTAGE }}%)
+                        </span>
+                        <span class="info-value small text-danger">- Rp {{ number_format($order->platform_fee, 0, ',', '.') }}</span>
+                    </div>
+                    
+                    <!-- Customer Paid Total -->
+                    <div class="info-row mt-3 pt-3 border-top">
+                        <span class="info-label text-muted">Customer Paid</span>
+                        <span class="info-value">Rp {{ number_format($order->customer_total, 0, ',', '.') }}</span>
+                    </div>
+                    
                     <div class="price-total info-row">
-                        <span>Total Amount</span>
-                        <span>Rp {{ number_format($order->total_price, 0, ',', '.') }}</span>
+                        <span>Your Earnings</span>
+                        <span class="text-success">Rp {{ number_format($order->tukang_earnings, 0, ',', '.') }}</span>
                     </div>
                 </div>
             </div>

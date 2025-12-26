@@ -319,9 +319,23 @@
                         @endforeach
                     @endif
                     
+                    <!-- Subtotal -->
+                    <div class="info-row mt-3 pt-3 border-top">
+                        <span class="info-label">Subtotal</span>
+                        <span class="info-value">Rp {{ number_format($order->subtotal, 0, ',', '.') }}</span>
+                    </div>
+
+                    <!-- Platform Fee -->
+                    <div class="info-row">
+                        <span class="info-label small text-muted">
+                            Platform Fee ({{ \App\Models\Order::PLATFORM_FEE_PERCENTAGE }}%)
+                        </span>
+                        <span class="info-value small">Rp {{ number_format($order->platform_fee, 0, ',', '.') }}</span>
+                    </div>
+                    
                     <div class="price-total info-row">
-                        <span>Total Paid</span>
-                        <span>Rp {{ number_format($order->total_price, 0, ',', '.') }}</span>
+                        <span>Total to Pay</span>
+                        <span>Rp {{ number_format($order->customer_total, 0, ',', '.') }}</span>
                     </div>
 
                      @if($order->payment_status !== 'paid' && $order->status === 'accepted')

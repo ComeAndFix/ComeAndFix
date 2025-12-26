@@ -139,6 +139,50 @@ class Order extends Model
         return $this->price + $additionalItemsTotal + $customItemsTotal;
     }
 
+    // Platform fee percentage (10%)
+    const PLATFORM_FEE_PERCENTAGE = 10;
+
+    /**
+     * Get the subtotal (service price without platform fee)
+     * This is what the tukang will receive
+     */
+    public function getSubtotalAttribute()
+    {
+        $additionalItemsTotal = $this->additionalItems->sum(function ($item) {
+            return $item->item_price * $item->quantity;
+        });
+        
+        $customItemsTotal = $this->customItems->sum(function ($item) {
+            return $item->item_price * $item->quantity;
+        });
+        
+        return $this->price + $additionalItemsTotal + $customItemsTotal;
+    }
+
+    /**
+     * Get the platform fee amount
+     */
+    public function getPlatformFeeAttribute()
+    {
+        return $this->subtotal * (self::PLATFORM_FEE_PERCENTAGE / 100);
+    }
+
+    /**
+     * Get the total amount customer pays (subtotal + platform fee)
+     */
+    public function getCustomerTotalAttribute()
+    {
+        return $this->subtotal + $this->platform_fee;
+    }
+
+    /**
+     * Get the amount tukang receives (subtotal, without platform fee)
+     */
+    public function getTukangEarningsAttribute()
+    {
+        return $this->subtotal;
+    }
+
     public function completion()
     {
         return $this->hasOne(OrderCompletion::class);
