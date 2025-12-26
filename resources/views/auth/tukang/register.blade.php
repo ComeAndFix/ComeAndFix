@@ -99,52 +99,56 @@
         </div>
 
         <!-- Password -->
-        <div class="input-wrapper">
-            <input 
-                id="password" 
-                class="custom-input" 
-                type="password" 
-                name="password" 
-                placeholder="Password"
-                required 
-                autocomplete="new-password" 
-            />
-            <button 
-                type="button" 
-                class="password-toggle" 
-                onclick="togglePassword('password', 'eye-icon-password')"
-                aria-label="Toggle password visibility"
-            >
-                <svg id="eye-icon-password" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                    <circle cx="12" cy="12" r="3"></circle>
-                </svg>
-            </button>
+        <div style="margin-bottom: 1.25rem;">
+            <div class="input-wrapper" style="margin-bottom: 0;">
+                <input 
+                    id="password" 
+                    class="custom-input" 
+                    type="password" 
+                    name="password" 
+                    placeholder="Password"
+                    required 
+                    autocomplete="new-password" 
+                />
+                <button 
+                    type="button" 
+                    class="password-toggle" 
+                    onclick="togglePassword('password', 'eye-icon-password')"
+                    aria-label="Toggle password visibility"
+                >
+                    <svg id="eye-icon-password" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                </button>
+            </div>
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
 
         <!-- Confirm Password -->
-        <div class="input-wrapper">
-            <input 
-                id="password_confirmation" 
-                class="custom-input" 
-                type="password" 
-                name="password_confirmation" 
-                placeholder="Confirm password"
-                required 
-                autocomplete="new-password" 
-            />
-            <button 
-                type="button" 
-                class="password-toggle" 
-                onclick="togglePassword('password_confirmation', 'eye-icon-confirm')"
-                aria-label="Toggle password confirmation visibility"
-            >
-                <svg id="eye-icon-confirm" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                    <circle cx="12" cy="12" r="3"></circle>
-                </svg>
-            </button>
+        <div style="margin-bottom: 1.25rem;">
+            <div class="input-wrapper" style="margin-bottom: 0;">
+                <input 
+                    id="password_confirmation" 
+                    class="custom-input" 
+                    type="password" 
+                    name="password_confirmation" 
+                    placeholder="Confirm password"
+                    required 
+                    autocomplete="new-password" 
+                />
+                <button 
+                    type="button" 
+                    class="password-toggle" 
+                    onclick="togglePassword('password_confirmation', 'eye-icon-confirm')"
+                    aria-label="Toggle password confirmation visibility"
+                >
+                    <svg id="eye-icon-confirm" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                </button>
+            </div>
             <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
         </div>
 

@@ -28,27 +28,29 @@
         </div>
 
         <!-- Password -->
-        <div class="input-wrapper">
-            <input 
-                id="password" 
-                class="custom-input" 
-                type="password" 
-                name="password" 
-                placeholder="Password"
-                required 
-                autocomplete="current-password" 
-            />
-            <button 
-                type="button" 
-                class="password-toggle" 
-                onclick="togglePassword()"
-                aria-label="Toggle password visibility"
-            >
-                <svg id="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                    <circle cx="12" cy="12" r="3"></circle>
-                </svg>
-            </button>
+        <div style="margin-bottom: 1.25rem;">
+            <div class="input-wrapper" style="margin-bottom: 0;">
+                <input 
+                    id="password" 
+                    class="custom-input" 
+                    type="password" 
+                    name="password" 
+                    placeholder="Password"
+                    required 
+                    autocomplete="current-password" 
+                />
+                <button 
+                    type="button" 
+                    class="password-toggle" 
+                    onclick="togglePassword()"
+                    aria-label="Toggle password visibility"
+                >
+                    <svg id="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                </button>
+            </div>
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
 
