@@ -588,16 +588,6 @@
         cursor: pointer;
     }
 
-    /* Ensure all child elements don't block pointer events */
-    .service-card * {
-        pointer-events: none;
-    }
-
-    /* Re-enable pointer events on the card itself */
-    .service-card {
-        pointer-events: auto;
-    }
-
     .service-icon-wrapper {
         width: 64px;
         height: 64px;
@@ -634,6 +624,11 @@
     /* Reduce section padding on mobile */
     .bottom-section {
         padding: 2rem 1rem !important;
+    }
+
+    /* Add padding to right column content on mobile */
+    .main-content-grid>div:last-child {
+        padding: 0 0.5rem;
     }
 
     .order-card {

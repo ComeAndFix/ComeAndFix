@@ -99,10 +99,17 @@
                 <!-- Tukang Info Card -->
                 <div class="review-card mt-3">
                     <div class="text-center">
-                        <img src="{{ $order->tukang->profile_photo_url ?? asset('images/default-avatar.png') }}" 
-                             class="rounded-circle mb-3" 
-                             style="width: 80px; height: 80px; object-fit: cover;" 
-                             alt="{{ $order->tukang->name }}">
+                        @if($order->tukang->profile_image_url)
+                            <img src="{{ $order->tukang->profile_image_url }}" 
+                                 class="rounded-circle mb-3 d-block mx-auto" 
+                                 style="width: 80px; height: 80px; object-fit: cover;" 
+                                 alt="{{ $order->tukang->name }}">
+                        @else
+                            <div class="mb-3 mx-auto rounded-circle d-flex align-items-center justify-content-center text-white fw-bold" 
+                                 style="width: 80px; height: 80px; background-color: var(--brand-orange); font-size: 2rem;">
+                                {{ $order->tukang->initials }}
+                            </div>
+                        @endif
                         <h6 class="fw-bold mb-1">{{ $order->tukang->name }}</h6>
                         <div class="text-warning mb-2">
                             @for($i = 1; $i <= 5; $i++)

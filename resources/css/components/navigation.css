@@ -230,11 +230,15 @@
     background: rgba(0, 0, 0, 0.5);
     z-index: 999;
     opacity: 0;
+    pointer-events: none;
+    /* Don't block clicks when inactive */
     transition: opacity 0.3s ease;
 }
 
 .mobile-menu-overlay.active {
     opacity: 1;
+    pointer-events: auto;
+    /* Allow clicks when active */
 }
 
 /* Hide mobile-specific elements on desktop */

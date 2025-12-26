@@ -214,3 +214,165 @@
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(255, 152, 0, 0.2);
 }
+
+/* ========================================
+   MOBILE RESPONSIVE STYLES
+   ======================================== */
+
+@media (max-width: 768px) {
+    .order-details-container {
+        margin: 1rem auto;
+        padding: 0 0.75rem;
+    }
+
+    /* Progress Tracker - More Compact on Mobile */
+    .progress-track {
+        padding: 0.5rem 0.5rem 0 0.5rem;
+        /* Top padding to prevent circle cutoff */
+        padding-right: 1.5rem;
+        /* Extra padding on right to prevent cutoff */
+        margin-bottom: 2rem;
+        overflow-x: auto;
+        overflow-y: visible;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        /* Firefox */
+    }
+
+    .progress-track::-webkit-scrollbar {
+        display: none;
+        /* Chrome, Safari */
+    }
+
+    .progress-track::before {
+        left: 0.5rem;
+        right: 0.5rem;
+    }
+
+    .progress-fill {
+        left: 0.5rem;
+    }
+
+    /* Smaller step circles and labels */
+    .progress-step {
+        width: 80px;
+        flex-shrink: 0;
+    }
+
+    .step-circle {
+        width: 30px;
+        height: 30px;
+        font-size: 0.875rem;
+        border-width: 2px;
+    }
+
+    .progress-step.active .step-circle {
+        transform: scale(1.15);
+        font-size: 1rem;
+    }
+
+    .step-label {
+        font-size: 0.7rem;
+        line-height: 1.2;
+        white-space: nowrap;
+    }
+
+    /* Override Come&Fix special styling on mobile */
+    .step-label[style*="font-size: 1.1rem"] {
+        font-size: 0.7rem !important;
+    }
+
+    /* Prevent status badge from wrapping */
+    .section-header {
+        flex-wrap: nowrap;
+        gap: 0.5rem;
+        font-size: 1.125rem;
+    }
+
+    .section-header span:first-child {
+        flex-shrink: 1;
+        min-width: 0;
+    }
+
+    /* Make status badge smaller and prevent wrapping */
+    .section-header .status-badge {
+        flex-shrink: 0;
+        font-size: 0.7rem !important;
+        padding: 0.375rem 0.75rem !important;
+        white-space: nowrap;
+    }
+
+    /* Order Cards */
+    .order-card {
+        padding: 1.25rem;
+        margin-bottom: 1.5rem;
+        border-radius: 16px;
+    }
+
+    /* Info Rows */
+    .info-row {
+        font-size: 0.875rem;
+        gap: 0.5rem;
+    }
+
+    .info-label {
+        font-size: 0.875rem;
+    }
+
+    .info-value {
+        font-size: 0.875rem;
+    }
+
+    .price-total {
+        font-size: 1.125rem;
+    }
+
+    /* Header */
+    .order-details-container .h3 {
+        font-size: 1.5rem;
+    }
+
+    /* Buttons */
+    .btn {
+        font-size: 0.875rem;
+        padding: 0.5rem 1rem;
+    }
+
+    /* Photo Grid */
+    .photo-grid {
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+        gap: 0.375rem;
+    }
+
+    /* Tukang Profile */
+    .tukang-avatar {
+        width: 60px;
+        height: 60px;
+    }
+
+    /* Alerts */
+    .alert {
+        font-size: 0.875rem;
+        padding: 0.875rem;
+    }
+
+    /* Make columns stack on mobile */
+    .row>[class*='col-'] {
+        margin-bottom: 1rem;
+    }
+}
+
+/* Extra small devices */
+@media (max-width: 375px) {
+    .progress-step {
+        width: 70px;
+    }
+
+    .step-label {
+        font-size: 0.65rem;
+    }
+
+    .section-header {
+        font-size: 1rem;
+    }
+}

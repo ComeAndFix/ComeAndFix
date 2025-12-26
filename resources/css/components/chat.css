@@ -805,3 +805,273 @@
     cursor: pointer;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
+
+/* ========================================
+   MOBILE RESPONSIVE STYLES
+   ======================================== */
+
+@media (max-width: 768px) {
+
+    /* Make chat fullscreen on mobile */
+    .chat-page-wrapper {
+        padding: 0;
+        min-height: 100vh;
+        background: white;
+    }
+
+    .chat-container {
+        max-width: 100%;
+        height: 100vh;
+        border-radius: 0;
+        box-shadow: none;
+        border: none;
+    }
+
+    /* Header adjustments */
+    .chat-header {
+        padding: 1rem 1rem;
+        padding-top: calc(70px + 1.5rem);
+        /* 70px for navbar + 1.5rem for extra spacing */
+        position: fixed;
+        top: 0;
+        /* Start from top to fill gap */
+        left: 0;
+        right: 0;
+        z-index: 99;
+        /* Below navbar (which is z-index: 1000) */
+        background: white;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .chat-header-avatar {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+
+    .chat-header-name {
+        font-size: 1rem;
+    }
+
+    .chat-header-status {
+        font-size: 0.7rem;
+    }
+
+    /* Back button mobile styling */
+    .chat-header .btn {
+        padding: 0.375rem 0.75rem;
+        font-size: 0.875rem;
+    }
+
+    /* Messages container */
+    .messages-container {
+        padding: 1rem;
+        padding-top: 150px;
+        /* Account for navbar (70px) + header (70px) */
+        padding-bottom: 100px;
+        flex: 1;
+        overflow-y: auto;
+        height: 100vh;
+    }
+
+    #messages {
+        gap: 1rem;
+    }
+
+    /* Message bubbles */
+    .message-wrapper {
+        max-width: 85%;
+    }
+
+    .message-bubble {
+        padding: 0.875rem 1rem;
+        font-size: 0.875rem;
+    }
+
+    .message-time {
+        font-size: 0.7rem;
+    }
+
+    /* Order proposal cards */
+    .order-proposal-card {
+        padding: 1.25rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .proposal-badge {
+        font-size: 0.7rem;
+        padding: 0.375rem 0.75rem;
+    }
+
+    .proposal-title {
+        font-size: 1.125rem;
+    }
+
+    .proposal-detail {
+        font-size: 0.8125rem;
+        padding: 0.375rem 0;
+    }
+
+    .detail-label,
+    .detail-value {
+        font-size: 0.8125rem;
+    }
+
+    .price-label {
+        font-size: 0.875rem;
+    }
+
+    .price-amount {
+        font-size: 1.25rem;
+    }
+
+    .proposal-actions {
+        gap: 0.75rem;
+    }
+
+    .proposal-actions .btn {
+        padding: 0.625rem 1rem;
+        font-size: 0.875rem;
+    }
+
+    /* Input area */
+    .chat-input-area {
+        padding: 1rem;
+        padding-bottom: calc(env(safe-area-inset-bottom) + 1rem);
+        /* Account for home indicator */
+        background: white;
+        box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+    }
+
+    .message-form-container {
+        padding: 0.375rem 0.375rem 0.375rem 1rem;
+    }
+
+    .chat-input {
+        padding: 0.625rem 0;
+        font-size: 0.875rem;
+    }
+
+    .chat-send-btn {
+        width: 42px;
+        height: 42px;
+    }
+
+    .chat-send-btn i {
+        font-size: 1.125rem;
+    }
+
+    .chat-attachment-btn {
+        font-size: 1.125rem;
+        padding: 0.375rem;
+    }
+
+    /* Image preview */
+    .image-preview-container {
+        margin-bottom: 0.5rem;
+        padding: 0.375rem;
+    }
+
+    .image-preview-thumbnail {
+        width: 40px;
+        height: 40px;
+    }
+
+    #image-name {
+        font-size: 0.8125rem;
+        max-width: 150px;
+    }
+
+    #image-size {
+        font-size: 0.7rem;
+    }
+
+    /* Chat images */
+    .message-bubble.message-image {
+        max-width: 250px;
+    }
+
+    .chat-attachment-image {
+        max-height: 300px;
+    }
+
+    /* Date divider */
+    .chat-date-divider span {
+        font-size: 0.7rem;
+        padding: 0.25rem 0.75rem;
+    }
+
+    /* Status badges */
+    .status-badge {
+        padding: 0.3125rem 0.75rem;
+        font-size: 0.7rem;
+    }
+
+    /* Payment method grid - stack on mobile */
+    .payment-method-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+
+    .payment-method-card {
+        padding: 1rem;
+    }
+
+    /* Modal adjustments for mobile */
+    .modal-dialog {
+        margin: 0;
+        max-width: 100%;
+        height: 100%;
+    }
+
+    .modal-content {
+        height: 100%;
+        border-radius: 0;
+    }
+
+    .modal-header,
+    .modal-body,
+    .modal-footer {
+        padding: 1rem;
+    }
+
+    .modal-body {
+        max-height: calc(100vh - 200px);
+    }
+
+    /* Payment overlay */
+    .payment-overlay-content {
+        max-width: 90%;
+        padding: 2rem 1.5rem;
+    }
+
+    .payment-spinner-container {
+        width: 60px;
+        height: 60px;
+    }
+
+    .success-icon,
+    .error-icon {
+        font-size: 2.5rem;
+    }
+}
+
+/* Extra small devices */
+@media (max-width: 375px) {
+    .message-wrapper {
+        max-width: 90%;
+    }
+
+    .proposal-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .proposal-actions .btn {
+        width: 100%;
+    }
+}

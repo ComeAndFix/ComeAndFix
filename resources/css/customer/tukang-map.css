@@ -46,6 +46,35 @@
     overflow: hidden;
 }
 
+/* Mobile Back Header (Hidden on Desktop) */
+.mobile-back-header {
+    display: none;
+}
+
+.mobile-back-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 1.5rem;
+    background: white;
+    border-bottom: 1px solid #F0F0F0;
+    text-decoration: none;
+    color: var(--brand-dark);
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.mobile-back-btn:hover {
+    background: #F8F9FA;
+    color: var(--brand-orange);
+}
+
+.mobile-back-btn i {
+    font-size: 1.25rem;
+}
+
 /* Sidebar Header */
 .sidebar-header {
     padding: 2rem 2rem 1.5rem 2rem;
@@ -681,19 +710,67 @@
     font-size: 1.125rem;
 }
 
+/* Close Button (Hidden on Desktop, Visible on Mobile) */
+.popup-close-btn {
+    display: none;
+    /* Hidden by default on desktop */
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 10;
+    width: 40px;
+    height: 40px;
+    background: white;
+    border: 2px solid #E0E0E0;
+    border-radius: 50%;
+    color: var(--brand-dark);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.popup-close-btn:hover {
+    background: #F8F9FA;
+    border-color: var(--brand-orange);
+    color: var(--brand-orange);
+    transform: scale(1.1);
+}
+
+.popup-close-btn i {
+    font-size: 1rem;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
-    .map-nav-overlay {
-        left: 1rem;
-        right: 1rem;
+
+    /* Hide map entirely on mobile */
+    #map {
+        display: none !important;
     }
 
+    /* Hide navigation overlay on mobile (nav is already in the sidebar) */
+    .map-nav-overlay {
+        display: none;
+    }
+
+    /* Make tukang list full screen on mobile */
     .tukang-list-sidebar {
-        left: 1rem;
-        right: 1rem;
-        width: auto;
-        top: 6rem;
-        max-height: calc(100vh - 7rem);
+        left: 0;
+        right: 0;
+        top: 0;
+        width: 100%;
+        max-height: 100vh;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    /* Show mobile back button */
+    .mobile-back-header {
+        display: block;
+        padding-top: env(safe-area-inset-top);
+        /* Account for notch */
     }
 
     .sidebar-header {
@@ -712,15 +789,65 @@
         padding: 0 0.75rem 1rem 0.75rem;
     }
 
-    /* Popup responsive */
+    /* Show close button on mobile */
+    .popup-close-btn {
+        display: flex;
+    }
+
+    /* Make popup full-screen on mobile */
+    .tukang-popup {
+        position: fixed !important;
+        left: 0 !important;
+        right: 0 !important;
+        top: 0 !important;
+        bottom: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        z-index: 2000;
+    }
+
     .tukang-popup.active {
-        left: 1rem !important;
-        right: 1rem;
-        top: auto !important;
-        bottom: 1rem;
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
     }
 
     .popup-content {
-        width: auto;
+        width: 100%;
+        max-height: 90vh;
+        border-radius: 24px 24px 0 0;
+        margin: 0;
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+        animation: slideUpMobile 0.3s ease-out;
+    }
+
+    @keyframes slideUpMobile {
+        from {
+            transform: translateY(100%);
+        }
+
+        to {
+            transform: translateY(0);
+        }
+    }
+
+    /* Adjust popup scrollable area for mobile */
+    .popup-scrollable-area {
+        padding: 1.5rem;
+        padding-top: 3.5rem;
+        /* Make room for close button */
+        max-height: calc(90vh - 100px);
+        /* Account for footer */
+    }
+
+    /* Ensure footer stays at bottom */
+    .popup-footer {
+        padding: 1rem 1.5rem;
+        padding-bottom: calc(env(safe-area-inset-bottom) + 1rem);
+        /* Account for home indicator */
     }
 }
