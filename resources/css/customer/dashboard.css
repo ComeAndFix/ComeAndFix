@@ -135,7 +135,9 @@
     opacity: 0;
     transition: opacity 0.4s ease;
     border-radius: 20px;
+    pointer-events: none;
 }
+
 
 .service-card:hover::before {
     opacity: 1;
@@ -149,6 +151,40 @@
 
 .service-card:active {
     transform: translateY(-4px);
+}
+
+/* Disable hover effects on touch devices */
+@media (hover: none) and (pointer: coarse) {
+    .service-card:hover {
+        transform: none;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        border-color: transparent;
+    }
+
+    .service-card:hover::before {
+        opacity: 0;
+    }
+
+    .service-card:hover .service-icon-wrapper {
+        background: linear-gradient(135deg, rgba(255, 152, 0, 0.1), rgba(255, 152, 0, 0.05));
+        transform: none;
+        box-shadow: 0 4px 12px rgba(255, 152, 0, 0.1);
+    }
+
+    .service-card:hover .service-icon {
+        color: var(--brand-orange);
+        transform: none;
+    }
+
+    .service-card:hover .service-name {
+        color: var(--brand-dark);
+    }
+
+    /* Add active state for touch feedback */
+    .service-card:active {
+        transform: scale(0.98);
+        opacity: 0.9;
+    }
 }
 
 .service-icon-wrapper {
@@ -539,22 +575,54 @@
         font-size: 0.9375rem;
     }
 
+    /* Services grid - 2 columns on mobile */
     .services-grid {
-        grid-template-columns: 1fr;
-        gap: 1.25rem;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
     }
 
     .service-card {
-        padding: 2rem 1.5rem;
+        padding: 1.75rem 1rem;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: rgba(255, 152, 0, 0.1);
+        cursor: pointer;
+    }
+
+    /* Ensure all child elements don't block pointer events */
+    .service-card * {
+        pointer-events: none;
+    }
+
+    /* Re-enable pointer events on the card itself */
+    .service-card {
+        pointer-events: auto;
     }
 
     .service-icon-wrapper {
-        width: 76px;
-        height: 76px;
+        width: 64px;
+        height: 64px;
+        margin-bottom: 1rem;
     }
 
     .service-icon {
-        font-size: 2.25rem;
+        font-size: 2rem;
+    }
+
+    .service-name {
+        font-size: 1rem;
+    }
+
+    .service-description {
+        font-size: 0.8125rem;
+    }
+
+    /* Add padding to sections to prevent edge touching */
+    .services-section {
+        padding: 0 1rem;
+    }
+
+    .how-it-works-section {
+        padding: 0 1rem;
     }
 
     /* Make bottom section stack vertically on mobile */
