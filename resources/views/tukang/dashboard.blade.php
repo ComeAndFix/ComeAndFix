@@ -49,26 +49,22 @@
                 <div id="status-card" class="d-flex align-items-center justify-content-between p-4 rounded-4 shadow-sm" 
                      style="background: white; border-left: 8px solid {{ Auth::guard('tukang')->user()->is_available ? '#10B981' : '#EF4444' }}; transition: all 0.3s ease;">
                     
-                    <div class="d-flex align-items-center gap-3">
-                        <div id="status-icon-wrapper" class="rounded-circle d-flex align-items-center justify-content-center text-white" 
-                             style="width: 60px; height: 60px; background-color: {{ Auth::guard('tukang')->user()->is_available ? '#10B981' : '#EF4444' }}; font-size: 1.75rem; transition: background-color 0.3s;">
-                            <i id="status-icon" class="bi {{ Auth::guard('tukang')->user()->is_available ? 'bi-wifi' : 'bi-wifi-off' }}"></i>
-                        </div>
-                        <div>
-                            <h5 class="fw-bold mb-1" style="color: var(--brand-dark);">Current Status</h5>
-                            <p id="availability-text" class="mb-0 fw-medium {{ Auth::guard('tukang')->user()->is_available ? 'text-success' : 'text-danger' }}" style="font-size: 1.1rem;">
-                                {{ Auth::guard('tukang')->user()->is_available ? 'Available for New Jobs' : 'Currently Unavailable' }}
-                            </p>
-                            <p class="text-muted small mb-0 mt-1">
-                                <i class="bi bi-info-circle me-1"></i>
-                                <span id="availability-info">
-                                    {{ Auth::guard('tukang')->user()->is_available 
-                                        ? 'Customers can find you on the map.' 
-                                        : 'You are hidden from customer searches.' }}
-                                </span>
-                            </p>
-                        </div>
+                    
+                    <div>
+                        <h5 class="fw-bold mb-1" style="color: var(--brand-dark);">Current Status</h5>
+                        <p id="availability-text" class="mb-0 fw-medium {{ Auth::guard('tukang')->user()->is_available ? 'text-success' : 'text-danger' }}" style="font-size: 1.1rem;">
+                            {{ Auth::guard('tukang')->user()->is_available ? 'Available for New Jobs' : 'Currently Unavailable' }}
+                        </p>
+                        <p class="text-muted small mb-0 mt-1">
+                            <i class="bi bi-info-circle me-1"></i>
+                            <span id="availability-info">
+                                {{ Auth::guard('tukang')->user()->is_available 
+                                    ? 'Customers can find you on the map.' 
+                                    : 'You are hidden from customer searches.' }}
+                            </span>
+                        </p>
                     </div>
+
 
                     <div class="form-check form-switch custom-switch">
                         <input class="form-check-input" type="checkbox" id="availability-toggle" style="width: 3.5rem; height: 1.75rem; cursor: pointer;" 
@@ -254,8 +250,6 @@
         // Availability Toggle
         function toggleAvailability(checkbox) {
             const statusCard = document.getElementById('status-card');
-            const iconWrapper = document.getElementById('status-icon-wrapper');
-            const statusIcon = document.getElementById('status-icon');
             const text = document.getElementById('availability-text');
             const infoText = document.getElementById('availability-info');
             
@@ -276,15 +270,13 @@
             const updateUI = (available) => {
                 const color = available ? '#10B981' : '#EF4444'; // Green : Red
                 const textClass = available ? 'text-success' : 'text-danger';
-                const iconClass = available ? 'bi-wifi' : 'bi-wifi-off';
                 const statusText = available ? 'Available for New Jobs' : 'Currently Unavailable';
                 const infoMsg = available ? 'Customers can find you on the map.' : 'You are hidden from customer searches.';
                 
                 // Update elements
                 statusCard.style.borderLeftColor = color;
-                iconWrapper.style.backgroundColor = color;
                 
-                statusIcon.className = `bi ${iconClass}`;
+                // Icon wrapper removed - no need to update background color
                 
                 text.textContent = statusText;
                 text.className = `mb-0 fw-medium ${textClass}`;
