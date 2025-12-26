@@ -356,16 +356,17 @@ class ChatController extends Controller
                 ], 400);
             }
 
-            // Check for existing pending proposal
+            // Check for existing pending proposal that is NOT expired
             $pendingProposalExists = Order::where('customer_id', $request->customer_id)
                 ->where('tukang_id', $tukangId)
                 ->where('status', 'pending')
+                ->where('expires_at', '>', now())
                 ->exists();
 
             if ($pendingProposalExists) {
                 return response()->json([
                     'success' => false,
-                    'error' => 'You already have a pending proposal with this customer. Please wait for their response or cancel the existing proposal first.'
+                    'error' => 'You already have a valid pending proposal with this customer. Please wait for their response or cancel the existing proposal first.'
                 ], 400);
             }
 

@@ -59,8 +59,8 @@
 
                         <div class="booking-footer">
                             <div class="tukang-info">
-                                <img src="{{ $order->tukang->user->avatar_url ?? 'https://ui-avatars.com/api/?name=Tukang' }}" alt="Tukang" class="tukang-avatar-small">
-                                <span class="tukang-name">{{ $order->tukang->user->name ?? 'Tukang Name' }}</span>
+                                <img src="{{ $order->tukang->profile_image ? \App\Helpers\StorageHelper::url($order->tukang->profile_image) : 'https://ui-avatars.com/api/?name='.urlencode($order->tukang->name) }}" alt="{{ $order->tukang->name }}" class="tukang-avatar-small">
+                                <span class="tukang-name">{{ $order->tukang->name }}</span>
                             </div>
                             <span class="status-badge {{ ($order->status === 'pending' && $order->isExpired()) ? 'rejected' : $order->status }}">
                                 {{ ($order->status === 'pending' && $order->isExpired()) ? 'Expired' : ucwords(str_replace('_', ' ', $order->status)) }}
@@ -106,7 +106,7 @@
 
                         <div class="booking-footer">
                             <div class="tukang-info">
-                                <img src="{{ $order->tukang->profile_photo_url ?? asset('images/default-avatar.png') }}" 
+                                <img src="{{ $order->tukang->profile_image ? \App\Helpers\StorageHelper::url($order->tukang->profile_image) : 'https://ui-avatars.com/api/?name='.urlencode($order->tukang->name) }}" 
                                      alt="{{ $order->tukang->name }}" 
                                      class="tukang-avatar-small">
                                 <span class="tukang-name">{{ $order->tukang->name }}</span>
