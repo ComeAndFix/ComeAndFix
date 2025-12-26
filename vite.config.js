@@ -15,6 +15,7 @@ export default defineConfig({
                 'resources/css/components/buttons.css',
                 'resources/css/components/chat.css',
                 'resources/css/components/forms.css',
+                'resources/css/components/image-viewer.css',
                 'resources/css/components/location-modal.css',
                 'resources/css/components/navigation.css',
                 'resources/css/components/order-details.css',
