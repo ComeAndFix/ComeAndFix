@@ -196,32 +196,252 @@
     background: transparent;
 }
 
-@media (max-width: 768px) {
+/* Hamburger Button - Hidden on Desktop */
+.hamburger-btn {
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 28px;
+    height: 22px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 1001;
+}
+
+.hamburger-btn span {
+    display: block;
+    width: 100%;
+    height: 3px;
+    background-color: var(--brand-dark);
+    border-radius: 3px;
+    transition: all 0.3s ease;
+}
+
+/* Mobile Menu Overlay */
+.mobile-menu-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.mobile-menu-overlay.active {
+    opacity: 1;
+}
+
+/* Hide mobile-specific elements on desktop */
+.mobile-profile-section,
+.mobile-logout-section,
+.mobile-menu-close {
+    display: none;
+}
+
+
+
+@media (max-width: 1000px) {
     .main-nav {
-        padding: 1rem;
+        padding: 0.75rem 1rem;
+        margin: 0.5rem 1rem;
+        grid-template-columns: auto 1fr auto;
     }
 
-    .nav-menu {
-        gap: 1rem;
-        font-size: 0.75rem;
+    /* Show hamburger button on mobile - positioned on the right */
+    .hamburger-btn {
+        display: flex;
+        justify-self: end;
     }
 
+    /* Hide hamburger when menu is open */
+    .hamburger-btn.active {
+        display: none;
+    }
+
+    /* Hide desktop profile section on mobile */
     .nav-profile-section {
-        gap: 0.6rem;
+        display: none;
     }
 
-    .nav-user-name {
+    /* Hide logo text on mobile */
+    .nav-logo span {
+        display: none !important;
+    }
+
+    /* Mobile menu styling */
+    .nav-menu {
+        position: fixed;
+        top: 0;
+        right: -300px;
+        width: 300px;
+        height: 100vh;
+        background: white;
+        flex-direction: column;
+        gap: 0;
+        padding: 0;
+        margin: 0;
+        box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+        transition: right 0.3s ease;
+        z-index: 1000;
+        overflow-y: auto;
+    }
+
+    .nav-menu.active {
+        right: 0;
+    }
+
+    /* Mobile Close Button */
+    .mobile-menu-close {
+        display: block;
+        padding: 1.5rem 1.5rem 1rem 1.5rem;
+        border-bottom: 1px solid #F0F0F0;
+    }
+
+    .mobile-close-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: transparent;
+        border: none;
+        color: var(--brand-dark);
+        font-family: 'Inter', sans-serif;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        padding: 0;
+        transition: color 0.2s ease;
+    }
+
+    .mobile-close-btn:hover {
+        color: var(--brand-orange);
+    }
+
+    .mobile-close-btn svg {
+        transition: transform 0.2s ease;
+    }
+
+    .mobile-close-btn:hover svg {
+        transform: translateX(-3px);
+    }
+
+    /* Mobile Profile Section - at the top of the menu */
+    .mobile-profile-section {
+        display: block;
+        background: linear-gradient(135deg, var(--brand-orange) 0%, #ff9500 100%);
+        padding: 2rem 1.5rem;
+        border-bottom: none;
+        margin-bottom: 0.5rem;
+    }
+
+    .mobile-profile-link {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        text-decoration: none;
+        color: white;
+    }
+
+    .mobile-profile-avatar,
+    .mobile-profile-avatar-placeholder {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid white;
+        flex-shrink: 0;
+        background: rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: white;
+    }
+
+    .mobile-profile-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        min-width: 0;
+    }
+
+    .mobile-profile-name {
+        font-family: 'Inter', sans-serif;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: white;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .mobile-profile-role {
+        font-family: 'Inter', sans-serif;
         font-size: 0.8rem;
-        max-width: 120px;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.9);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
-    .nav-user-avatar,
-    .nav-user-avatar-placeholder {
-        width: 36px;
-        height: 36px;
+    /* Navigation items */
+    .nav-menu li:not(.mobile-profile-section):not(.mobile-logout-section):not(.mobile-menu-close) {
+        width: 100%;
+        border-bottom: 1px solid #F0F0F0;
     }
 
-    .nav-logout-btn {
-        font-size: 0.65rem;
+    .nav-menu-item {
+        display: block;
+        padding: 1.25rem 1.5rem;
+        font-size: 0.95rem;
+        text-transform: none;
+        letter-spacing: 0;
+        transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .nav-menu-item:hover,
+    .nav-menu-item.active {
+        background-color: rgba(255, 152, 0, 0.1);
+        color: var(--brand-orange);
+    }
+
+    /* Mobile Logout Section */
+    .mobile-logout-section {
+        display: block;
+        margin-top: auto;
+        padding: 1.5rem;
+        border-top: 1px solid #F0F0F0;
+    }
+
+    .mobile-logout-btn {
+        width: 100%;
+        padding: 0.875rem;
+        background: transparent;
+        border: 2px solid #DC3545;
+        border-radius: 8px;
+        color: #DC3545;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .mobile-logout-btn:hover {
+        background: #DC3545;
+        color: white;
+    }
+
+    /* Show overlay on mobile when menu is active */
+    .mobile-menu-overlay {
+        display: block;
     }
 }
