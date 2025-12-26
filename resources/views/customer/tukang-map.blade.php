@@ -602,7 +602,7 @@
                 const portfolioHtml = tukang.portfolios.slice(0, 3).map(portfolio => {
                     console.log('Portfolio item:', portfolio);
                     const imageUrl = portfolio.images && portfolio.images.length > 0 
-                        ? `/storage/${portfolio.images[0].image_path}`
+                        ? portfolio.images[0].image_path
                         : 'https://via.placeholder.com/200x150/E0E0E0/757575?text=No+Image';
                     
                     return `

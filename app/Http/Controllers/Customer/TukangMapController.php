@@ -77,7 +77,7 @@ class TukangMapController extends Controller
                 // If photos stores absolute paths or relative to storage, adjust here. 
                 // Assuming stored as relative paths in array.
                 foreach ($order->completion->photos as $photo) {
-                    $images[] = ['image_path' => $photo];
+                    $images[] = ['image_path' => \App\Helpers\StorageHelper::url($photo)];
                 }
             }
 
