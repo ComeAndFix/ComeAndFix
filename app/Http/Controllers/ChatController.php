@@ -65,7 +65,8 @@ class ChatController extends Controller
     {
         try{
             $request->validate([
-                'message' => 'required|string|max:1000',
+                'message' => 'required_without:image|nullable|string|max:1000',
+                'image' => 'nullable|file|mimes:jpg,jpeg,png,webp,heic,heif|max:10240',
                 'receiver_id' => 'required|integer',
                 'receiver_type' => 'required|in:tukang,customer',
                 'service_type' => 'nullable|string',
@@ -111,6 +112,23 @@ class ChatController extends Controller
                 }
             }
 
+            $messageContent = $request->message;
+            $messageType = 'text';
+
+            if ($request->hasFile('image')) {
+                try {
+                    $file = $request->file('image');
+                    $path = \Illuminate\Support\Facades\Storage::disk('azure')->putFile('chat-attachments', $file);
+                    if ($path) {
+                        $messageContent = $path;
+                        $messageType = 'image';
+                    }
+                } catch (\Exception $e) {
+                    Log::error('Chat attachment upload failed: ' . $e->getMessage());
+                    return response()->json(['success' => false, 'error' => 'Failed to upload image.'], 500);
+                }
+            }
+
             $message = ChatMessage::create([
                 'conversation_id' => $conversationId,
                 'conversation_service_id' => $conversationServiceId,
@@ -118,7 +136,8 @@ class ChatController extends Controller
                 'sender_id' => $customer->id,
                 'receiver_type' => $receiverClass,
                 'receiver_id' => $receiver->id,
-                'message' => $request->message,
+                'message' => $messageContent ?? '',
+                'message_type' => $messageType,
             ]);
 
             $message->load(['sender', 'receiver']);

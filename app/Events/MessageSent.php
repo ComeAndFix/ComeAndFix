@@ -58,6 +58,8 @@ class MessageSent implements ShouldBroadcastNow
                     'name' => $this->message->receiver->name,
                     'type' => $this->message->receiver_type,
                 ],
+                'message_type' => $this->message->message_type,
+                'image_url' => $this->message->image_url,
                 'service' => $this->message->conversationService ? [
                     'id' => $this->message->conversationService->id,
                     'name' => $this->message->conversationService->name,

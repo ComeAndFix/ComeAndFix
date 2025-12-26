@@ -26,6 +26,22 @@ class ChatMessage extends Model
         'read_at' => 'datetime',
     ];
 
+    protected $appends = [
+        'image_url',
+    ];
+
+    public function getImageUrlAttribute()
+    {
+        if ($this->message_type === 'image' && $this->message) {
+            $azureUrl = config('filesystems.disks.azure.url');
+            if ($azureUrl) {
+                return rtrim($azureUrl, '/') . '/' . ltrim($this->message, '/');
+            }
+            return \Illuminate\Support\Facades\Storage::disk('azure')->url($this->message);
+        }
+        return null;
+    }
+
     public function sender()
     {
         return $this->morphTo();

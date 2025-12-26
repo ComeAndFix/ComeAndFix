@@ -187,8 +187,14 @@
                             </div>
                         @else
                             <div class="message-wrapper {{ $message->sender_type === 'App\Models\Customer' ? 'sent' : 'received' }}">
-                                <div class="message-bubble">
-                                    {{ $message->message }}
+                                <div class="message-bubble {{ $message->message_type === 'image' ? 'message-image' : '' }}">
+                                    @if($message->message_type === 'image')
+                                        <div class="chat-image-wrapper">
+                                            <img src="{{ $message->image_url }}" alt="Attachment" class="chat-attachment-image" onclick="openImageViewer(this.src)">
+                                        </div>
+                                    @else
+                                        {{ $message->message }}
+                                    @endif
                                 </div>
                                 <div class="message-time">
                                     {{ $message->created_at->format('H:i') }}
@@ -206,23 +212,47 @@
 
             <!-- Input Form -->
             <div class="chat-input-area">
-                <form id="message-form">
+                <!-- Image Preview -->
+                <div id="image-preview-container" class="image-preview-container">
+                    <img id="image-preview" src="#" alt="Preview" class="image-preview-thumbnail">
+                    <div class="flex-grow-1">
+                        <div id="image-name" class="small fw-bold text-truncate" style="max-width: 200px;"></div>
+                        <div id="image-size" class="smaller text-muted"></div>
+                    </div>
+                    <button type="button" id="remove-image" class="remove-image-btn">
+                        <i class="bi bi-x"></i>
+                    </button>
+                </div>
+
+                <form id="message-form" enctype="multipart/form-data">
                     @csrf
                     <div class="message-form-container">
                         <input type="hidden" id="receiver-id" value="{{ $receiver->id }}">
                         <input type="hidden" id="receiver-type" value="{{ $receiverType }}">
+                        
+                        <!-- Attachment Button -->
+                        <label for="chat-image-input" class="chat-attachment-btn" title="Attach image">
+                            <i class="bi bi-plus-circle"></i>
+                        </label>
+                        <input type="file" id="chat-image-input" name="image" accept="image/*,.heic,.heif" style="display: none;">
+
                         <input type="text"
                                id="message-input"
                                class="chat-input"
                                placeholder="Message {{ $receiver->name }}..."
-                               autocomplete="off"
-                               required>
+                               autocomplete="off">
                         <button type="submit" class="chat-send-btn">
                             <i class="bi bi-send-fill"></i>
                         </button>
                     </div>
                 </form>
             </div>
+        </div>
+
+        <!-- Image Viewer Modal -->
+        <div id="imageViewer" class="image-viewer-modal">
+            <span class="image-viewer-close">&times;</span>
+            <img class="image-viewer-content" id="viewerImage">
         </div>
     </div>
 
@@ -299,12 +329,48 @@
                 console.error('Echo is not available on window object');
             }
 
+            // Image attachment handler
+            const imageInput = document.getElementById('chat-image-input');
+            const previewContainer = document.getElementById('image-preview-container');
+            const previewImage = document.getElementById('image-preview');
+            const imageName = document.getElementById('image-name');
+            const imageSize = document.getElementById('image-size');
+            const removeImageBtn = document.getElementById('remove-image');
+
+            imageInput.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    if (file.size > 10 * 1024 * 1024) {
+                        showErrorAlert('Image size too large (max 10MB)');
+                        this.value = '';
+                        return;
+                    }
+
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        previewImage.src = e.target.result;
+                        imageName.textContent = file.name;
+                        imageSize.textContent = (file.size / 1024).toFixed(1) + ' KB';
+                        previewContainer.style.display = 'flex';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            removeImageBtn.addEventListener('click', function() {
+                imageInput.value = '';
+                previewContainer.style.display = 'none';
+                previewImage.src = '#';
+            });
+
             // Message form handler
             messageForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
 
                 const message = messageInput.value.trim();
-                if (!message) {
+                const imageFile = imageInput.files[0];
+
+                if (!message && !imageFile) {
                     return;
                 }
 
@@ -315,25 +381,29 @@
                 const urlParams = new URLSearchParams(window.location.search);
                 const serviceType = urlParams.get('service_type');
 
-                const requestBody = {
-                    message: message,
-                    receiver_id: parseInt(receiverId),
-                    receiver_type: receiverType
-                };
-                
-                // Include service_type if available
+                const submitBtn = messageForm.querySelector('.chat-send-btn');
+                const originalBtnContent = submitBtn.innerHTML;
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+
+                const formData = new FormData();
+                formData.append('message', message);
+                formData.append('receiver_id', receiverId);
+                formData.append('receiver_type', receiverType);
+                if (imageFile) {
+                    formData.append('image', imageFile);
+                }
                 if (serviceType) {
-                    requestBody.service_type = serviceType;
+                    formData.append('service_type', serviceType);
                 }
 
                 try {
                     const response = await fetch('{{ route("chat.send") }}', {
                         method: 'POST',
                         headers: {
-                            'Content-Type': 'application/json',
                             'X-CSRF-TOKEN': csrfToken
                         },
-                        body: JSON.stringify(requestBody)
+                        body: formData
                     });
 
                     const data = await response.json();
@@ -342,6 +412,9 @@
                         console.log('Message sent successfully via AJAX:', data.message);
                         addMessageToChat(data.message, true);
                         messageInput.value = '';
+                        imageInput.value = '';
+                        previewContainer.style.display = 'none';
+                        previewImage.src = '#';
                         scrollToBottom();
                     } else {
                         console.error('Failed to send message:', data);
@@ -350,6 +423,9 @@
                 } catch (error) {
                     console.error('Error sending message:', error);
                     showErrorAlert('Network error. Please check your connection and try again.');
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnContent;
                 }
             });
 
@@ -742,9 +818,21 @@
 
                 const messageWrapper = document.createElement('div');
                 messageWrapper.className = `message-wrapper ${isSender ? 'sent' : 'received'}`;
+                
+                let content = '';
+                if (message.message_type === 'image') {
+                    content = `
+                        <div class="chat-image-wrapper">
+                            <img src="${message.image_url}" alt="Attachment" class="chat-attachment-image" onclick="openImageViewer(this.src)">
+                        </div>
+                    `;
+                } else {
+                    content = escapeHtml(message.message);
+                }
+
                 messageWrapper.innerHTML = `
-                    <div class="message-bubble">
-                        ${escapeHtml(message.message)}
+                    <div class="message-bubble ${message.message_type === 'image' ? 'message-image' : ''}">
+                        ${content}
                     </div>
                     <div class="message-time">
                         ${formatTime(message.created_at)}
@@ -833,6 +921,43 @@
                     }
                 }, 5000);
             }
+
+            // Image Viewer Logic
+            const imageViewer = document.getElementById('imageViewer');
+            const viewerImage = document.getElementById('viewerImage');
+            const viewerClose = document.querySelector('.image-viewer-close');
+
+            window.openImageViewer = function(src) {
+                viewerImage.src = src;
+                imageViewer.classList.add('show');
+                document.body.style.overflow = 'hidden'; // Prevent scrolling
+            };
+
+            function closeImageViewer() {
+                imageViewer.classList.remove('show');
+                document.body.style.overflow = '';
+                setTimeout(() => {
+                    viewerImage.src = '';
+                }, 300);
+            }
+
+            if (viewerClose) {
+                viewerClose.onclick = closeImageViewer;
+            }
+            
+            if (imageViewer) {
+                imageViewer.onclick = function(e) {
+                    if (e.target !== viewerImage) {
+                        closeImageViewer();
+                    }
+                };
+            }
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && imageViewer && imageViewer.classList.contains('show')) {
+                    closeImageViewer();
+                }
+            });
 
             function scrollToBottom() {
                 const container = document.getElementById('messages-container');
