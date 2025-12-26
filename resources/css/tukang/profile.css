@@ -1,4 +1,8 @@
 /* Tukang Profile Page Styles - Matching Design System */
+body {
+    background-color: #F8F9FA;
+}
+
 .profile-page-wrapper {
     background-color: #F8F9FA;
     min-height: calc(100vh - 80px);

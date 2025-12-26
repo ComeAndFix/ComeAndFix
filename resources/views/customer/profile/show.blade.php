@@ -22,193 +22,262 @@
                 </div>
             @endif
 
-            <!-- Personal Information Section -->
-        <div class="profile-section">
-            <div class="section-header">
-                <h3 class="section-title">Personal Information</h3>
-                <div class="button-group">
-                    <button type="button" class="edit-btn" id="edit-personal-btn">
-                        <i class="bi bi-pencil"></i>
-                        <span>Edit Profile</span>
-                    </button>
-                    <button type="button" class="save-btn" id="save-personal-btn" style="display: none;">
-                        <i class="bi bi-check-lg"></i>
-                        <span>Save Changes</span>
-                    </button>
-                    <button type="button" class="cancel-btn" id="cancel-personal-btn" style="display: none;">
-                        <i class="bi bi-x-lg"></i>
-                        <span>Cancel</span>
-                    </button>
-                </div>
-            </div>
-
-            <form id="personal-info-form" method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data">
-                @csrf
-                @method('PUT')
-
-                <div class="field-group profile-photo-group" style="margin-bottom: 2rem;">
-                    <label class="field-label">Profile Photo</label>
-                    <div style="display: flex; align-items: center; gap: 2rem;">
-                        <div class="profile-photo-preview" style="width: 100px; height: 100px; border-radius: 50%; overflow: hidden; background: #f0f0f0; border: 3px solid var(--brand-orange); flex-shrink: 0;">
-                            @if($customer->profile_image)
-                                <img src="{{ \App\Helpers\StorageHelper::url($customer->profile_image) }}" alt="Profile Photo" id="photo-preview-img" style="width: 100%; height: 100%; object-fit: cover;">
-                            @else
-                                <div id="photo-placeholder" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #FFF3E0; color: var(--brand-orange); font-size: 2.5rem; font-weight: bold;">
-                                    {{ strtoupper(substr($customer->name, 0, 1)) }}
+            <!-- View Mode -->
+            <div id="view-mode" class="view-mode-container">
+                <div class="profile-grid">
+                    <!-- Sidebar -->
+                    <div class="profile-sidebar">
+                        <!-- Profile Card -->
+                        <div class="profile-card">
+                            <div class="profile-header">
+                                <div class="profile-photo-wrapper">
+                                    @if($customer->profile_image)
+                                        <img src="{{ \App\Helpers\StorageHelper::url($customer->profile_image) }}" alt="Profile Photo" class="profile-photo">
+                                    @else
+                                        <div class="profile-placeholder">
+                                            {{ strtoupper(substr($customer->name, 0, 1)) }}
+                                        </div>
+                                    @endif
                                 </div>
-                                <img src="" alt="Profile Photo" id="photo-preview-img" style="width: 100%; height: 100%; object-fit: cover; display: none;">
+                                
+                                <h2 class="profile-name">{{ $customer->name }}</h2>
+                                
+                                <div class="profile-contact">
+                                    <i class="bi bi-envelope"></i>
+                                    <span>{{ $customer->email }}</span>
+                                </div>
+                                
+                                @if($customer->phone)
+                                    <div class="profile-contact">
+                                        <i class="bi bi-telephone"></i>
+                                        <span>{{ $customer->phone }}</span>
+                                    </div>
+                                @endif
+
+                                <!-- Member Since -->
+                                <div class="member-since">
+                                    <i class="bi bi-calendar-check"></i>
+                                    <span>Member since {{ $customer->created_at->format('F Y') }}</span>
+                                </div>
+
+                                <!-- Quick Actions -->
+                                <div class="quick-actions">
+                                    <button type="button" class="action-btn action-btn-primary" onclick="toggleEditMode()">
+                                        <i class="bi bi-pencil"></i>
+                                        <span>Edit Profile</span>
+                                    </button>
+                                    <a href="{{ route('profile.reset-password') }}" class="action-btn action-btn-secondary">
+                                        <i class="bi bi-key"></i>
+                                        <span>Change Password</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Email Verification Status Card -->
+                        <div class="status-card">
+                            <h3 class="status-header">Email Verification</h3>
+                            <div class="status-row">
+                                <span>Status</span>
+                                @if($customer->email_verified_at)
+                                    <span class="status-badge status-verified">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                        Verified
+                                    </span>
+                                @else
+                                    <span class="status-badge status-unverified">
+                                        <i class="bi bi-exclamation-circle-fill"></i>
+                                        Unverified
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main Content -->
+                    <div class="profile-main">
+                        <!-- Personal Information -->
+                        <div class="profile-section">
+                            <div class="section-header">
+                                <h3 class="section-title">
+                                    <i class="bi bi-person-fill text-brand-orange"></i>
+                                    Personal Information
+                                </h3>
+                            </div>
+
+                            <div class="field-grid">
+                                <div class="field-group">
+                                    <label class="field-label">Name</label>
+                                    <input type="text" class="field-value" value="{{ $customer->name }}" disabled>
+                                </div>
+
+                                <div class="field-group">
+                                    <label class="field-label">Phone</label>
+                                    <input type="text" class="field-value" value="{{ $customer->phone ?? '-' }}" disabled>
+                                </div>
+
+                                <div class="field-group full-width">
+                                    <label class="field-label">Email</label>
+                                    <input type="text" class="field-value" value="{{ $customer->email }}" disabled>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Location Information -->
+                        <div class="profile-section">
+                            <div class="section-header">
+                                <h3 class="section-title">
+                                    <i class="bi bi-geo-alt-fill text-brand-orange"></i>
+                                    Location Information
+                                </h3>
+                            </div>
+
+                            <div class="field-grid">
+                                <div class="field-group full-width">
+                                    <label class="field-label">Address</label>
+                                    <input type="text" class="field-value" value="{{ $customer->address ?? '-' }}" disabled>
+                                </div>
+
+                                <div class="field-group">
+                                    <label class="field-label">City</label>
+                                    <input type="text" class="field-value" value="{{ $customer->city ?? '-' }}" disabled>
+                                </div>
+
+                                <div class="field-group">
+                                    <label class="field-label">Postal Code</label>
+                                    <input type="text" class="field-value" value="{{ $customer->postal_code ?? '-' }}" disabled>
+                                </div>
+                            </div>
+
+                            <div class="map-container disabled" id="map-container">
+                                <div id="profile-map"></div>
+                            </div>
+                            
+                            @if($customer->latitude && $customer->longitude)
+                                <p style="margin-top: 0.75rem; color: #6C757D; font-size: 0.875rem;">
+                                    <i class="bi bi-pin-map"></i>
+                                    <strong>Coordinates:</strong> {{ number_format($customer->latitude, 6) }}, {{ number_format($customer->longitude, 6) }}
+                                </p>
+                            @else
+                                <p style="margin-top: 0.75rem; color: #6C757D; font-size: 0.875rem; font-style: italic;">
+                                    <i class="bi bi-exclamation-circle"></i>
+                                    Location not set. Please edit your profile to set your location.
+                                </p>
                             @endif
                         </div>
-                        
-                        <div class="photo-upload-controls" style="display: none;">
-                            <input type="file" name="profile_image" id="profile_image" class="field-value" accept="image/png, image/jpeg, image/jpg" style="padding-left: 0;">
-                            <small class="text-muted" style="display: block; margin-top: 0.5rem; color: #6c757d;">Supported formats: JPG, JPEG, PNG. Max size: 1MB.</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Edit Mode -->
+            <div id="edit-mode" class="edit-mode-container">
+                <div class="profile-section">
+                    <div class="section-header">
+                        <h3 class="section-title">
+                            <i class="bi bi-pencil-square text-brand-orange"></i>
+                            Edit Profile
+                        </h3>
+                    </div>
+
+                    <form method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data">
+                        @csrf
+                        @method('PUT')
+
+                        <!-- Profile Photo Upload -->
+                        <div class="photo-upload-section">
+                            <div class="photo-upload-wrapper">
+                                @if($customer->profile_image)
+                                    <img src="{{ \App\Helpers\StorageHelper::url($customer->profile_image) }}" alt="Profile Photo" class="profile-photo" id="edit-profile-photo">
+                                @else
+                                    <div class="profile-placeholder" id="edit-profile-placeholder">
+                                        {{ strtoupper(substr($customer->name, 0, 1)) }}
+                                    </div>
+                                    <img src="" alt="Profile Photo" class="profile-photo" id="edit-profile-photo" style="display: none;">
+                                @endif
+                                
+                                <label for="profile_image" class="photo-upload-label">
+                                    <i class="bi bi-camera"></i>
+                                </label>
+                                <input type="file" name="profile_image" id="profile_image" class="photo-upload-input" accept="image/png, image/jpeg, image/jpg">
+                            </div>
+                            <p class="photo-upload-hint">Click the camera icon to upload a new photo (JPG, PNG, max 1MB)</p>
                         </div>
-                    </div>
-                    @error('profile_image')
-                        <small class="text-danger">{{ $message }}</small>
-                    @enderror
+
+                        <!-- Personal Information Fields -->
+                        <div class="field-grid">
+                            <div class="field-group">
+                                <label class="field-label">Name <span class="text-danger">*</span></label>
+                                <input type="text" name="name" class="field-value editable" value="{{ old('name', $customer->name) }}" required>
+                            </div>
+
+                            <div class="field-group">
+                                <label class="field-label">Phone <span class="text-danger">*</span></label>
+                                <input type="text" name="phone" class="field-value editable" value="{{ old('phone', $customer->phone) }}" required>
+                            </div>
+
+                            <div class="field-group full-width">
+                                <label class="field-label">Email</label>
+                                <input type="email" class="field-value" value="{{ $customer->email }}" disabled>
+                                <small style="color: #6C757D; font-size: 0.75rem; margin-top: 0.25rem; display: block;">Email cannot be changed</small>
+                            </div>
+
+                            <div class="field-group full-width">
+                                <label class="field-label">Address</label>
+                                <input type="text" name="address" class="field-value editable" value="{{ old('address', $customer->address) }}">
+                            </div>
+
+                            <div class="field-group">
+                                <label class="field-label">City</label>
+                                <input type="text" name="city" class="field-value editable" value="{{ old('city', $customer->city) }}">
+                            </div>
+
+                            <div class="field-group">
+                                <label class="field-label">Postal Code</label>
+                                <input type="text" name="postal_code" class="field-value editable" value="{{ old('postal_code', $customer->postal_code) }}">
+                            </div>
+                        </div>
+
+                        <!-- Hidden Location Fields -->
+                        <input type="hidden" name="latitude" id="latitude" value="{{ $customer->latitude }}">
+                        <input type="hidden" name="longitude" id="longitude" value="{{ $customer->longitude }}">
+
+                        <!-- Location Map Section -->
+                        <div class="field-group full-width" style="margin-top: 1.5rem;">
+                            <label class="field-label">
+                                <i class="bi bi-geo-alt-fill"></i>
+                                Your Location
+                            </label>
+                            
+                            <div class="map-container" id="edit-map-container" style="display: none;">
+                                <div id="edit-profile-map"></div>
+                            </div>
+                            
+                            <div id="edit-map-instruction" style="display: none; margin-top: 0.75rem; padding: 0.75rem; background: #FFF3E0; border-left: 4px solid var(--brand-orange); border-radius: 8px;">
+                                <i class="bi bi-info-circle" style="color: var(--brand-orange); margin-right: 0.5rem;"></i>
+                                <small style="color: var(--brand-dark);">
+                                    <strong>Tip:</strong> Click anywhere on the map or drag the marker to set your new location
+                                </small>
+                            </div>
+                            
+                            <button type="button" id="use-current-location-btn" class="use-current-location-btn" style="display: none;">
+                                <i class="bi bi-crosshair"></i>
+                                <span>Use Current Location</span>
+                            </button>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="form-actions">
+                            <button type="submit" class="form-btn form-btn-save">
+                                <i class="bi bi-check-circle"></i>
+                                <span>Save Changes</span>
+                            </button>
+                            <button type="button" class="form-btn form-btn-cancel" onclick="toggleEditMode()">
+                                <i class="bi bi-x-circle"></i>
+                                <span>Cancel</span>
+                            </button>
+                        </div>
+                    </form>
                 </div>
-
-                <div class="field-group">
-                    <label class="field-label">Name</label>
-                    <input type="text" name="name" class="field-value" value="{{ old('name', $customer->name) }}" disabled>
-                    @error('name')
-                        <small class="text-danger">{{ $message }}</small>
-                    @enderror
-                </div>
-
-                <div class="field-group">
-                    <label class="field-label">Email Address</label>
-                    <div style="display: flex; align-items: center;">
-                        <input type="email" name="email" class="field-value" value="{{ old('email', $customer->email) }}" readonly style="flex: 1;">
-                        @if($customer->email_verified_at)
-                            <span class="verified-badge">
-                                <i class="bi bi-check-circle-fill"></i>
-                                Verified
-                            </span>
-                        @else
-                            <span class="unverified-badge">
-                                <i class="bi bi-exclamation-circle-fill"></i>
-                                Unverified
-                            </span>
-                        @endif
-                    </div>
-                    @error('email')
-                        <small class="text-danger">{{ $message }}</small>
-                    @enderror
-                </div>
-
-                <div class="field-group">
-                    <label class="field-label">Phone Number</label>
-                    <input type="text" name="phone" class="field-value" value="{{ old('phone', $customer->phone ?? '') }}" disabled>
-                    @error('phone')
-                        <small class="text-danger">{{ $message }}</small>
-                    @enderror
-                </div>
-
-                <div class="field-group">
-                    <label class="field-label">Member Since</label>
-                    <input type="text" class="field-value" value="{{ $customer->created_at->format('F d, Y') }}" disabled>
-                </div>
-            </form>
-        </div>
-
-        <!-- Location Information Section -->
-        <div class="profile-section">
-            <div class="section-header">
-                <h3 class="section-title">Location Information</h3>
-                <div class="button-group">
-                    <button type="button" class="edit-btn" id="edit-location-btn">
-                        <i class="bi bi-pencil"></i>
-                        <span>Edit Location</span>
-                    </button>
-                    <button type="button" class="save-btn" id="save-location-btn" style="display: none;">
-                        <i class="bi bi-check-lg"></i>
-                        <span>Save Changes</span>
-                    </button>
-                    <button type="button" class="cancel-btn" id="cancel-location-btn" style="display: none;">
-                        <i class="bi bi-x-lg"></i>
-                        <span>Cancel</span>
-                    </button>
-                </div>
-            </div>
-
-            <form id="location-info-form" method="POST" action="{{ route('profile.update') }}">
-                @csrf
-                @method('PUT')
-
-                <!-- Hidden fields for personal info (required by validation) -->
-                <input type="hidden" name="name" value="{{ $customer->name }}">
-                <input type="hidden" name="email" value="{{ $customer->email }}">
-                <input type="hidden" name="phone" value="{{ $customer->phone ?? '' }}">
-
-                <div class="field-group">
-                    <label class="field-label">Address</label>
-                    <input type="text" name="address" class="field-value" value="{{ old('address', $customer->address ?? '') }}" disabled>
-                    @error('address')
-                        <small class="text-danger">{{ $message }}</small>
-                    @enderror
-                </div>
-
-                <div class="field-row">
-                    <div class="field-group">
-                        <label class="field-label">City</label>
-                        <input type="text" name="city" class="field-value" value="{{ old('city', $customer->city ?? '') }}" disabled>
-                        @error('city')
-                            <small class="text-danger">{{ $message }}</small>
-                        @enderror
-                    </div>
-
-                    <div class="field-group">
-                        <label class="field-label">Postal Code</label>
-                        <input type="text" name="postal_code" class="field-value" value="{{ old('postal_code', $customer->postal_code ?? '') }}" disabled>
-                        @error('postal_code')
-                            <small class="text-danger">{{ $message }}</small>
-                        @enderror
-                    </div>
-                </div>
-
-                <input type="hidden" name="latitude" id="latitude" value="{{ $customer->latitude }}">
-                <input type="hidden" name="longitude" id="longitude" value="{{ $customer->longitude }}">
-
-                <div class="map-container disabled" id="map-container">
-                    <div id="profile-map"></div>
-                </div>
-                
-                <div id="map-instruction" style="display: none; margin-top: 0.75rem; padding: 0.75rem; background: #FFF3E0; border-left: 4px solid var(--brand-orange); border-radius: 8px;">
-                    <i class="bi bi-info-circle" style="color: var(--brand-orange); margin-right: 0.5rem;"></i>
-                    <small style="color: var(--brand-dark);">
-                        <strong>Tip:</strong> Click anywhere on the map or drag the marker to set your new location
-                    </small>
-                </div>
-                
-                <button type="button" id="use-current-location-btn" class="use-current-location-btn" style="display: none;">
-                    <i class="bi bi-crosshair"></i>
-                    <span>Use Current Location</span>
-                </button>
-            </form>
-        </div>
-
-        <!-- Security Section -->
-        <div class="profile-section">
-            <div class="section-header">
-                <h3 class="section-title">
-                    <i class="bi bi-shield-lock-fill text-brand-orange"></i>
-                    Security
-                </h3>
-            </div>
-
-            <div class="security-card-simple">
-                <div class="security-info">
-                    <h4 class="security-title">Password</h4>
-                    <p class="security-description">Keep your account secure with a strong password. Change it regularly to maintain security.</p>
-                </div>
-                <a href="{{ route('profile.reset-password') }}" class="reset-password-btn-simple">
-                    <i class="bi bi-key"></i>
-                    <span>Change Password</span>
-                </a>
-            </div>
             </div>
         </div>
     </div>
@@ -258,20 +327,21 @@
     </style>
     
     <script>
-        let map;
-        let marker;
-        let isEditingPersonal = false;
-        let isEditingLocation = false;
+        let viewMap;
+        let editMap;
+        let viewMarker;
+        let editMarker;
+        let isEditMode = false;
 
-        // Initialize map
-        function initMap() {
+        // Initialize view mode map
+        function initViewMap() {
             const lat = parseFloat(document.getElementById('latitude').value) || -6.2088;
             const lng = parseFloat(document.getElementById('longitude').value) || 106.8456;
             
             const position = [lat, lng];
 
-            // Initialize Leaflet map
-            map = L.map('profile-map', {
+            // Initialize Leaflet map for view mode
+            viewMap = L.map('profile-map', {
                 zoomControl: true,
                 dragging: false,
                 touchZoom: false,
@@ -285,7 +355,7 @@
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 19,
                 attribution: '© OpenStreetMap contributors'
-            }).addTo(map);
+            }).addTo(viewMap);
 
             // Create custom icon for user location
             const userIcon = L.divIcon({
@@ -295,54 +365,168 @@
             });
 
             // Add marker for user location
-            marker = L.marker(position, {
+            viewMarker = L.marker(position, {
                 icon: userIcon,
                 draggable: false
-            }).addTo(map);
+            }).addTo(viewMap);
 
-            marker.bindPopup('<strong>Your Location</strong>').openPopup();
+            viewMarker.bindPopup('<strong>Your Location</strong>').openPopup();
         }
 
-        // Personal Info Edit Controls
-        document.addEventListener('DOMContentLoaded', function() {
-            initMap();
+        // Initialize edit mode map
+        function initEditMap() {
+            const lat = parseFloat(document.getElementById('latitude').value) || -6.2088;
+            const lng = parseFloat(document.getElementById('longitude').value) || 106.8456;
             
-            document.getElementById('edit-personal-btn').addEventListener('click', function() {
-                // Prevent editing if location is being edited
-                if (isEditingLocation) {
-                    alert('Please save or cancel your location changes before editing personal information.');
-                    return;
-                }
+            const position = [lat, lng];
+
+            // Initialize Leaflet map for edit mode
+            editMap = L.map('edit-profile-map', {
+                zoomControl: true,
+                dragging: true,
+                touchZoom: true,
+                scrollWheelZoom: true,
+                doubleClickZoom: true,
+                boxZoom: true,
+                keyboard: true
+            }).setView(position, 15);
+
+            // Add tile layer (OpenStreetMap)
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(editMap);
+
+            // Create custom icon for user location
+            const userIcon = L.divIcon({
+                className: 'user-location-marker',
+                iconSize: [24, 24],
+                iconAnchor: [12, 12]
+            });
+
+            // Add marker for user location
+            editMarker = L.marker(position, {
+                icon: userIcon,
+                draggable: true
+            }).addTo(editMap);
+
+            editMarker.bindPopup('<strong>Your Location</strong>').openPopup();
+
+            // Update coordinates when marker is dragged
+            editMarker.on('dragend', function(event) {
+                const position = editMarker.getLatLng();
+                document.getElementById('latitude').value = position.lat;
+                document.getElementById('longitude').value = position.lng;
+            });
+
+            // Allow clicking on map to place new pinpoint
+            editMap.on('click', function(e) {
+                const newPosition = e.latlng;
                 
-                isEditingPersonal = true;
-                togglePersonalEdit(true);
+                // Move marker to clicked position
+                editMarker.setLatLng(newPosition);
+                
+                // Update coordinates
+                document.getElementById('latitude').value = newPosition.lat;
+                document.getElementById('longitude').value = newPosition.lng;
+                
+                // Pan map to new position
+                editMap.panTo(newPosition);
+                
+                // Show popup
+                editMarker.bindPopup('<strong>New Location</strong>').openPopup();
             });
+        }
 
-            document.getElementById('cancel-personal-btn').addEventListener('click', function() {
-                isEditingPersonal = false;
-                togglePersonalEdit(false);
-                // Reset form
-                document.getElementById('personal-info-form').reset();
-                location.reload();
-            });
+        function toggleEditMode() {
+            const viewMode = document.getElementById('view-mode');
+            const editMode = document.getElementById('edit-mode');
+            const editMapContainer = document.getElementById('edit-map-container');
+            const editMapInstruction = document.getElementById('edit-map-instruction');
+            const useLocationBtn = document.getElementById('use-current-location-btn');
+            
+            if (viewMode.classList.contains('hidden')) {
+                // Switch to view mode
+                viewMode.classList.remove('hidden');
+                editMode.classList.remove('active');
+                isEditMode = false;
+                
+                // Hide edit map elements
+                editMapContainer.style.display = 'none';
+                editMapInstruction.style.display = 'none';
+                useLocationBtn.style.display = 'none';
+                
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                
+                // Reinitialize view map after a short delay
+                setTimeout(() => {
+                    if (viewMap) {
+                        viewMap.invalidateSize();
+                    }
+                }, 100);
+            } else {
+                // Switch to edit mode
+                viewMode.classList.add('hidden');
+                editMode.classList.add('active');
+                isEditMode = true;
+                
+                // Show edit map elements
+                editMapContainer.style.display = 'block';
+                editMapInstruction.style.display = 'block';
+                useLocationBtn.style.display = 'block';
+                
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                
+                // Initialize or refresh edit map after a short delay
+                setTimeout(() => {
+                    if (!editMap) {
+                        initEditMap();
+                    } else {
+                        editMap.invalidateSize();
+                        const lat = parseFloat(document.getElementById('latitude').value) || -6.2088;
+                        const lng = parseFloat(document.getElementById('longitude').value) || 106.8456;
+                        editMap.setView([lat, lng], 15);
+                        editMarker.setLatLng([lat, lng]);
+                    }
+                }, 100);
+            }
+        }
 
-            document.getElementById('save-personal-btn').addEventListener('click', function() {
-                document.getElementById('personal-info-form').submit();
-            });
-
-            // Profile image preview
+        // Use Current Location button
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize view map on page load
+            initViewMap();
+            
+            // Profile Image Preview
             const profileImageInput = document.getElementById('profile_image');
+            
             if (profileImageInput) {
                 profileImageInput.addEventListener('change', function(e) {
                     const file = e.target.files[0];
                     if (file) {
+                        // Validate file size (1MB = 1048576 bytes)
+                        if (file.size > 1048576) {
+                            alert('File size must be less than 1MB');
+                            this.value = '';
+                            return;
+                        }
+
+                        // Validate file type
+                        const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+                        if (!validTypes.includes(file.type)) {
+                            alert('Only JPG, JPEG, and PNG files are allowed');
+                            this.value = '';
+                            return;
+                        }
+
                         const reader = new FileReader();
                         reader.onload = function(e) {
-                            const previewImg = document.getElementById('photo-preview-img');
-                            const placeholder = document.getElementById('photo-placeholder');
+                            const previewImg = document.getElementById('edit-profile-photo');
+                            const placeholder = document.getElementById('edit-profile-placeholder');
                             
                             previewImg.src = e.target.result;
                             previewImg.style.display = 'block';
+                            
                             if (placeholder) {
                                 placeholder.style.display = 'none';
                             }
@@ -351,234 +535,84 @@
                     }
                 });
             }
-        });
 
-        function togglePersonalEdit(editing) {
-            const form = document.getElementById('personal-info-form');
-            const inputs = form.querySelectorAll('input[name]:not([type="hidden"])');
-            const photoUploadControls = form.querySelector('.photo-upload-controls');
-            
-            if (photoUploadControls) {
-                photoUploadControls.style.display = editing ? 'block' : 'none';
-            }
-            
-            inputs.forEach(input => {
-                // Skip email field - it's always readonly
-                // Also skip file input here as we handle it via container visibility
-                if (input.name === 'email' || input.type === 'file') {
-                    return;
-                }
-                
-                input.disabled = !editing;
-                if (editing) {
-                    input.classList.add('editable');
-                } else {
-                    input.classList.remove('editable');
-                }
-            });
-
-            document.getElementById('edit-personal-btn').style.display = editing ? 'none' : 'inline-flex';
-            document.getElementById('save-personal-btn').style.display = editing ? 'inline-flex' : 'none';
-            document.getElementById('cancel-personal-btn').style.display = editing ? 'inline-flex' : 'none';
-            
-            // Disable location edit button when editing personal info
-            const locationEditBtn = document.getElementById('edit-location-btn');
-            if (editing) {
-                locationEditBtn.style.opacity = '0.5';
-                locationEditBtn.style.pointerEvents = 'none';
-            } else {
-                locationEditBtn.style.opacity = '1';
-                locationEditBtn.style.pointerEvents = 'auto';
-            }
-        }
-
-        // Location Info Edit Controls
-        document.getElementById('edit-location-btn').addEventListener('click', function() {
-            // Prevent editing if personal info is being edited
-            if (isEditingPersonal) {
-                alert('Please save or cancel your personal information changes before editing location.');
-                return;
-            }
-            
-            isEditingLocation = true;
-            toggleLocationEdit(true);
-        });
-
-        document.getElementById('cancel-location-btn').addEventListener('click', function() {
-            isEditingLocation = false;
-            toggleLocationEdit(false);
-            // Reset form
-            document.getElementById('location-info-form').reset();
-            location.reload();
-        });
-
-        document.getElementById('save-location-btn').addEventListener('click', function() {
-            document.getElementById('location-info-form').submit();
-        });
-
-        // Use Current Location button
-        document.getElementById('use-current-location-btn').addEventListener('click', function() {
-            const btn = this;
-            const originalText = btn.innerHTML;
-            
-            // Check if geolocation is supported
-            if (!navigator.geolocation) {
-                alert('Geolocation is not supported by your browser');
-                return;
-            }
-            
-            // Disable button and show loading state
-            btn.disabled = true;
-            btn.innerHTML = '<i class="bi bi-arrow-clockwise spin"></i><span>Getting location...</span>';
-            
-            // Get current position
-            navigator.geolocation.getCurrentPosition(
-                function(position) {
-                    const lat = position.coords.latitude;
-                    const lng = position.coords.longitude;
-                    const newPosition = [lat, lng];
-                    
-                    // Update marker position
-                    marker.setLatLng(newPosition);
-                    
-                    // Update coordinates
-                    document.getElementById('latitude').value = lat;
-                    document.getElementById('longitude').value = lng;
-                    
-                    // Pan map to new position
-                    map.setView(newPosition, 15);
-                    
-                    // Show popup
-                    marker.bindPopup('<strong>Current Location</strong>').openPopup();
-                    
-                    // Reset button
-                    btn.disabled = false;
-                    btn.innerHTML = originalText;
-                },
-                function(error) {
-                    // Handle errors
-                    let errorMessage = 'Unable to get your location. ';
-                    switch(error.code) {
-                        case error.PERMISSION_DENIED:
-                            errorMessage += 'Please allow location access in your browser settings.';
-                            break;
-                        case error.POSITION_UNAVAILABLE:
-                            errorMessage += 'Location information is unavailable.';
-                            break;
-                        case error.TIMEOUT:
-                            errorMessage += 'The request timed out.';
-                            break;
-                        default:
-                            errorMessage += 'An unknown error occurred.';
-                    }
-                    alert(errorMessage);
-                    
-                    // Reset button
-                    btn.disabled = false;
-                    btn.innerHTML = originalText;
-                },
-                {
-                    enableHighAccuracy: true,
-                    timeout: 10000,
-                    maximumAge: 0
-                }
-            );
-        });
-
-        function toggleLocationEdit(editing) {
-            const form = document.getElementById('location-info-form');
-            const inputs = form.querySelectorAll('input[name]:not([type="hidden"])');
-            const mapContainer = document.getElementById('map-container');
-            
-            inputs.forEach(input => {
-                input.disabled = !editing;
-                if (editing) {
-                    input.classList.add('editable');
-                } else {
-                    input.classList.remove('editable');
-                }
-            });
-
-            if (editing) {
-                mapContainer.classList.remove('disabled');
-                
-                // Enable map interactions
-                map.dragging.enable();
-                map.touchZoom.enable();
-                map.scrollWheelZoom.enable();
-                map.doubleClickZoom.enable();
-                map.boxZoom.enable();
-                map.keyboard.enable();
-                
-                // Make marker draggable
-                marker.dragging.enable();
-                
-                // Update coordinates when marker is dragged
-                marker.on('dragend', function(event) {
-                    const position = marker.getLatLng();
-                    document.getElementById('latitude').value = position.lat;
-                    document.getElementById('longitude').value = position.lng;
-                });
-                
-                // Allow clicking on map to place new pinpoint
-                map.on('click', function(e) {
-                    const newPosition = e.latlng;
-                    
-                    // Move marker to clicked position
-                    marker.setLatLng(newPosition);
-                    
-                    // Update coordinates
-                    document.getElementById('latitude').value = newPosition.lat;
-                    document.getElementById('longitude').value = newPosition.lng;
-                    
-                    // Pan map to new position
-                    map.panTo(newPosition);
-                    
-                    // Show popup
-                    marker.bindPopup('<strong>New Location</strong>').openPopup();
-                });
-            } else {
-                mapContainer.classList.add('disabled');
-                
-                // Disable map interactions
-                map.dragging.disable();
-                map.touchZoom.disable();
-                map.scrollWheelZoom.disable();
-                map.doubleClickZoom.disable();
-                map.boxZoom.disable();
-                map.keyboard.disable();
-                
-                // Make marker non-draggable
-                marker.dragging.disable();
-                
-                // Remove dragend event
-                marker.off('dragend');
-                
-                // Remove map click event
-                map.off('click');
-            }
-
-            document.getElementById('edit-location-btn').style.display = editing ? 'none' : 'inline-flex';
-            document.getElementById('save-location-btn').style.display = editing ? 'inline-flex' : 'none';
-            document.getElementById('cancel-location-btn').style.display = editing ? 'inline-flex' : 'none';
-            
-            // Show/hide map instruction
-            const mapInstruction = document.getElementById('map-instruction');
-            mapInstruction.style.display = editing ? 'block' : 'none';
-            
-            // Show/hide use current location button
+            // Use Current Location button handler
             const useLocationBtn = document.getElementById('use-current-location-btn');
-            useLocationBtn.style.display = editing ? 'block' : 'none';
-            
-            // Disable personal edit button when editing location
-            const personalEditBtn = document.getElementById('edit-personal-btn');
-            if (editing) {
-                personalEditBtn.style.opacity = '0.5';
-                personalEditBtn.style.pointerEvents = 'none';
-            } else {
-                personalEditBtn.style.opacity = '1';
-                personalEditBtn.style.pointerEvents = 'auto';
+            if (useLocationBtn) {
+                useLocationBtn.addEventListener('click', function() {
+                    const btn = this;
+                    const originalText = btn.innerHTML;
+                    
+                    // Check if geolocation is supported
+                    if (!navigator.geolocation) {
+                        alert('Geolocation is not supported by your browser');
+                        return;
+                    }
+                    
+                    // Disable button and show loading state
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="bi bi-arrow-clockwise spin"></i><span>Getting location...</span>';
+                    
+                    // Get current position
+                    navigator.geolocation.getCurrentPosition(
+                        function(position) {
+                            const lat = position.coords.latitude;
+                            const lng = position.coords.longitude;
+                            const newPosition = [lat, lng];
+                            
+                            // Update marker position
+                            if (editMarker) {
+                                editMarker.setLatLng(newPosition);
+                            }
+                            
+                            // Update coordinates
+                            document.getElementById('latitude').value = lat;
+                            document.getElementById('longitude').value = lng;
+                            
+                            // Pan map to new position
+                            if (editMap) {
+                                editMap.setView(newPosition, 15);
+                            }
+                            
+                            // Show popup
+                            if (editMarker) {
+                                editMarker.bindPopup('<strong>Current Location</strong>').openPopup();
+                            }
+                            
+                            // Reset button
+                            btn.disabled = false;
+                            btn.innerHTML = originalText;
+                        },
+                        function(error) {
+                            // Handle errors
+                            let errorMessage = 'Unable to get your location. ';
+                            switch(error.code) {
+                                case error.PERMISSION_DENIED:
+                                    errorMessage += 'Please allow location access in your browser settings.';
+                                    break;
+                                case error.POSITION_UNAVAILABLE:
+                                    errorMessage += 'Location information is unavailable.';
+                                    break;
+                                case error.TIMEOUT:
+                                    errorMessage += 'The request timed out.';
+                                    break;
+                                default:
+                                    errorMessage += 'An unknown error occurred.';
+                            }
+                            alert(errorMessage);
+                            
+                            // Reset button
+                            btn.disabled = false;
+                            btn.innerHTML = originalText;
+                        },
+                        {
+                            enableHighAccuracy: true,
+                            timeout: 10000,
+                            maximumAge: 0
+                        }
+                    );
+                });
             }
-        }
+        });
     </script>
 </x-app-layout>
