@@ -10,9 +10,17 @@
                 <div class="card shadow-sm mb-4">
                     <div class="card-body">
                         <h5 class="card-title mb-4">Profile Information</h5>
-                        <form method="POST" action="{{ route('profile.update') }}">
+                        <form method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data">
                             @csrf
                             @method('PUT')
+                            <div class="mb-3">
+                                <label for="profile_image" class="form-label">Profile Image</label>
+                                <input type="file" class="form-control @error('profile_image') is-invalid @enderror"
+                                       id="profile_image" name="profile_image" accept="image/png, image/jpeg, image/jpg">
+                                @error('profile_image')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
 
                             <div class="mb-3">
                                 <label for="name" class="form-label">Name</label>

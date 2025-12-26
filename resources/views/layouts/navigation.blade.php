@@ -65,11 +65,11 @@
                 </form>
             </div>
             <a href="{{ route('profile.show') }}">
-                @if(Auth::guard('customer')->user()->profile_image)
-                    <img src="{{ Auth::guard('customer')->user()->profile_image }}" alt="Profile" class="nav-user-avatar">
+                @if(Auth::guard('customer')->user()->profile_image_url)
+                    <img src="{{ Auth::guard('customer')->user()->profile_image_url }}" alt="Profile" class="nav-user-avatar">
                 @else
-                    <div class="nav-user-avatar-placeholder">
-                        <i class="bi bi-person"></i>
+                    <div class="nav-user-avatar-placeholder" style="display: flex; align-items: center; justify-content: center; background-color: var(--brand-orange); color: white; border-radius: 50%; width: 40px; height: 40px; font-weight: 600;">
+                        {{ Auth::guard('customer')->user()->initials }}
                     </div>
                 @endif
             </a>
@@ -86,11 +86,11 @@
                 </form>
             </div>
             <a href="{{ route('tukang.profile.show') }}">
-                @if(Auth::guard('tukang')->user()->profile_image)
-                    <img src="{{ Auth::guard('tukang')->user()->profile_image }}" alt="Profile" class="nav-user-avatar">
+                @if(Auth::guard('tukang')->user()->profile_image_url)
+                    <img src="{{ Auth::guard('tukang')->user()->profile_image_url }}" alt="Profile" class="nav-user-avatar">
                 @else
-                    <div class="nav-user-avatar-placeholder">
-                        <i class="bi bi-person"></i>
+                    <div class="nav-user-avatar-placeholder" style="display: flex; align-items: center; justify-content: center; background-color: var(--brand-orange); color: white; border-radius: 50%; width: 40px; height: 40px; font-weight: 600;">
+                        {{ Auth::guard('tukang')->user()->initials }}
                     </div>
                 @endif
             </a>

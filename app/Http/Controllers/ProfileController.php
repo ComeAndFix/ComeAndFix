@@ -12,6 +12,7 @@ use Illuminate\Validation\Rules\Password;
 use Illuminate\View\View;
 
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class ProfileController extends Controller
 {
@@ -42,7 +43,7 @@ class ProfileController extends Controller
 
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:customers,email,' . $customer->id],
+            // 'email' => ['required', 'string', 'email', 'max:255', 'unique:customers,email,' . $customer->id],
             'phone' => ['nullable', 'string', 'max:20'],
             'address' => ['nullable', 'string', 'max:255'],
             'city' => ['nullable', 'string', 'max:100'],
@@ -53,11 +54,34 @@ class ProfileController extends Controller
         ]);
 
         if ($request->hasFile('profile_image')) {
-            if ($customer->profile_image) {
-                Storage::delete($customer->profile_image);
+            Log::info('Customer Profile update: hasFile is true');
+            try {
+                if ($customer->profile_image) {
+                    Log::info('Deleting old image: ' . $customer->profile_image);
+                    Storage::disk('azure')->delete($customer->profile_image);
+                }
+                
+                $file = $request->file('profile_image');
+                Log::info('Uploading file: ' . $file->getClientOriginalName() . ' Size: ' . $file->getSize());
+
+                // Use putFile to automatically generate unique ID and store in 'profile-photos' directory on azure
+                $path = Storage::disk('azure')->putFile('profile-photos', $file);
+                
+                Log::info('Upload result path: ' . json_encode($path));
+
+                if ($path) {
+                    $validated['profile_image'] = $path;
+                } else {
+                    Log::error('Customer upload returned false/empty path');
+                    throw new \Exception('Failed to upload image to Azure Storage. Please try again.');
+                }
+            } catch (\Exception $e) {
+                Log::error('Customer profile image upload failed: ' . $e->getMessage());
+                Log::error($e->getTraceAsString());
+                return back()->with('error', 'Failed to upload profile image: ' . $e->getMessage());
             }
-            $path = $request->file('profile_image')->store('profile-photos');
-            $validated['profile_image'] = $path;
+        } else {
+            Log::info('Customer Profile update: No profile_image file in request');
         }
 
         $customer->update($validated);

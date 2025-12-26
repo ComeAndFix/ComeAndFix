@@ -37,11 +37,11 @@
                         <div class="profile-card">
                             <div class="profile-header">
                                 <div class="profile-photo-wrapper">
-                                    @if($tukang->profile_image)
-                                        <img src="{{ \App\Helpers\StorageHelper::url($tukang->profile_image) }}" alt="Profile Photo" class="profile-photo">
+                                    @if($tukang->profile_image_url)
+                                        <img src="{{ $tukang->profile_image_url }}" alt="Profile Photo" class="profile-photo">
                                     @else
                                         <div class="profile-placeholder">
-                                            {{ strtoupper(substr($tukang->name, 0, 1)) }}
+                                            {{ $tukang->initials }}
                                         </div>
                                     @endif
                                 </div>
@@ -237,11 +237,11 @@
                         <!-- Profile Photo Upload -->
                         <div class="photo-upload-section">
                             <div class="photo-upload-wrapper">
-                                @if($tukang->profile_image)
-                                    <img src="{{ \App\Helpers\StorageHelper::url($tukang->profile_image) }}" alt="Profile Photo" class="profile-photo" id="edit-profile-photo">
+                                @if($tukang->profile_image_url)
+                                    <img src="{{ $tukang->profile_image_url }}" alt="Profile Photo" class="profile-photo" id="edit-profile-photo">
                                 @else
                                     <div class="profile-placeholder" id="edit-profile-placeholder">
-                                        {{ strtoupper(substr($tukang->name, 0, 1)) }}
+                                        {{ $tukang->initials }}
                                     </div>
                                     <img src="" alt="Profile Photo" class="profile-photo" id="edit-profile-photo" style="display: none;">
                                 @endif

@@ -252,11 +252,34 @@ class TukangController extends Controller
         ]);
 
         if ($request->hasFile('profile_image')) {
-            if ($tukang->profile_image) {
-                Storage::delete($tukang->profile_image);
+            Log::info('Profile update: usage hasFile is true');
+            try {
+                if ($tukang->profile_image) {
+                    Log::info('Deleting old image: ' . $tukang->profile_image);
+                    Storage::disk('azure')->delete($tukang->profile_image);
+                }
+                
+                $file = $request->file('profile_image');
+                Log::info('Uploading file: ' . $file->getClientOriginalName() . ' Size: ' . $file->getSize());
+                
+                // Use putFile to automatically generate unique ID and store in 'profile-photos' directory on azure
+                $path = Storage::disk('azure')->putFile('profile-photos', $file);
+                
+                Log::info('Upload result path: ' . json_encode($path));
+                
+                if ($path) {
+                    $data['profile_image'] = $path;
+                } else {
+                    Log::error('Upload returned false/empty path');
+                    throw new \Exception('Failed to upload image to Azure Storage. Please try again.');
+                }
+            } catch (\Exception $e) {
+                Log::error('Profile image upload failed: ' . $e->getMessage());
+                Log::error($e->getTraceAsString());
+                return back()->with('error', 'Failed to upload profile image: ' . $e->getMessage());
             }
-            $path = $request->file('profile_image')->store('profile-photos');
-            $data['profile_image'] = $path;
+        } else {
+            Log::info('Profile update: No profile_image file in request');
         }
 
         $tukang->update($data);

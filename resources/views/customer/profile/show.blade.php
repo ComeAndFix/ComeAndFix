@@ -22,6 +22,19 @@
                 </div>
             @endif
 
+            @if($errors->any())
+                <div class="alert alert-danger">
+                    <i class="bi bi-exclamation-circle alert-icon"></i>
+                    <div>
+                        <ul style="margin: 0; padding-left: 1.25rem;">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+            @endif
+
             <!-- View Mode -->
             <div id="view-mode" class="view-mode-container">
                 <div class="profile-grid">
@@ -31,11 +44,11 @@
                         <div class="profile-card">
                             <div class="profile-header">
                                 <div class="profile-photo-wrapper">
-                                    @if($customer->profile_image)
-                                        <img src="{{ \App\Helpers\StorageHelper::url($customer->profile_image) }}" alt="Profile Photo" class="profile-photo">
+                                    @if($customer->profile_image_url)
+                                        <img src="{{ $customer->profile_image_url }}" alt="Profile Photo" class="profile-photo">
                                     @else
                                         <div class="profile-placeholder">
-                                            {{ strtoupper(substr($customer->name, 0, 1)) }}
+                                            {{ $customer->initials }}
                                         </div>
                                     @endif
                                 </div>
@@ -186,11 +199,11 @@
                         <!-- Profile Photo Upload -->
                         <div class="photo-upload-section">
                             <div class="photo-upload-wrapper">
-                                @if($customer->profile_image)
-                                    <img src="{{ \App\Helpers\StorageHelper::url($customer->profile_image) }}" alt="Profile Photo" class="profile-photo" id="edit-profile-photo">
+                                @if($customer->profile_image_url)
+                                    <img src="{{ $customer->profile_image_url }}" alt="Profile Photo" class="profile-photo" id="edit-profile-photo">
                                 @else
                                     <div class="profile-placeholder" id="edit-profile-placeholder">
-                                        {{ strtoupper(substr($customer->name, 0, 1)) }}
+                                        {{ $customer->initials }}
                                     </div>
                                     <img src="" alt="Profile Photo" class="profile-photo" id="edit-profile-photo" style="display: none;">
                                 @endif

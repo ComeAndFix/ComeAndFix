@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Notifications\TukangVerifyEmail;
+use Illuminate\Support\Facades\Storage;
 
 class Tukang extends Authenticatable implements MustVerifyEmail
 {
@@ -134,5 +135,39 @@ class Tukang extends Authenticatable implements MustVerifyEmail
             'rating' => $avgRating ? round($avgRating, 2) : null,
             'total_reviews' => $totalReviews,
         ]);
+    }
+
+    public function getProfileImageUrlAttribute()
+    {
+        if ($this->profile_image) {
+            if (filter_var($this->profile_image, FILTER_VALIDATE_URL)) {
+                return $this->profile_image;
+            }
+            
+            $azureUrl = config('filesystems.disks.azure.url');
+            if ($azureUrl) {
+                return rtrim($azureUrl, '/') . '/' . ltrim($this->profile_image, '/');
+            }
+
+            return Storage::disk('azure')->url($this->profile_image);
+        }
+        return null;
+    }
+
+    public function getInitialsAttribute()
+    {
+        $name = $this->name;
+        $words = explode(' ', $name);
+        $initials = '';
+        
+        if (count($words) >= 1) {
+            $initials .= strtoupper(substr($words[0], 0, 1));
+        }
+        
+        if (count($words) > 1) {
+            $initials .= strtoupper(substr(end($words), 0, 1));
+        }
+        
+        return $initials;
     }
 }
