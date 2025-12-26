@@ -2,7 +2,12 @@
     @include('components.payment-popup')
 
     @push('styles')
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
         @vite(['resources/css/components/chat.css'])
+    @endpush
+
+    @push('scripts')
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     @endpush
 
     <div class="chat-page-wrapper">
@@ -224,9 +229,24 @@
                             </div>
 
                             <div class="mb-4">
-                                <label for="customer-address" class="form-label">Service Location *</label>
-                                <textarea id="customer-address" name="working_address" class="form-control" rows="2" placeholder="Where should the service be performed?" required>{{ $receiver->address ?? '' }}</textarea>
-                                <div class="form-text mt-2"><i class="bi bi-info-circle me-1"></i> Pre-filled with customer's address.</div>
+                                <label class="form-label">Service Location</label>
+                                <div class="p-3 border rounded-4 bg-white">
+                                    <div class="mb-3">
+                                        <label class="form-label small text-muted mb-1">Full Address</label>
+                                        <textarea id="customer-address" name="working_address" class="form-control bg-light text-muted fw-semibold border-dashed" rows="2" readonly style="resize: none; cursor: not-allowed;">{{ $receiver->address ?? 'No address provided' }}</textarea>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label small text-muted mb-1">City</label>
+                                            <input type="text" class="form-control bg-light text-muted fw-semibold border-dashed" value="{{ $receiver->city ?? 'N/A' }}" readonly style="cursor: not-allowed;">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label small text-muted mb-1">Postal Code</label>
+                                            <input type="text" class="form-control bg-light text-muted fw-semibold border-dashed" value="{{ $receiver->postal_code ?? 'N/A' }}" readonly style="cursor: not-allowed;">
+                                        </div>
+                                    </div>
+                                    <div id="customer-location-map" style="height: 200px; width: 100%; border-radius: 8px;"></div>
+                                </div>
                             </div>
 
                             <div class="row">
@@ -418,7 +438,34 @@
             @if($receiverType === 'customer')
             const orderProposalModal = document.getElementById('orderProposalModal');
             if (orderProposalModal && !orderProposalModal.hasAttribute('data-listener-attached')) {
-                orderProposalModal.addEventListener('show.bs.modal', loadTukangServices);
+                orderProposalModal.addEventListener('show.bs.modal', function() {
+                    loadTukangServices();
+                    
+                    // Initialize Map
+                    setTimeout(() => {
+                        const lat = {{ $receiver->latitude ?? -6.200000 }};
+                        const lng = {{ $receiver->longitude ?? 106.816666 }};
+                        
+                        if (window.customerMap) {
+                            window.customerMap.remove();
+                        }
+
+                        window.customerMap = L.map('customer-location-map').setView([lat, lng], 15);
+                        
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                            attribution: '© OpenStreetMap contributors'
+                        }).addTo(window.customerMap);
+
+                        L.marker([lat, lng]).addTo(window.customerMap)
+                            .bindPopup('Customer Location')
+                            .openPopup();
+                        
+                        // Force map to recalculate size after render
+                        setTimeout(() => {
+                            window.customerMap.invalidateSize();
+                        }, 100);
+                    }, 500); // Slight delay to ensure modal is fully rendered
+                });
                 orderProposalModal.setAttribute('data-listener-attached', 'true');
             }
 
