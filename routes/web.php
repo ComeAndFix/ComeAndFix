@@ -184,3 +184,13 @@ Route::get('/services/{slug}', [ServiceController::class, 'show'])->name('servic
 Route::get('/tukangs/{id}', [TukangMapController::class, 'showProfile'])->name('tukangs.show');
 
 require __DIR__.'/auth.php';
+
+// Fallback route for undefined URLs
+Route::fallback(function () {
+    if (auth()->guard('customer')->check()) {
+        return redirect()->route('dashboard');
+    } elseif (auth()->guard('tukang')->check()) {
+        return redirect()->route('tukang.dashboard');
+    }
+    return redirect()->route('customer.login');
+});
