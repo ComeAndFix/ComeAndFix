@@ -1,8 +1,8 @@
 .main-nav {
     background: white;
     padding: 1rem 2rem;
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
     align-items: center;
     border: 1px solid #F0F0F0;
     position: sticky;
@@ -104,6 +104,8 @@
     display: flex;
     align-items: center;
     gap: 0.75rem;
+    justify-self: end;
+    min-width: 0;
 }
 
 .nav-user-avatar {
@@ -160,6 +162,7 @@
     text-decoration: none;
     display: block;
     line-height: 1.2;
+    max-width: 150px;
 }
 
 .nav-user-name:hover {
@@ -209,6 +212,7 @@
 
     .nav-user-name {
         font-size: 0.8rem;
+        max-width: 100px;
     }
 
     .nav-user-avatar,
