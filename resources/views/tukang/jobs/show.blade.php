@@ -324,12 +324,12 @@
                         <span class="info-value">Rp {{ number_format($order->subtotal, 0, ',', '.') }}</span>
                     </div>
 
-                    <!-- Platform Fee Deduction -->
+                    <!-- Platform Fee -->
                     <div class="info-row">
                         <span class="info-label small text-muted">
                             Platform Fee ({{ \App\Models\Order::PLATFORM_FEE_PERCENTAGE }}%)
                         </span>
-                        <span class="info-value small text-danger">- Rp {{ number_format($order->platform_fee, 0, ',', '.') }}</span>
+                        <span class="info-value small text-muted">Rp {{ number_format($order->platform_fee, 0, ',', '.') }}</span>
                     </div>
                     
                     <!-- Customer Paid Total -->
