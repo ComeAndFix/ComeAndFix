@@ -526,11 +526,13 @@ body {
     }
 
     .profile-sidebar {
-        order: 2;
+        order: 1;
+        /* Show sidebar first on mobile */
     }
 
     .profile-main {
-        order: 1;
+        order: 2;
+        /* Show main content second on mobile */
     }
 }
 
