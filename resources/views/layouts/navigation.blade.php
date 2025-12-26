@@ -50,42 +50,50 @@
         </ul>
     @endif
 
-    <!-- Profile Icon -->
-    <div class="dropdown">
-        <a href="#" class="nav-profile" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="bi bi-person nav-profile-icon"></i>
-        </a>
-        <ul class="dropdown-menu dropdown-menu-end">
-            <li>
-                <a class="dropdown-item" href="@if(Auth::guard('tukang')->check()) {{ route('tukang.profile.show') }} @else {{ route('profile.show') }} @endif">
-                    <i class="bi bi-person me-2"></i>Profile
+    <!-- Profile Section -->
+    <div class="nav-profile-section">
+        @if(Auth::guard('customer')->check())
+            <div class="nav-user-details">
+                <a href="{{ route('profile.show') }}" class="nav-user-name">
+                    {{ Auth::guard('customer')->user()->name }}
                 </a>
-            </li>
-            <li><hr class="dropdown-divider"></li>
-            <li>
-                @if(Auth::guard('customer')->check())
-                    <form method="POST" action="{{ route('customer.logout') }}">
-                        @csrf
-                        <button type="submit" class="dropdown-item text-danger">
-                            <i class="bi bi-box-arrow-right me-2"></i>Logout
-                        </button>
-                    </form>
-                @elseif(Auth::guard('tukang')->check())
-                    <form method="POST" action="{{ route('tukang.logout') }}">
-                        @csrf
-                        <button type="submit" class="dropdown-item text-danger">
-                            <i class="bi bi-box-arrow-right me-2"></i>Logout
-                        </button>
-                    </form>
+                <form method="POST" action="{{ route('customer.logout') }}" class="nav-logout-form">
+                    @csrf
+                    <button type="submit" class="nav-logout-btn">
+                        Logout
+                    </button>
+                </form>
+            </div>
+            <a href="{{ route('profile.show') }}">
+                @if(Auth::guard('customer')->user()->profile_image)
+                    <img src="{{ Auth::guard('customer')->user()->profile_image }}" alt="Profile" class="nav-user-avatar">
                 @else
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit" class="dropdown-item text-danger">
-                            <i class="bi bi-box-arrow-right me-2"></i>Logout
-                        </button>
-                    </form>
+                    <div class="nav-user-avatar-placeholder">
+                        <i class="bi bi-person"></i>
+                    </div>
                 @endif
-            </li>
-        </ul>
+            </a>
+        @elseif(Auth::guard('tukang')->check())
+            <div class="nav-user-details">
+                <a href="{{ route('tukang.profile.show') }}" class="nav-user-name">
+                    {{ Auth::guard('tukang')->user()->name }}
+                </a>
+                <form method="POST" action="{{ route('tukang.logout') }}" class="nav-logout-form">
+                    @csrf
+                    <button type="submit" class="nav-logout-btn">
+                        Logout
+                    </button>
+                </form>
+            </div>
+            <a href="{{ route('tukang.profile.show') }}">
+                @if(Auth::guard('tukang')->user()->profile_image)
+                    <img src="{{ Auth::guard('tukang')->user()->profile_image }}" alt="Profile" class="nav-user-avatar">
+                @else
+                    <div class="nav-user-avatar-placeholder">
+                        <i class="bi bi-person"></i>
+                    </div>
+                @endif
+            </a>
+        @endif
     </div>
 </nav>

@@ -99,25 +99,98 @@
     color: var(--brand-orange);
 }
 
-.nav-profile {
-    width: 32px;
-    height: 32px;
+/* Profile Section Styles */
+.nav-profile-section {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.nav-user-avatar {
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
-    background: #E0E0E0;
+    object-fit: cover;
+    border: 2px solid var(--brand-orange);
+    transition: transform 0.3s ease;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+.nav-user-avatar:hover {
+    transform: scale(1.05);
+}
+
+.nav-user-avatar-placeholder {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--brand-orange);
     display: flex;
     align-items: center;
     justify-content: center;
+    color: white;
+    font-size: 1.4rem;
+    transition: transform 0.3s ease;
+    flex-shrink: 0;
     cursor: pointer;
-    transition: all 0.3s ease;
 }
 
-.nav-profile:hover {
-    transform: scale(1.1);
+.nav-user-avatar-placeholder:hover {
+    transform: scale(1.05);
 }
 
-.nav-profile-icon {
-    color: var(--text-gray);
-    font-size: 1.125rem;
+.nav-user-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.05rem;
+    min-width: 0;
+    align-items: flex-end;
+}
+
+.nav-user-name {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--brand-dark);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color 0.3s ease;
+    text-decoration: none;
+    display: block;
+    line-height: 1.2;
+}
+
+.nav-user-name:hover {
+    color: var(--brand-orange);
+    text-decoration: none;
+}
+
+.nav-logout-form {
+    margin: 0;
+}
+
+.nav-logout-btn {
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #6C757D;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    text-decoration: none;
+    line-height: 1.2;
+    outline: none;
+}
+
+.nav-logout-btn:hover {
+    color: #DC3545;
+    text-decoration: none;
+    background: transparent;
 }
 
 @media (max-width: 768px) {
@@ -128,5 +201,23 @@
     .nav-menu {
         gap: 1rem;
         font-size: 0.75rem;
+    }
+
+    .nav-profile-section {
+        gap: 0.6rem;
+    }
+
+    .nav-user-name {
+        font-size: 0.8rem;
+    }
+
+    .nav-user-avatar,
+    .nav-user-avatar-placeholder {
+        width: 36px;
+        height: 36px;
+    }
+
+    .nav-logout-btn {
+        font-size: 0.65rem;
     }
 }
