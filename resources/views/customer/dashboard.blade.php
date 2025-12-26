@@ -22,35 +22,44 @@
         @if($recentOrders->count() > 0)
         <section class="orders-section" aria-label="Active Orders">
             <div style="max-width: 1200px; margin: 0 auto;">
-                <h2 class="section-title">Your Ongoing Order</h2>
+                <h2 class="section-title">Your Ongoing {{ $recentOrders->count() > 1 ? 'Orders' : 'Order' }}</h2>
                 
-                @foreach($recentOrders->take(1) as $order)
-                <a href="{{ route('customer.orders.show', $order) }}" class="order-card" aria-label="View order details for {{ $order->service->name }}">
-                    <div class="order-info">
-                        <p class="order-type-label">Order Type</p>
-                        <h3 class="order-type">{{ $order->service->name }}</h3>
-                        
-                        <div class="order-badges">
-                            <span class="order-badge status" role="status">{{ ucwords(str_replace('_', ' ', $order->status)) }}</span>
-                            @if($order->payment_status)
-                            <span class="order-badge payment" role="status">{{ ucwords($order->payment_status) }}</span>
+                <div class="orders-grid">
+                    @foreach($recentOrders as $order)
+                    <a href="{{ route('customer.orders.show', $order) }}" class="order-card" aria-label="View order details for {{ $order->service->name }}">
+                        <div class="order-info">
+                            <p class="order-type-label">Order Type</p>
+                            <h3 class="order-type">{{ $order->service->name }}</h3>
+                            
+                            <div class="order-badges">
+                                <span class="order-badge status" role="status">{{ ucwords(str_replace('_', ' ', $order->status)) }}</span>
+                                @if($order->payment_status)
+                                <span class="order-badge payment" role="status">{{ ucwords($order->payment_status) }}</span>
+                                @endif
+                            </div>
+                            
+                            @if($order->work_datetime)
+                            <div class="order-datetime">
+                                <i class="bi bi-calendar-event"></i>
+                                <span>{{ $order->work_datetime->format('D, M j • g:i A') }}</span>
+                            </div>
                             @endif
-                        </div>
-                        
-                        <div class="order-tukang">
-                            <img src="{{ $order->tukang->profile_photo_url ?? asset('images/default-avatar.png') }}" alt="Profile photo of {{ $order->tukang->name }}" class="tukang-avatar">
-                            <div>
-                                <p class="tukang-label">Tukang</p>
-                                <p class="tukang-name">{{ $order->tukang->name }}</p>
+                            
+                            <div class="order-tukang">
+                                <img src="{{ $order->tukang->profile_photo_url ?? asset('images/default-avatar.png') }}" alt="Profile photo of {{ $order->tukang->name }}" class="tukang-avatar">
+                                <div>
+                                    <p class="tukang-label">Tukang</p>
+                                    <p class="tukang-name">{{ $order->tukang->name }}</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    
-                    <div class="order-arrow" aria-hidden="true">
-                        <i class="bi bi-chevron-right"></i>
-                    </div>
-                </a>
-                @endforeach
+                        
+                        <div class="order-arrow" aria-hidden="true">
+                            <i class="bi bi-chevron-right"></i>
+                        </div>
+                    </a>
+                    @endforeach
+                </div>
             </div>
         </section>
         @endif

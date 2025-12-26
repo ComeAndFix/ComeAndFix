@@ -307,13 +307,49 @@
     margin-bottom: 1.5rem;
 }
 
+/* Orders Grid Layout */
+.orders-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+    gap: 1.5rem;
+    width: 100%;
+}
+
+/* Order DateTime Display */
+.order-datetime {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: rgba(59, 130, 246, 0.08);
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    font-family: 'Inter', sans-serif;
+    transition: background 0.3s ease;
+}
+
+.order-card:hover .order-datetime {
+    background: rgba(59, 130, 246, 0.12);
+}
+
+.order-datetime i {
+    color: #3B82F6;
+    font-size: 1rem;
+}
+
+.order-datetime span {
+    color: var(--brand-dark);
+    font-weight: 600;
+    font-size: 0.9375rem;
+}
+
 .order-card {
     background: white;
     border-radius: 24px;
-    padding: 2.5rem 3rem;
+    padding: 2rem 2.5rem;
     display: flex;
     align-items: center;
-    gap: 2rem;
+    gap: 1.5rem;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     text-decoration: none;
@@ -362,7 +398,7 @@
 }
 
 .order-type {
-    font-size: 2rem;
+    font-size: 1.5rem;
     font-weight: 800;
     color: var(--brand-orange);
     margin-bottom: 1rem;
@@ -543,5 +579,11 @@
 
     .orders-section {
         padding: 2rem 1rem;
+    }
+
+    /* Orders grid stacks on mobile */
+    .orders-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
     }
 }

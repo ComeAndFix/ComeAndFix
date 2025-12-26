@@ -12,7 +12,6 @@ class CustomerDashboardController extends Controller
     {
         $customerId = auth()->guard('customer')->id();
         
-        // Get only active orders (non-completed)
         // Get only active orders (non-completed and non-expired pending)
         $recentOrders = Order::where('customer_id', $customerId)
             ->where(function($query) {
@@ -25,7 +24,8 @@ class CustomerDashboardController extends Controller
                       });
             })
             ->with(['service', 'tukang', 'additionalItems', 'customItems'])
-            ->latest()
+            ->orderByRaw('CASE WHEN work_datetime IS NULL THEN 1 ELSE 0 END') // Put null dates last
+            ->orderBy('work_datetime', 'asc') // Sort by nearest date first
             ->take(4)
             ->get();
 
