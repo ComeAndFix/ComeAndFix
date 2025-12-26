@@ -55,7 +55,7 @@
                     </a>
                     
                     <!-- Tukang/Customer Link -->
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <div class="auth-top-nav" style="display: flex; align-items: center; gap: 0.5rem;">
                         @if(request()->routeIs('tukang.*'))
                             <span style="color: #666666; font-size: 0.875rem; font-family: 'Inter', sans-serif;">Are you a Customer?</span>
                             <a href="{{ route('customer.login') }}" class="link-orange">Customer Page</a>
@@ -67,7 +67,7 @@
                 </div>
 
                 <!-- Middle Content Slot -->
-                <div style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
+                <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 2rem 0;">
                     {{ $slot }}
                 </div>
 

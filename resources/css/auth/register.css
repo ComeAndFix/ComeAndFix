@@ -93,4 +93,15 @@
     .form-row .input-wrapper {
         margin-bottom: 1.25rem;
     }
+
+    /* Stack and right-align the tukang/customer link section */
+    .auth-top-nav {
+        flex-direction: column;
+        align-items: flex-end !important;
+        gap: 0.25rem !important;
+    }
+
+    .auth-top-nav span {
+        font-size: 0.8125rem;
+    }
 }
