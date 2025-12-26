@@ -35,6 +35,14 @@
         
         <!-- Tukang List Sidebar -->
         <div class="tukang-list-sidebar">
+            <!-- Mobile-Only Back Button -->
+            <div class="mobile-back-header">
+                <a href="{{ route('dashboard') }}" class="mobile-back-btn">
+                    <i class="bi bi-chevron-left"></i>
+                    <span>Back</span>
+                </a>
+            </div>
+            
             <!-- Header -->
             <div class="sidebar-header">
                 <h1 class="sidebar-title">Find Your Tukang!</h1>
@@ -91,6 +99,10 @@
                 </div>
                 
                 <div class="popup-body" id="popupBody" style="display: none;">
+                    <!-- Close Button (Mobile) -->
+                    <button class="popup-close-btn" onclick="closeTukangPopup()" aria-label="Close popup">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
                     
                     <!-- Scrollable Content -->
                     <div class="popup-scrollable-area">
@@ -141,9 +153,13 @@
         let sortDirection = 'asc'; // 'asc' or 'desc'
         let selectedTukangId = null;
         let userLocation = null;
+        const isMobile = window.innerWidth <= 768;
 
         document.addEventListener('DOMContentLoaded', function() {
-            initializeMap();
+            // Only initialize map on desktop
+            if (!isMobile) {
+                initializeMap();
+            }
             setupSortDropdown();
             setupSortDirectionToggle();
             getUserLocationAndLoadTukangs();
@@ -185,11 +201,12 @@
                     lng: {{ $customer->longitude }}
                 };
                 
-                // Add user marker
-                addUserMarker(userLocation.lat, userLocation.lng);
-                
-                // Center map on user location
-                map.setView([userLocation.lat, userLocation.lng], 13);
+                // Add user marker (only on desktop)
+                if (!isMobile) {
+                    addUserMarker(userLocation.lat, userLocation.lng);
+                    // Center map on user location
+                    map.setView([userLocation.lat, userLocation.lng], 13);
+                }
                 
                 // Load tukangs with user location
                 loadTukangs(userLocation.lat, userLocation.lng);
@@ -267,7 +284,10 @@
                         showEmptyState();
                     } else {
                         sortAndDisplayTukangs();
-                        addTukangMarkers();
+                        // Only add markers on desktop
+                        if (!isMobile) {
+                            addTukangMarkers();
+                        }
                     }
                 })
                 .catch(error => {
@@ -391,19 +411,21 @@
                 }
             });
             
-            // Update markers and center map
-            Object.entries(markers).forEach(([id, marker]) => {
-                const markerElement = marker.getElement();
-                if (parseInt(id) === tukangId) {
-                    markerElement.classList.add('active');
-                    marker.setZIndexOffset(1000); // Bring to front
-                    // Pan to marker
-                    map.panTo(marker.getLatLng());
-                } else {
-                    markerElement.classList.remove('active');
-                    marker.setZIndexOffset(0); // Reset
-                }
-            });
+            // Update markers and center map (only on desktop)
+            if (!isMobile) {
+                Object.entries(markers).forEach(([id, marker]) => {
+                    const markerElement = marker.getElement();
+                    if (parseInt(id) === tukangId) {
+                        markerElement.classList.add('active');
+                        marker.setZIndexOffset(1000); // Bring to front
+                        // Pan to marker
+                        map.panTo(marker.getLatLng());
+                    } else {
+                        markerElement.classList.remove('active');
+                        marker.setZIndexOffset(0); // Reset
+                    }
+                });
+            }
             
             // Show popup after a delay to allow map to center
             setTimeout(() => {
@@ -516,8 +538,10 @@
                 popupBody.style.display = 'none';
             }
             
-            // This will now "glide" the popup to the new position thanks to CSS transitions
-            positionPopup(tukangId);
+            // Position popup (only on desktop, mobile uses fixed positioning)
+            if (!isMobile) {
+                positionPopup(tukangId);
+            }
             
             // Fetch tukang details
             fetch(`/api/tukangs/${tukangId}`, {
