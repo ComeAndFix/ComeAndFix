@@ -16,6 +16,12 @@
             background-color: #ccc;
             border-radius: 4px;
         }
+        .scale-hover {
+            transition: transform 0.2s ease;
+        }
+        .scale-hover:hover {
+            transform: translateY(-3px);
+        }
     </style>
 @endpush
 
@@ -74,38 +80,55 @@
                 </div>
             </section>
 
-            <!-- Active Job Indicator -->
-            @if($activeJob)
-            <section class="mb-5" aria-label="Active Job">
-                <h2 class="section-title">Active Job</h2>
-                
-                <a href="{{ route('tukang.jobs.show', $activeJob) }}" class="order-card" aria-label="View job details">
-                    <div class="order-info">
-                        <p class="order-type-label">Current Job</p>
-                        <h3 class="order-type">{{ $activeJob->service->name }}</h3>
-                        
-                        <div class="order-badges">
-                            <span class="order-badge status" role="status">{{ ucwords(str_replace('_', ' ', $activeJob->status)) }}</span>
-                            @if($activeJob->payment_status == 'paid')
-                            <span class="order-badge payment" role="status">Paid</span>
-                            @endif
+            <!-- Calendar & Scheduled Jobs Section -->
+            <section class="mb-5">
+                <div class="row g-4">
+                    <!-- Left: Calendar -->
+                    <div class="col-lg-5">
+                        <div class="dashboard-card h-100">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h5 class="fw-bold mb-0">
+                                    <i class="bi bi-calendar-check me-2 text-warning"></i>Schedule
+                                </h5>
+                                <div class="d-flex gap-2">
+                                    <button id="today-btn" class="btn btn-sm bg-white border shadow-sm rounded-pill px-3 fw-bold text-primary" onclick="goToToday()" style="height: 38px; font-size: 0.85rem;">
+                                        Today
+                                    </button>
+                                    <div class="d-flex align-items-center bg-white rounded-pill border px-1 py-1 shadow-sm">
+                                        <button class="btn btn-sm btn-icon text-muted hover-bg-light" onclick="changeMonth(-1)" style="width: 28px; height: 28px; padding: 0; border-radius: 50%;">
+                                            <i class="bi bi-chevron-left small"></i>
+                                        </button>
+                                        <div class="fw-bold px-2 small" id="current-month-display" style="min-width: 110px; text-align: center; cursor: default;"></div>
+                                        <button class="btn btn-sm btn-icon text-muted hover-bg-light" onclick="changeMonth(1)" style="width: 28px; height: 28px; padding: 0; border-radius: 50%;">
+                                            <i class="bi bi-chevron-right small"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="job-calendar" class="calendar-container"></div>
                         </div>
-                        
-                        <div class="order-customer">
-                            <img src="{{ $activeJob->customer->profile_photo_url ?? asset('images/default-avatar.png') }}" class="customer-avatar" alt="Customer">
-                            <div>
-                                <p class="customer-label">Customer</p>
-                                <p class="customer-name">{{ $activeJob->customer->name }}</p>
+                    </div>
+
+                    <!-- Right: Active Orders List -->
+                    <div class="col-lg-7">
+                        <div class="dashboard-card h-100" style="background: #f8f9fa; border: none; box-shadow: none;">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h5 class="fw-bold mb-0" id="selected-date-title">
+                                    Upcoming Jobs
+                                </h5>
+                            </div>
+                            
+                            <div id="selected-date-jobs" class="d-flex flex-column gap-3 requests-scroll" style="max-height: 400px; overflow-y: auto;">
+                                <!-- Job cards will be injected here by JS -->
+                                <div class="text-center py-5 text-muted">
+                                    <i class="bi bi-calendar-event display-6 mb-3 d-block opacity-50"></i>
+                                    <p>Select a date to view scheduled jobs</p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="order-arrow" aria-hidden="true">
-                        <i class="bi bi-chevron-right"></i>
-                    </div>
-                </a>
+                </div>
             </section>
-            @endif
 
             <!-- Main Dashboard Grid -->
             <div class="row g-4">
@@ -207,15 +230,7 @@
                         </div>
                     </a>
 
-                    <!-- Job Schedule (Calendar) - Moved to Right Column -->
-                    <div class="dashboard-card flex-grow-1">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h5 class="fw-bold mb-0">
-                                <i class="bi bi-calendar-check me-2 text-warning"></i>Job Schedule
-                            </h5>
-                        </div>
-                        <div id="job-calendar" class="calendar-container"></div>
-                    </div>
+
                 </div>
             </div>
         </div>
@@ -306,29 +321,55 @@
         // Calendar Implementation
         document.addEventListener('DOMContentLoaded', function() {
             renderCalendar();
+            // Select today default or first available
+            const today = new Date().toISOString().split('T')[0];
+            selectDate(today);
         });
 
         const scheduledJobs = @json($scheduledJobs);
         // Create a route template string where we can replace the placeholder
         const jobRouteBase = "{{ route('tukang.jobs.show', ['order' => 'PLACEHOLDER']) }}";
 
+        let selectedDate = null;
+        let currentCalendarDate = new Date();
+
+        function changeMonth(offset) {
+            currentCalendarDate.setMonth(currentCalendarDate.getMonth() + offset);
+            renderCalendar();
+        }
+
+        function goToToday() {
+            currentCalendarDate = new Date();
+            renderCalendar();
+            // Optional: Select today as well
+            const today = currentCalendarDate.toISOString().split('T')[0];
+            selectDate(today);
+        }
+
         function renderCalendar() {
             const calendar = document.getElementById('job-calendar');
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = now.getMonth();
+            const year = currentCalendarDate.getFullYear();
+            const month = currentCalendarDate.getMonth();
+            
+            // Check if current view is this month
+            const realToday = new Date();
+            const isCurrentMonth = realToday.getMonth() === month && realToday.getFullYear() === year;
+            const todayBtn = document.getElementById('today-btn');
+            if(todayBtn) {
+                todayBtn.style.display = isCurrentMonth ? 'none' : 'block';
+            }
+            
+            const monthEl = document.getElementById('current-month-display');
+            if(monthEl) monthEl.textContent = currentCalendarDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
             const firstDay = new Date(year, month, 1);
             const lastDay = new Date(year, month + 1, 0);
             const daysInMonth = lastDay.getDate();
             const startDay = firstDay.getDay(); // 0 = Sunday
 
-            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-            let html = `<div class="calendar-header mb-3 fw-bold">${monthNames[month]} ${year}</div>`;
-
-            html += '<div class="calendar-grid">';
+            let html = '<div class="calendar-grid" style="grid-template-columns: repeat(7, 1fr); gap: 0.5rem;">';
             ['S', 'M', 'T', 'W', 'T', 'F', 'S'].forEach(day => {
-                html += `<div class="calendar-day-header text-center small py-1">${day}</div>`;
+                html += `<div class="calendar-day-header text-center small py-1" style="font-size: 0.75rem; color: #6c757d;">${day}</div>`;
             });
 
             for (let i = 0; i < startDay; i++) {
@@ -338,71 +379,141 @@
             for (let day = 1; day <= daysInMonth; day++) {
                 const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
                 const hasJob = scheduledJobs[dateStr] !== undefined;
-                const jobClass = hasJob ? 'has-job shadow-sm' : '';
                 
-                // Add click handler for days with jobs
-                let clickAttr = '';
+                let dayClasses = "calendar-day d-flex align-items-center justify-content-center flex-column position-relative";
+                let style = "aspect-ratio: 1; border-radius: 12px; cursor: pointer; transition: all 0.2s;";
+                let content = `<span style="font-size: 0.9rem;">${day}</span>`;
+                let clickAction = `onclick="selectDate('${dateStr}')"`;
+                
+                // Visual feedback for interaction
+                style += " user-select: none;";
+
                 if (hasJob) {
-                    try {
-                        const link = getJobLink(scheduledJobs[dateStr]);
-                        clickAttr = `onclick="window.location.href='${link}'"`;
-                    } catch (e) {
-                        console.error('Error generating link for date', dateStr, e);
-                    }
-                }
-                
-                const cursorStyle = hasJob ? 'cursor: pointer;' : '';
-                
-                // Add tooltip logic
-                let tooltipHtml = '';
-                if (hasJob) {
-                    const jobs = scheduledJobs[dateStr];
-                    tooltipHtml = `<div class="job-tooltip text-start">`;
-                    
-                    // Limit to 3 jobs to prevent tooltip from getting too huge
-                    const displayJobs = jobs.slice(0, 3);
-                    
-                    displayJobs.forEach((job, index) => {
-                         const date = new Date(job.work_datetime);
-                         const time = date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                         
-                         const mbClass = index < displayJobs.length - 1 ? 'mb-2 pb-2 border-bottom border-secondary' : '';
-                         
-                         tooltipHtml += `
-                            <div class="${mbClass}">
-                                <div class="fw-bold text-warning" style="font-size: 0.8rem;">${job.service.name}</div>
-                                <div style="font-size: 0.75rem;">${job.customer.name}</div>
-                                <div class="text-white-50" style="font-size: 0.7rem;">${time}</div>
-                            </div>
-                        `;
-                    });
-                    
-                    if(jobs.length > 3) {
-                         tooltipHtml += `<div class="mt-1 text-center small text-muted">+${jobs.length - 3} more</div>`;
-                    }
-                    
-                    tooltipHtml += `</div>`;
+                    content += `<div style="width: 4px; height: 4px; background: #f59e0b; border-radius: 50%; margin-top: 4px;"></div>`;
                 }
 
-                html += `<div class="calendar-day ${jobClass} d-flex align-items-center justify-content-center" 
-                             style="aspect-ratio: 1; ${cursorStyle}" ${clickAttr} title="">
-                             ${day}
-                             ${tooltipHtml}
+                // Highlight selected date if it's in this month
+                let extraStyles = "";
+                let dotStyle = "";
+                
+                if (selectedDate === dateStr) {
+                    extraStyles = "background: #f59e0b; color: white; font-weight: bold;";
+                    if (hasJob) {
+                        // Invert dot color when selected
+                         content = `<span style="font-size: 0.9rem;">${day}</span><div style="width: 4px; height: 4px; background: white; border-radius: 50%; margin-top: 4px;"></div>`;
+                    }
+                }
+
+                html += `<div class="${dayClasses}" 
+                             id="day-${dateStr}"
+                             style="${style} ${extraStyles}" 
+                             ${clickAction}>
+                             ${content}
                          </div>`;
             }
             html += '</div>';
             calendar.innerHTML = html;
         }
 
-        function getJobLink(jobs) {
-            // Use the first job content if multiple exist
-            if(jobs && jobs.length > 0) {
-                const job = jobs[0];
-                // Use uuid for routing as defined in model getRouteKeyName
-                const uuid = job.uuid || job.id; 
-                return jobRouteBase.replace('PLACEHOLDER', uuid);
+        function selectDate(dateStr) {
+            // Update selected state visual
+            if (selectedDate) {
+                const el = document.getElementById(`day-${selectedDate}`);
+                if (el) {
+                    el.style.background = '';
+                    el.style.color = '';
+                    el.style.fontWeight = '';
+                    const dot = el.querySelector('div');
+                    if(dot) dot.style.background = '#f59e0b';
+                }
             }
-            return '#';
+            
+            selectedDate = dateStr;
+            const el = document.getElementById(`day-${dateStr}`);
+            if (el) {
+                el.style.background = '#f59e0b';
+                el.style.color = 'white';
+                el.style.fontWeight = 'bold';
+                const dot = el.querySelector('div');
+                if(dot) dot.style.background = 'white';
+            }
+
+            // Update List
+            const listContainer = document.getElementById('selected-date-jobs');
+            const title = document.getElementById('selected-date-title');
+            
+            if(title) {
+                const dateObj = new Date(dateStr);
+                // Fix timezone by creating date from parts
+                const parts = dateStr.split('-');
+                const localDate = new Date(parts[0], parts[1]-1, parts[2]);
+                title.textContent = localDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+            }
+
+            if(listContainer) {
+                listContainer.innerHTML = '';
+                const jobs = scheduledJobs[dateStr];
+                
+                if (jobs && jobs.length > 0) {
+                    jobs.forEach(job => {
+                        const uuid = job.uuid || job.id;
+                        const link = jobRouteBase.replace('PLACEHOLDER', uuid);
+                        const dateTime = new Date(job.work_datetime);
+                        const timeStr = dateTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                        
+                        // Status badge logic
+                        const statusColors = {
+                            'pending': 'bg-warning',
+                            'accepted': 'bg-info',
+                            'on_progress': 'bg-primary',
+                            'completed': 'bg-success',
+                            'cancelled': 'bg-danger'
+                        };
+                        const statusBadge = statusColors[job.status] || 'bg-secondary';
+                        
+                        const card = `
+                            <a href="${link}" class="text-decoration-none text-dark scale-hover">
+                                <div class="card border-0 shadow-sm rounded-4" style="background: white;">
+                                    <div class="card-body p-3">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div class="rounded-3 d-flex align-items-center justify-content-center text-white" 
+                                                style="width: 48px; height: 48px; background: linear-gradient(135deg, #f59e0b, #d97706); flex-shrink: 0;">
+                                                <i class="bi bi-briefcase fs-5"></i>
+                                            </div>
+                                            <div class="flex-grow-1" style="min-width: 0;">
+                                                <div class="d-flex justify-content-between align-items-start mb-1">
+                                                    <h6 class="fw-bold mb-0 text-truncate">${job.service.name}</h6>
+                                                    <span class="badge ${statusBadge} bg-opacity-75 rounded-pill" style="font-size: 0.7rem;">${job.status.replace('_', ' ')}</span>
+                                                </div>
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <p class="mb-0 text-muted small text-truncate">
+                                                        <i class="bi bi-person me-1"></i> ${job.customer.name}
+                                                    </p>
+                                                    <small class="fw-bold text-dark flex-shrink-0">
+                                                        <i class="bi bi-clock me-1"></i>${timeStr}
+                                                    </small>
+                                                </div>
+                                            </div>
+                                            <i class="bi bi-chevron-right text-muted"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        `;
+                        listContainer.innerHTML += card;
+                    });
+                } else {
+                    listContainer.innerHTML = `
+                        <div class="text-center py-5 text-muted">
+                            <div class="mb-3">
+                                <i class="bi bi-calendar-event display-6" style="color: #e5e7eb;"></i>
+                            </div>
+                            <h6 class="fw-bold text-secondary">No Jobs Scheduled</h6>
+                            <p class="small text-muted mb-0">You have no active orders for this date.</p>
+                        </div>
+                    `;
+                }
+            }
         }
     </script>
 </x-app-layout>
