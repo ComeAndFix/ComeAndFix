@@ -11,8 +11,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Tukang\TukangChatRoomController;
 
 Route::get('/', function () {
-    return redirect()->route('customer.login');
-});
+    return view('landing');
+})->name('landing');
 
 // Enable broadcasting for both customers and tukangs
 Broadcast::routes(['middleware' => ['web', 'auth:customer,tukang']]);
