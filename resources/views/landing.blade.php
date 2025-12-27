@@ -6,6 +6,11 @@
     <meta name="description" content="Come&Fix - Connect with skilled handymen for all your home repair needs. Fast, reliable, and affordable service at your fingertips.">
     <title>Come&Fix - Your Trusted Home Repair Solution</title>
     
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="{{ asset('images/favicon.svg') }}">
+    <link rel="shortcut icon" href="{{ asset('images/favicon.ico') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/favicon.svg') }}">
+    
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,7 +20,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     
     <!-- Custom CSS -->
-    @vite(['resources/css/landing.css'])
+    @vite(['resources/css/components/navigation.css', 'resources/css/landing.css'])
 </head>
 <body>
     <!-- Navigation -->
