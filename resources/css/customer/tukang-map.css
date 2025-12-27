@@ -461,7 +461,8 @@
 
 .popup-content {
     width: 420px;
-    max-height: 600px;
+    max-height: 85vh;
+    /* Use viewport height instead of fixed pixels for better responsiveness */
     background: white;
     border-radius: 20px;
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
@@ -657,6 +658,8 @@
 /* Scrollable Content Area */
 .popup-scrollable-area {
     flex: 1;
+    min-height: 0;
+    /* CRITICAL: Allows flex item to shrink below content size, enabling scroll */
     overflow-y: auto;
     padding: 1.5rem;
     padding-bottom: 0.5rem;

@@ -191,6 +191,16 @@
                     closeTukangPopup();
                 }
             });
+            
+            // Reposition popup on window resize (handles zoom changes)
+            window.addEventListener('resize', function() {
+                if (selectedTukangId && !isMobile) {
+                    const popup = document.getElementById('tukangPopup');
+                    if (popup.classList.contains('active')) {
+                        positionPopup(selectedTukangId);
+                    }
+                }
+            });
         }
 
         function getUserLocationAndLoadTukangs() {
@@ -561,6 +571,14 @@
                 popupBody.style.display = 'flex';
                 popupBody.style.opacity = '1';
                 popupBody.style.transform = 'scale(1)';
+                
+                // Reposition popup after content is loaded and rendered (only on desktop)
+                if (!isMobile) {
+                    // Use setTimeout to ensure DOM has updated with actual content height
+                    setTimeout(() => {
+                        positionPopup(tukangId);
+                    }, 50);
+                }
             })
             .catch(error => {
                 console.error('Error loading tukang details:', error);
@@ -570,18 +588,55 @@
         
         function positionPopup(tukangId) {
             const popup = document.getElementById('tukangPopup');
+            const popupContent = popup.querySelector('.popup-content');
             const marker = markers[tukangId];
             
             if (marker) {
                 const markerLatLng = marker.getLatLng();
                 const point = map.latLngToContainerPoint(markerLatLng);
                 
-                // Position popup to the right of the marker
-                const offsetX = 50; // Distance from marker
-                const offsetY = -150; // Vertical centering adjustment
+                // Get popup dimensions
+                const popupWidth = 420; // From CSS
+                // Use the smaller of actual height or max-height constraint (85vh)
+                const maxAllowedHeight = window.innerHeight * 0.85;
+                const actualHeight = popupContent.offsetHeight;
+                const popupHeight = actualHeight > 0 ? Math.min(actualHeight, maxAllowedHeight) : maxAllowedHeight;
                 
-                popup.style.left = `${point.x + offsetX}px`;
-                popup.style.top = `${point.y + offsetY}px`;
+                // Get viewport dimensions
+                const viewportWidth = window.innerWidth;
+                const viewportHeight = window.innerHeight;
+                
+                // Calculate initial position (to the right of marker)
+                let offsetX = 50; // Distance from marker
+                let offsetY = -150; // Vertical centering adjustment
+                
+                let left = point.x + offsetX;
+                let top = point.y + offsetY;
+                
+                // Boundary checking - ensure popup stays within viewport
+                // Check right edge
+                if (left + popupWidth > viewportWidth - 20) {
+                    // Position to the left of marker instead
+                    left = point.x - popupWidth - offsetX;
+                }
+                
+                // Check left edge
+                if (left < 20) {
+                    left = 20;
+                }
+                
+                // Check bottom edge - CRITICAL for preventing button cutoff
+                if (top + popupHeight > viewportHeight - 20) {
+                    top = viewportHeight - popupHeight - 20;
+                }
+                
+                // Check top edge
+                if (top < 20) {
+                    top = 20;
+                }
+                
+                popup.style.left = `${left}px`;
+                popup.style.top = `${top}px`;
             }
         }
         
