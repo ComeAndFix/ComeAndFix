@@ -71,8 +71,8 @@
                     <label for="spec_electricity">Electricity</label>
                 </div>
                 <div class="specialization-pill">
-                    <input type="checkbox" name="specializations[]" value="HVAC/AC" id="spec_hvac">
-                    <label for="spec_hvac">HVAC/AC</label>
+                    <input type="checkbox" name="specializations[]" value="HVAC" id="spec_hvac">
+                    <label for="spec_hvac">HVAC</label>
                 </div>
                 <div class="specialization-pill">
                     <input type="checkbox" name="specializations[]" value="Painting" id="spec_painting">
