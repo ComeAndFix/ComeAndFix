@@ -412,29 +412,40 @@
             const preselectedServiceId = {{ isset($selectedService) && $selectedService ? $selectedService->id : 'null' }};
             console.log('Preselected Service ID:', preselectedServiceId);
 
-            // Set min datetime to tomorrow (block today and past)
+            // Set min datetime to 3 hours from now (allow today if time is sufficient)
             const workDatetimeInput = document.getElementById('work-datetime');
             if(workDatetimeInput) {
-                const tomorrow = new Date();
-                tomorrow.setDate(tomorrow.getDate() + 1);
-                tomorrow.setHours(0, 0, 0, 0); // Start of tomorrow
+                const now = new Date();
+                const minDateTime = new Date(now.getTime() + (3 * 60 * 60 * 1000)); // Add 3 hours
                 
                 // Format: YYYY-MM-DDTHH:MM
-                const year = tomorrow.getFullYear();
-                const month = String(tomorrow.getMonth() + 1).padStart(2, '0');
-                const day = String(tomorrow.getDate()).padStart(2, '0');
-                const hours = String(tomorrow.getHours()).padStart(2, '0');
-                const minutes = String(tomorrow.getMinutes()).padStart(2, '0');
+                const year = minDateTime.getFullYear();
+                const month = String(minDateTime.getMonth() + 1).padStart(2, '0');
+                const day = String(minDateTime.getDate()).padStart(2, '0');
+                const hours = String(minDateTime.getHours()).padStart(2, '0');
+                const minutes = String(minDateTime.getMinutes()).padStart(2, '0');
                 
                 workDatetimeInput.min = `${year}-${month}-${day}T${hours}:${minutes}`;
                 
-                // Add listener for availability check
+                // Add listener for availability check and minimum time validation
                 workDatetimeInput.addEventListener('change', async function() {
                     const selectedTime = this.value;
                     if (!selectedTime) return;
 
                     // Reset state
                     this.classList.remove('is-invalid', 'is-valid');
+                    const feedback = document.getElementById('datetime-feedback');
+                    
+                    // Check if selected time is at least 3 hours from now
+                    const selectedDate = new Date(selectedTime);
+                    const currentTime = new Date();
+                    const threeHoursFromNow = new Date(currentTime.getTime() + (3 * 60 * 60 * 1000));
+                    
+                    if (selectedDate < threeHoursFromNow) {
+                        this.classList.add('is-invalid');
+                        if(feedback) feedback.textContent = 'Please select a time at least 3 hours from now.';
+                        return;
+                    }
                     
                     try {
                         const response = await fetch('{{ route("tukang.order.check-availability") }}', {
@@ -451,7 +462,6 @@
                         
                         if (!data.available) {
                             this.classList.add('is-invalid');
-                            const feedback = document.getElementById('datetime-feedback');
                             if(feedback) feedback.textContent = data.message;
                         } else {
                             this.classList.add('is-valid');
