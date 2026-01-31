@@ -17,6 +17,11 @@ chown -R nobody:nogroup storage bootstrap/cache 2>/dev/null || true
 echo "📝 Running migrations..."
 php artisan migrate --force
 
+if [ "${RUN_SEEDS:-false}" = "true" ]; then
+    echo "🌱 Running database seeders..."
+    php artisan db:seed --force
+fi
+
 echo "🔗 Creating storage link..."
 # Remove existing link if it exists, then create fresh one
 rm -f public/storage
